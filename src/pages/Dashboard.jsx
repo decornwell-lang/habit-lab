@@ -1,5 +1,7 @@
-// Dashboard: the members' home page. Loads the member's data once, then
-// shows the sections in the order set out in the brief.
+// Dashboard: the members' home page, split into four tabs (see DashboardTabs.jsx):
+//   Community · This week · My practice · Upcoming
+// The open tab is part of the address (e.g. /dashboard?tab=week), so links
+// and notifications can open a specific tab.
 import { useCallback, useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
@@ -26,6 +28,9 @@ import StartAgain from "../components/dashboard/StartAgain.jsx";
 import Messages from "../components/dashboard/Messages.jsx";
 import NotificationSettings from "../components/NotificationSettings.jsx";
 import InstallApp from "../components/InstallApp.jsx";
+import DashboardTabs, { TABS, DEFAULT_TAB } from "../components/dashboard/DashboardTabs.jsx";
+import StreakCard from "../components/dashboard/StreakCard.jsx";
+import UpcomingEvents from "../components/dashboard/UpcomingEvents.jsx";
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -36,6 +41,12 @@ export default function Dashboard() {
   const [startAgain, setStartAgain] = useState(false);
   const [params, setParams] = useSearchParams();
   const today = todayKey();
+
+  const tab = TABS.some((t) => t.id === params.get("tab")) ? params.get("tab") : DEFAULT_TAB;
+  function setTab(id) {
+    setParams(id === DEFAULT_TAB ? {} : { tab: id });
+    window.scrollTo(0, 0);
+  }
 
   const load = useCallback(async () => {
     try {
@@ -109,23 +120,18 @@ export default function Dashboard() {
     else if (newBadges.length) setCelebrate(newBadges.at(-1));
   }
 
+  const streak = computeStreak(data.checkins, today);
+  const tabTitle = TABS.find((t) => t.id === tab)?.label;
+
   return (
     <main className="page dashboard">
-      <p className="eyebrow">My dashboard</p>
-      <h1>Hello, {firstName}</h1>
-      {current && (
-        <p className="muted">
-          {current.cohort.name}
-          {active && ` · Day ${current.progress.day} of ${current.cohort.durationDays}`}
-        </p>
-      )}
+      <p className="eyebrow">Hello, {firstName}</p>
+      <h1>{tabTitle}</h1>
 
       {notice && <p className="notice notice-good" role="status">{notice}</p>}
       {error && <p className="form-error" role="alert">{error}</p>}
 
-      <Messages cohortIds={data.memberships.map((m) => m.cohortId)} />
-      <InstallApp />
-
+      {/* Shown on any tab, straight after a check-in */}
       {celebrate && (
         <Celebration
           uid={user.uid}
@@ -145,32 +151,67 @@ export default function Dashboard() {
         }} />
       )}
 
-      {current?.progress.state === "upcoming" && <PreCohort current={current} />}
-
-      <TodaysPractice uid={user.uid} content={content} practised={data.practised} today={today} />
-
-      {current && (
-        <DailyCheckin
-          uid={user.uid}
-          current={current}
-          content={content}
-          existing={data.checkins[today]}
-          streak={computeStreak(data.checkins, today)}
-          today={today}
-          onSaved={handleCheckinSaved}
-        />
+      {/* 1. Community: leaderboard and notifications */}
+      {tab === "community" && (
+        <>
+          <Messages cohortIds={data.memberships.map((m) => m.cohortId)} />
+          <NotificationSettings uid={user.uid} compact />
+          <InstallApp />
+          <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={today} />
+        </>
       )}
 
-      <WeeklyReflection content={content} />
-      <LiveSession settings={data.settings} />
-      <MyPod uid={user.uid} current={current} today={today} />
-      <JoinCohort uid={user.uid} cohorts={data.cohorts} memberships={data.memberships} onJoined={load} />
-      <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={today} />
-      <NotificationSettings uid={user.uid} compact />
+      {/* 2. This week: meditation, reflection and the Zoom session */}
+      {tab === "week" && (
+        <>
+          <TodaysPractice uid={user.uid} content={content} practised={data.practised} today={today} />
+          <WeeklyReflection content={content} />
+          <LiveSession settings={data.settings} />
+        </>
+      )}
+
+      {/* 3. My practice: streak, check-in, cohort and pod */}
+      {tab === "practice" && (
+        <>
+          {current ? (
+            <>
+              <StreakCard streak={streak} badges={data.publicProfile?.badges} current={current} weekTitle={content.title} />
+              {current.progress.state === "upcoming" && <PreCohort current={current} />}
+              <DailyCheckin
+                uid={user.uid}
+                current={current}
+                content={content}
+                existing={data.checkins[today]}
+                streak={streak}
+                today={today}
+                onSaved={handleCheckinSaved}
+              />
+              <MyPod uid={user.uid} current={current} today={today} />
+            </>
+          ) : (
+            <section className="card center">
+              <p className="card-label">My practice</p>
+              <h2>You haven't joined a cohort yet</h2>
+              <p className="muted">Your streak, daily check-in and pod will appear here once you join.</p>
+              <button className="btn btn-primary" onClick={() => setTab("upcoming")}>See upcoming cohorts</button>
+            </section>
+          )}
+        </>
+      )}
+
+      {/* 4. Upcoming: events and cohorts to join */}
+      {tab === "upcoming" && (
+        <>
+          <UpcomingEvents settings={data.settings} cohorts={data.cohorts} memberships={data.memberships} onOpenTab={setTab} />
+          <JoinCohort uid={user.uid} cohorts={data.cohorts} memberships={data.memberships} onJoined={load} />
+        </>
+      )}
 
       <p className="form-foot">
         <Link to="/account">My account and privacy settings</Link>
       </p>
+
+      <DashboardTabs active={tab} onChange={setTab} />
     </main>
   );
 }

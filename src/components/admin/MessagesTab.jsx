@@ -28,7 +28,7 @@ export default function MessagesTab({ cohorts, users }) {
       const id = await addNotice({
         title: form.title.trim(),
         body: form.body.trim(),
-        link: "/dashboard",
+        link: "/dashboard?tab=community",
         cohortId: form.cohortId || null,
       });
       try {
