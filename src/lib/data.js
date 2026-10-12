@@ -209,6 +209,43 @@ export async function adminMovePodMember({ uid, fromPodId, toPodId }) {
   await batch.commit();
 }
 
+// Owner only: change a pod's type or WhatsApp group link.
+export async function adminUpdatePod(podId, data) {
+  await updateDoc(doc(db, "pods", podId), data);
+}
+
+// Owner only: create several empty pods at once (e.g. 8 for a new cohort).
+export async function adminCreatePods(cohortId, count, type = "mixed") {
+  const batch = writeBatch(db);
+  for (let i = 0; i < count; i++) {
+    batch.set(doc(collection(db, "pods")), { cohortId, type, memberIds: [], whatsappGroupLink: null, createdAt: serverTimestamp() });
+  }
+  await batch.commit();
+}
+
+// Owner only: give each WhatsApp group link to a pod in this cohort that doesn't
+// have one yet (oldest first), creating new pods for any links left over.
+// Returns { assigned, created }.
+export async function adminAssignGroupLinks(cohortId, links, type = "mixed") {
+  const waiting = (await getPods(cohortId)).filter((p) => !p.whatsappGroupLink);
+  const batch = writeBatch(db);
+  let assigned = 0;
+  let created = 0;
+  links.forEach((link, i) => {
+    if (waiting[i]) {
+      batch.update(doc(db, "pods", waiting[i].id), { whatsappGroupLink: link, groupLinkSetBy: "admin" });
+      assigned++;
+    } else {
+      batch.set(doc(collection(db, "pods")), {
+        cohortId, type, memberIds: [], whatsappGroupLink: link, groupLinkSetBy: "admin", createdAt: serverTimestamp(),
+      });
+      created++;
+    }
+  });
+  await batch.commit();
+  return { assigned, created };
+}
+
 // Owner only: start a new, empty pod in a cohort.
 export async function adminCreatePod(cohortId, type = "mixed") {
   const ref = await addDoc(collection(db, "pods"), { cohortId, type, memberIds: [], createdAt: serverTimestamp() });

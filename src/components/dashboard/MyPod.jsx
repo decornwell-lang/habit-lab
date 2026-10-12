@@ -222,7 +222,8 @@ function PodGroupLink({ pod, uid, members, onSaved }) {
   const [link, setLink] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const setBy = members.find((m) => m.id === pod.groupLinkSetBy);
+  const [diy, setDiy] = useState(false); // member chose to set the group up themselves
+  const setBy = pod.groupLinkSetBy === "admin" ? { id: "admin", firstName: "David" } : members.find((m) => m.id === pod.groupLinkSetBy);
 
   async function save(e) {
     e.preventDefault();
@@ -264,6 +265,17 @@ function PodGroupLink({ pod, uid, members, onSaved }) {
     );
   }
 
+  // No link yet: David normally adds it. Members can set it up themselves if they want.
+  if (!editing && !diy) {
+    return (
+      <div className="pod-group pod-group-setup">
+        <h3>Your pod's WhatsApp group is on its way</h3>
+        <p className="muted small">David will add the link here soon, and you'll see a button to join.</p>
+        <button className="link-btn" onClick={() => setDiy(true)}>Or set it up yourself</button>
+      </div>
+    );
+  }
+
   return (
     <div className="pod-group pod-group-setup">
       <h3>Start your pod's WhatsApp group</h3>
@@ -277,7 +289,7 @@ function PodGroupLink({ pod, uid, members, onSaved }) {
         <input aria-label="WhatsApp group invite link" placeholder="https://chat.whatsapp.com/…" value={link} onChange={(e) => setLink(e.target.value)} />
         <button className="btn btn-primary btn-small" disabled={busy || !link.trim()}>Save</button>
       </form>
-      {editing && <button className="btn btn-text" onClick={() => setEditing(false)}>Cancel</button>}
+      <button className="btn btn-text" onClick={() => { setEditing(false); setDiy(false); }}>Cancel</button>
       {error && <p className="form-error">{error}</p>}
     </div>
   );

@@ -68,7 +68,7 @@ service cloud.firestore {
     match /pods/{podId} {
       allow read: if isAdmin()
         || (signedIn() && request.auth.uid in get(/databases/$(database)/documents/cohorts/$(resource.data.cohortId)).data.memberIds);
-      allow create: if signedIn()
+      allow create: if isAdmin() || signedIn()
         && request.resource.data.memberIds == [request.auth.uid]
         && request.auth.uid in get(/databases/$(database)/documents/cohorts/$(request.resource.data.cohortId)).data.memberIds;
       allow update: if isAdmin() || (signedIn()

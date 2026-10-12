@@ -1,8 +1,10 @@
 // Admin → Pods: change requests from members, and every pod by cohort.
-// Move anyone to another pod (or out of their pod), or start a new pod.
+// Create the pods for a cohort in advance (with WhatsApp group links you made),
+// set each pod's type, and move anyone to another pod.
 import { useEffect, useState } from "react";
+import { cleanGroupLink } from "../../lib/phone.js";
 import {
-  getAllPods, getPodMembers, getPodRequests, resolvePodRequest, adminMovePodMember, adminCreatePod, POD_SIZE,
+  getAllPods, getPodMembers, getPodRequests, resolvePodRequest, adminMovePodMember, adminCreatePods, adminUpdatePod, adminAssignGroupLinks, POD_SIZE,
   POD_TYPES, podTypeLabel,
 } from "../../lib/data.js";
 
@@ -45,8 +47,9 @@ export default function PodsTab({ cohorts, users }) {
     }
   }
 
-  async function newPod(cohortId, type) {
-    await adminCreatePod(cohortId, type);
+  async function createMany(cohortId, count) {
+    await adminCreatePods(cohortId, count);
+    setMessage(count === 1 ? "Pod added." : `${count} pods created. Now set each pod's type and paste its WhatsApp group link.`);
     await load();
   }
 
@@ -105,39 +108,135 @@ export default function PodsTab({ cohorts, users }) {
 
       {cohorts.filter((c) => c.status !== "finished").map((c) => {
         const cohortPods = pods.filter((p) => p.cohortId === c.id);
+        const missing = cohortPods.filter((p) => !p.whatsappGroupLink).length;
         return (
           <div key={c.id} className="card">
             <h2>{c.name}</h2>
-            {cohortPods.length === 0 && <p className="muted small">No pods yet. Members create them when they tap “Join a pod”.</p>}
-            {cohortPods.map((p, i) => (
-              <div key={p.id} className="admin-pod">
-                <h3>{podLabel(p, i)}</h3>
-                <p className="muted small">
-                  {p.whatsappGroupLink ? <a href={p.whatsappGroupLink} target="_blank" rel="noreferrer">WhatsApp group linked</a> : "No WhatsApp group yet"}
+            <p className="muted small">
+              {cohortPods.length} {cohortPods.length === 1 ? "pod" : "pods"}
+              {missing > 0 && <span className="tag tag-upcoming">{missing} need a WhatsApp group</span>}
+            </p>
+            {cohortPods.length === 0 && (
+              <div className="pod-setup-help">
+                <p className="small">
+                  <strong>Setting up pods for this cohort:</strong> create the WhatsApp groups first (e.g. “Habit Lab ·
+                  Pod 1” to “Pod 8”), then create the pods here and paste each group's invite link. Members are placed
+                  in these pods first, oldest first.
                 </p>
-                {p.memberIds.length === 0 && <p className="muted small">Empty</p>}
-                <ul className="plain-list">
-                  {p.memberIds.map((uid) => {
-                    const card = p.cards.find((x) => x.id === uid);
-                    return (
-                      <li key={uid}>
-                        {nameOf(uid)}
-                        {card?.phone && <span className="muted small"> · sharing {card.phone}</span>}
-                        <button className="link-btn" onClick={() => setMoving({ uid, fromPodId: p.id })}>Move</button>
-                      </li>
-                    );
-                  })}
-                </ul>
               </div>
+            )}
+            <BulkLinks cohortId={c.id} onDone={(text) => { setMessage(text); load(); }} />
+            {cohortPods.map((p, i) => (
+              <AdminPodRow key={p.id} pod={p} index={i} nameOf={nameOf} onMove={(uid) => setMoving({ uid, fromPodId: p.id })} onSaved={load} />
             ))}
             <div className="share-links" style={{ justifyContent: "flex-start" }}>
-              {POD_TYPES.map((t) => (
-                <button key={t.id} className="btn btn-ghost btn-small" onClick={() => newPod(c.id, t.id)}>New {t.label.toLowerCase()}</button>
-              ))}
+              <button className="btn btn-primary btn-small" onClick={() => createMany(c.id, 8)}>Create 8 pods</button>
+              <button className="btn btn-ghost btn-small" onClick={() => createMany(c.id, 1)}>Add 1 pod</button>
             </div>
           </div>
         );
       })}
     </section>
+  );
+}
+
+// One pod in the admin list: type, WhatsApp group link, and members.
+function AdminPodRow({ pod, index, nameOf, onMove, onSaved }) {
+  const [link, setLink] = useState(pod.whatsappGroupLink || "");
+  const [note, setNote] = useState("");
+
+  async function saveType(type) {
+    await adminUpdatePod(pod.id, { type });
+    onSaved();
+  }
+
+  async function saveLink(e) {
+    e.preventDefault();
+    if (!link.trim()) {
+      await adminUpdatePod(pod.id, { whatsappGroupLink: null, groupLinkSetBy: null });
+      setNote("Link removed.");
+      return onSaved();
+    }
+    const clean = cleanGroupLink(link);
+    if (!clean) return setNote("That isn't a WhatsApp group link (https://chat.whatsapp.com/…).");
+    await adminUpdatePod(pod.id, { whatsappGroupLink: clean, groupLinkSetBy: "admin" });
+    setLink(clean);
+    setNote("Saved ✓");
+    onSaved();
+  }
+
+  return (
+    <div className={`admin-pod ${pod.whatsappGroupLink ? "" : "needs-link"}`}>
+      <div className="admin-pod-head">
+        <h3>Pod {index + 1} <span className="muted small">({pod.memberIds.length}/{POD_SIZE})</span></h3>
+        <select value={pod.type || "mixed"} onChange={(e) => saveType(e.target.value)} aria-label="Pod type">
+          {POD_TYPES.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+        </select>
+      </div>
+      <form className="note-form" onSubmit={saveLink}>
+        <input aria-label="WhatsApp group invite link" placeholder="Paste WhatsApp group link: https://chat.whatsapp.com/…" value={link} onChange={(e) => { setLink(e.target.value); setNote(""); }} />
+        <button className="btn btn-primary btn-small">Save</button>
+      </form>
+      {note && <p className="small muted">{note}</p>}
+      {pod.memberIds.length === 0 ? (
+        <p className="muted small">No members yet</p>
+      ) : (
+        <ul className="plain-list">
+          {pod.memberIds.map((uid) => (
+            <li key={uid}>
+              {nameOf(uid)}
+              <button className="link-btn" onClick={() => onMove(uid)}>Move</button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+// Paste several WhatsApp group links at once (one per line). Each goes to a pod
+// without a link; new pods are created for any extra links.
+function BulkLinks({ cohortId, onDone }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  const [type, setType] = useState("mixed");
+  const [error, setError] = useState("");
+
+  async function submit(e) {
+    e.preventDefault();
+    const lines = text.split(/\s+/).filter(Boolean);
+    const links = lines.map(cleanGroupLink);
+    const bad = lines.filter((_, i) => !links[i]);
+    if (!lines.length) return setError("Paste at least one link.");
+    if (bad.length) return setError(`These aren't WhatsApp group links: ${bad.join(", ")}`);
+    const unique = [...new Set(links)];
+    const { assigned, created } = await adminAssignGroupLinks(cohortId, unique, type);
+    setText("");
+    setOpen(false);
+    onDone(`${unique.length} links added: ${assigned} to existing pods, ${created} new ${created === 1 ? "pod" : "pods"} created.`);
+  }
+
+  if (!open) {
+    return <button className="btn btn-ghost btn-small bulk-open" onClick={() => setOpen(true)}>Paste all group links at once</button>;
+  }
+
+  return (
+    <form className="bulk-links" onSubmit={submit}>
+      <div className="field">
+        <label>WhatsApp group links, one per line</label>
+        <textarea rows={6} value={text} onChange={(e) => { setText(e.target.value); setError(""); }}
+          placeholder={"https://chat.whatsapp.com/…\nhttps://chat.whatsapp.com/…"} />
+        <p className="hint">Links go to pods that don't have one yet; extra links create new pods.</p>
+      </div>
+      <div className="field">
+        <label>Type for any new pods</label>
+        <select value={type} onChange={(e) => setType(e.target.value)}>
+          {POD_TYPES.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+        </select>
+      </div>
+      {error && <p className="form-error">{error}</p>}
+      <button className="btn btn-primary btn-small">Add links</button>
+      <button type="button" className="btn btn-text" onClick={() => setOpen(false)}>Cancel</button>
+    </form>
   );
 }
