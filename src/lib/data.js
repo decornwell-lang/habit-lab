@@ -11,8 +11,9 @@
 //   cohorts/{cohortId}                cohort details and member list
 //   settings/content                  Zoom link, session date, weekly media links
 //   notices/{id}                      messages from the owner (also sent as push notifications)
+//   podNotes/{id}                     short encouragement notes between pod members
 import {
-  doc, getDoc, getDocs, setDoc, updateDoc, addDoc, collection, collectionGroup,
+  doc, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, collection, collectionGroup,
   query, where, orderBy, limit, writeBatch, arrayUnion, serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase.js";
@@ -123,6 +124,26 @@ export async function getNotices(max = 20) {
 export async function addNotice(data) {
   const ref = await addDoc(collection(db, "notices"), { ...data, createdAt: serverTimestamp() });
   return ref.id;
+}
+
+// ---------- Pod encouragement notes ----------
+//   podNotes/{id}  { cohortId, uid, firstName, avatar, text, createdAt }
+// Readable by members of that cohort; the app shows each member only their own pod's notes.
+export async function getPodNotes(cohortId) {
+  const snap = await getDocs(query(collection(db, "podNotes"), where("cohortId", "==", cohortId)));
+  return list(snap).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+}
+
+export async function addPodNote(note) {
+  await addDoc(collection(db, "podNotes"), { ...note, createdAt: serverTimestamp() });
+}
+
+export async function deletePodNote(id) {
+  await deleteDoc(doc(db, "podNotes", id));
+}
+
+export async function getAllPodNotes() {
+  return list(await getDocs(collection(db, "podNotes"))).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
 }
 
 // ---------- Admin only ----------

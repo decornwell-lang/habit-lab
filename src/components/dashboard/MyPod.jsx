@@ -5,8 +5,9 @@ import { podFor } from "../../lib/cohorts.js";
 import { getVisibleProfiles } from "../../lib/data.js";
 import { effectiveStreak } from "../../lib/streaks.js";
 import Avatar from "../Avatar.jsx";
+import PodNotes from "./PodNotes.jsx";
 
-export default function MyPod({ uid, current, today }) {
+export default function MyPod({ uid, profile, current, today }) {
   const [members, setMembers] = useState(null);
   const pod = current ? podFor(current.cohort.memberIds || [], uid) : [];
   const podKey = pod.join(",");
@@ -51,6 +52,7 @@ export default function MyPod({ uid, current, today }) {
         </p>
       )}
       {pod.length === 1 && <p className="muted small">More members will join your pod as the cohort fills up.</p>}
+      <PodNotes uid={uid} profile={profile} cohortId={current.cohort.id} podIds={pod} />
     </section>
   );
 }

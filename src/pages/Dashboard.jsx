@@ -31,6 +31,8 @@ import InstallApp from "../components/InstallApp.jsx";
 import DashboardTabs, { TABS, DEFAULT_TAB } from "../components/dashboard/DashboardTabs.jsx";
 import StreakCard from "../components/dashboard/StreakCard.jsx";
 import UpcomingEvents from "../components/dashboard/UpcomingEvents.jsx";
+import BreathePause from "../components/dashboard/BreathePause.jsx";
+import JourneyMap from "../components/dashboard/JourneyMap.jsx";
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -177,6 +179,7 @@ export default function Dashboard() {
             <>
               <StreakCard streak={streak} badges={data.publicProfile?.badges} current={current} weekTitle={content.title} />
               {current.progress.state === "upcoming" && <PreCohort current={current} />}
+              {current.progress.state === "active" && <BreathePause />}
               <DailyCheckin
                 uid={user.uid}
                 current={current}
@@ -186,7 +189,8 @@ export default function Dashboard() {
                 today={today}
                 onSaved={handleCheckinSaved}
               />
-              <MyPod uid={user.uid} current={current} today={today} />
+              <JourneyMap current={current} checkins={data.checkins} />
+              <MyPod uid={user.uid} profile={profile} current={current} today={today} />
             </>
           ) : (
             <section className="card center">
