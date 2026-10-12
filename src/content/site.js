@@ -8,7 +8,7 @@ export const site = {
   photo: "/images/david-placeholder.svg",
   photoAlt: "Portrait of David Ernest Cornwell",
   intro:
-    "Change one habit at a time, together. The Habit Lab runs small, guided cohorts with a weekly breathing meditation, a short daily check-in and a live session every Monday.",
+    "Let go of old patterns, and a new self emerges. Guided by UKCP-registered psychotherapist David Ernest Cornwell, The Habit Lab helps you change one habit at a time, together, with a weekly breathing meditation, a short daily check-in and a live session every Monday.",
   signUpTitle: "Join The Habit Lab",
   signUpSubtitle: "Create your free account. You can choose a cohort once you're in.",
 };
