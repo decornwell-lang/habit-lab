@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
+  <!-- Placeholder portrait. Replace with a real photo (see src/content/site.js). -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dfe8e1"/>
+      <stop offset="1" stop-color="#f3e2d8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="1000" fill="url(#bg)"/>
+  <circle cx="400" cy="400" r="150" fill="#b9cbbd"/>
+  <path d="M130 1000c0-190 120-330 270-330s270 140 270 330z" fill="#b9cbbd"/>
+  <text x="400" y="930" text-anchor="middle" font-family="Georgia, serif" font-size="40" fill="#5f7d67">Photo coming soon</text>
+</svg>

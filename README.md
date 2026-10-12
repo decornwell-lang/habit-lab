@@ -22,7 +22,7 @@ Copy `.env.example` to `.env.local` and fill in the Firebase (and later Stripe) 
 
 ## Build progress
 1. ✅ Project setup (Vite, React, Firebase placeholders, Vercel-ready)
-2. ⬜ Landing page, sign-up, log in, hamburger menu
+2. ✅ Landing page, sign-up, log in, hamburger menu
 3. ⬜ Dashboard shell
 4. ⬜ Daily check-in, streaks, leaderboard
 5. ⬜ Cohorts and Stripe checkout, pre-cohort assignment

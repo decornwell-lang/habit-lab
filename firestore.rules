@@ -1,0 +1,18 @@
+// Firestore security rules: who can read and write which data.
+// Paste these into Firebase console → Firestore Database → Rules, then Publish.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // A member's private profile (includes surname and email).
+    // Only that member can read or change it, and they can never make
+    // themselves an admin.
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid
+                    && request.resource.data.role == "member";
+      allow update: if request.auth != null && request.auth.uid == uid
+                    && request.resource.data.role == resource.data.role;
+    }
+  }
+}
