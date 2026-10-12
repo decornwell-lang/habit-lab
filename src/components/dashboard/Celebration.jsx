@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { savePracticeCheck } from "../../lib/data.js";
 import { badgeInfo } from "../../lib/streaks.js";
+import ShareBadge from "../ShareBadge.jsx";
 
 export default function Celebration({ uid, badgeId, onDone, onNotRightNow }) {
   const badge = badgeInfo(badgeId);
   const [busy, setBusy] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
   async function answer(value) {
     setBusy(true);
@@ -21,6 +23,11 @@ export default function Celebration({ uid, badgeId, onDone, onNotRightNow }) {
       <p className="card-label">New badge</p>
       <h2>{badge.label}</h2>
       <p className="muted">You've practised for {badge.label.toLowerCase()} in a row. Take a moment to notice that.</p>
+      {sharing ? (
+        <ShareBadge badgeId={badgeId} />
+      ) : (
+        <button className="btn btn-ghost btn-small" onClick={() => setSharing(true)}>Share this badge</button>
+      )}
       <p className="question-title">Still in your practice?</p>
       <div className="segmented">
         <button onClick={() => answer("yes")} disabled={busy}>Yes</button>

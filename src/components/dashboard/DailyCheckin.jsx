@@ -1,9 +1,12 @@
-// 2. Daily Check-in: commitment Yes/No, craving 0-10, one open question.
+// 2. Daily Check-in: commitment Yes/No, craving rating, one open question.
 // Only shown to members who have joined a cohort.
+// The craving scale (1-5) is set in src/content/prompts.json.
 import { useState } from "react";
 import { saveCheckin } from "../../lib/data.js";
 import { formatDate } from "../../lib/dates.js";
-import { COMMITMENT_QUESTION, CRAVING_QUESTION } from "../../lib/content.js";
+import { COMMITMENT_QUESTION, CRAVING_QUESTION, CRAVING_SCALE } from "../../lib/content.js";
+
+const scaleValues = Array.from({ length: CRAVING_SCALE.max - CRAVING_SCALE.min + 1 }, (_, i) => CRAVING_SCALE.min + i);
 
 export default function DailyCheckin({ uid, current, content, existing, streak, today, onSaved }) {
   const { cohort, progress } = current;
@@ -35,7 +38,7 @@ export default function DailyCheckin({ uid, current, content, existing, streak, 
     e.preventDefault();
     setError("");
     if (maintained === null) return setError("Please answer Yes or No.");
-    if (craving === null) return setError("Please choose a number from 0 to 10.");
+    if (craving === null) return setError(`Please choose a number from ${CRAVING_SCALE.min} to ${CRAVING_SCALE.max}.`);
     setBusy(true);
     try {
       const checkin = {
@@ -69,7 +72,7 @@ export default function DailyCheckin({ uid, current, content, existing, streak, 
         <p className="streak">{streakLine}</p>
         <ul className="summary">
           <li>Commitment kept today: <strong>{existing?.maintained ? "Yes" : "No"}</strong></li>
-          <li>Cravings: <strong>{existing?.craving} / 10</strong></li>
+          <li>Cravings: <strong>{existing?.craving} / {CRAVING_SCALE.max}</strong></li>
           {existing?.answer && <li>“{existing.answer}”</li>}
         </ul>
         <button className="btn btn-ghost" onClick={() => setEditing(true)}>Change today's answers</button>
@@ -94,14 +97,14 @@ export default function DailyCheckin({ uid, current, content, existing, streak, 
 
         <fieldset className="question">
           <legend>{CRAVING_QUESTION}</legend>
-          <div className="scale">
-            {Array.from({ length: 11 }, (_, n) => (
+          <div className="scale" style={{ gridTemplateColumns: `repeat(${scaleValues.length}, 1fr)` }}>
+            {scaleValues.map((n) => (
               <button type="button" key={n} className={craving === n ? "selected" : ""} aria-pressed={craving === n} onClick={() => setCraving(n)}>
                 {n}
               </button>
             ))}
           </div>
-          <div className="scale-labels"><span>None</span><span>Very strong</span></div>
+          <div className="scale-labels"><span>{CRAVING_SCALE.lowLabel}</span><span>{CRAVING_SCALE.highLabel}</span></div>
         </fieldset>
 
         <div className="field">

@@ -3,6 +3,7 @@
 
   "commitmentQuestion": "Did you maintain your commitment today?",
   "cravingQuestion": "How strong were cravings or impulses today?",
+  "cravingScale": { "min": 1, "max": 5, "lowLabel": "Very mild", "highLabel": "Very strong" },
 
   "habits": {
     "smoking": {

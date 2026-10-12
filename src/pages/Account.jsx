@@ -1,10 +1,12 @@
-// My account: avatar, leaderboard opt-in, and log out.
-import { useState } from "react";
+// My account: badges (with sharing), avatar, leaderboard opt-in, and log out.
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
-import { updateUserProfile, savePublicProfile } from "../lib/data.js";
+import { updateUserProfile, savePublicProfile, getPublicProfile } from "../lib/data.js";
+import { badgeInfo, sortBadges } from "../lib/streaks.js";
 import { AVATARS } from "../content/avatars.js";
 import Avatar from "../components/Avatar.jsx";
+import ShareBadge from "../components/ShareBadge.jsx";
 
 export default function Account() {
   const { user, profile, logOut } = useAuth();
@@ -13,7 +15,15 @@ export default function Account() {
   const [optIn, setOptIn] = useState(Boolean(profile?.leaderboardOptIn));
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [badges, setBadges] = useState([]);
+  const [sharingId, setSharingId] = useState(null);
   const firstName = profile?.firstName || user.displayName || "";
+
+  useEffect(() => {
+    getPublicProfile(user.uid)
+      .then((p) => setBadges(sortBadges(p?.badges || [])))
+      .catch(() => setBadges([]));
+  }, [user.uid]);
 
   async function handleSave(e) {
     e.preventDefault();
@@ -37,6 +47,31 @@ export default function Account() {
       <p className="eyebrow">My account</p>
       <h1>{firstName}</h1>
       <p className="muted">{profile?.email || user.email}</p>
+
+      <section className="card">
+        <h2>My badges</h2>
+        {badges.length === 0 ? (
+          <p className="muted small">Your first badge arrives with your first “Yes” check-in.</p>
+        ) : (
+          <ul className="badge-list">
+            {badges.map((id) => {
+              const b = badgeInfo(id);
+              return (
+                <li key={id}>
+                  <div className="badge-row">
+                    <span className="badge-icon">{b.icon}</span>
+                    <span className="person-name">{b.label}</span>
+                    <button type="button" className="link-btn" onClick={() => setSharingId(sharingId === id ? null : id)}>
+                      {sharingId === id ? "Close" : "Share"}
+                    </button>
+                  </div>
+                  {sharingId === id && <ShareBadge badgeId={id} />}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
 
       <form className="card" onSubmit={handleSave}>
         <h2>Your avatar</h2>

@@ -349,8 +349,8 @@ a { color: var(--sage-dark); }
   color: #fff;
 }
 .card-celebrate .segmented button { background: var(--surface); }
-.scale { display: grid; grid-template-columns: repeat(11, 1fr); gap: 4px; }
-.scale button { min-height: 44px; padding: 0; font-size: 0.95rem; }
+.scale { display: grid; gap: 8px; }
+.scale button { min-height: 52px; padding: 0; font-size: 1.1rem; }
 .scale-labels { display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.8rem; color: var(--text-muted); }
 
 .people { list-style: none; padding: 0; margin: 8px 0; }
@@ -402,6 +402,25 @@ a { color: var(--sage-dark); }
 .cohort-list h3 { margin: 0 0 2px; font-size: 1.05rem; }
 .cohort-list p { margin: 0; }
 .joined { color: var(--sage-dark); font-weight: 600; white-space: nowrap; }
+
+/* ---------- Sharing badges ---------- */
+.share-panel { margin: 12px 0 4px; text-align: center; }
+.share-preview {
+  display: block;
+  width: 100%;
+  max-width: 260px;
+  margin: 0 auto 14px;
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+}
+.share-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 12px 0 6px; }
+.share-links .btn { margin-top: 0; }
+.card-celebrate .btn-ghost { background: var(--surface); }
+.badge-list { list-style: none; padding: 0; margin: 8px 0 0; }
+.badge-list li { border-bottom: 1px solid var(--border); padding: 8px 0; }
+.badge-list li:last-child { border-bottom: none; }
+.badge-row { display: flex; align-items: center; gap: 12px; }
+.badge-icon { font-size: 1.8rem; width: 44px; text-align: center; }
 
 /* ---------- Info pages ---------- */
 .bio-photo { width: 100%; max-width: 360px; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); margin-bottom: 24px; }

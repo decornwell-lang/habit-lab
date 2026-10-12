@@ -5,6 +5,7 @@ import prompts from "../content/prompts.json";
 export const WEEKS_IN_PROGRAMME = prompts.habits.default.weeks.length;
 export const COMMITMENT_QUESTION = prompts.commitmentQuestion;
 export const CRAVING_QUESTION = prompts.cravingQuestion;
+export const CRAVING_SCALE = prompts.cravingScale;
 
 export function weekPrompts(habitType, week) {
   const weeks = (prompts.habits[habitType] || prompts.habits.default).weeks;
