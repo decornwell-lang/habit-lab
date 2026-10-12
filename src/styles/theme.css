@@ -617,6 +617,9 @@ a { color: var(--primary); }
 .pod-section { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
 .pod-section h3 { font-size: 1.05rem; margin: 0 0 8px; }
 .pod-section .btn { margin-top: 4px; }
+.btn-whatsapp { gap: 10px; margin-top: 16px; background: #1fa855; color: #fff; }
+.btn-whatsapp svg { width: 22px; height: 22px; flex-shrink: 0; }
+.btn-whatsapp:hover { background: #178a45; }
 .wa-link { display: block; font-size: 0.85rem; font-weight: 500; color: #128c4b; text-decoration: none; }
 .wa-link:hover { text-decoration: underline; }
 .pod-types { display: grid; gap: 8px; margin: 18px 0 6px; }
