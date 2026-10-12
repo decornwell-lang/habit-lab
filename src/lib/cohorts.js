@@ -1,14 +1,18 @@
 // Cohort helpers: where a member is in their cohort, their pod, prices.
 import { daysBetween, addDays } from "./dates.js";
 
+// `streak` is how a streak is described on the leaderboard and when sharing,
+// e.g. "12 days smoke-free". Change the wording here.
 export const HABIT_TYPES = [
-  { id: "smoking", label: "Smoking" },
-  { id: "alcohol", label: "Alcohol" },
-  { id: "exercise", label: "Exercise" },
-  { id: "weightLoss", label: "Weight loss" },
+  { id: "smoking", label: "Smoking", streak: "smoke-free", icon: "🚭" },
+  { id: "alcohol", label: "Alcohol", streak: "alcohol-free", icon: "💧" },
+  { id: "exercise", label: "Exercise", streak: "of exercise", icon: "🏃" },
+  { id: "weightLoss", label: "Weight loss", streak: "of healthy eating", icon: "🥗" },
 ];
 
 export const habitLabel = (id) => HABIT_TYPES.find((h) => h.id === id)?.label || id;
+export const habitStreakLabel = (id) => HABIT_TYPES.find((h) => h.id === id)?.streak || "of practice";
+export const habitIcon = (id) => HABIT_TYPES.find((h) => h.id === id)?.icon || "🌿";
 
 // Where the member is today in a cohort.
 // If they chose "Restart from day 1", their own start date is used instead.

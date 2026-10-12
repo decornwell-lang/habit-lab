@@ -14,6 +14,7 @@ export default function Account() {
   const navigate = useNavigate();
   const [avatar, setAvatar] = useState(profile?.avatar || null);
   const [optIn, setOptIn] = useState(Boolean(profile?.leaderboardOptIn));
+  const [showHabit, setShowHabit] = useState(profile?.showHabit !== false);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [badges, setBadges] = useState([]);
@@ -31,9 +32,9 @@ export default function Account() {
     setBusy(true);
     setMessage("");
     try {
-      await updateUserProfile(user.uid, { avatar, leaderboardOptIn: optIn });
+      await updateUserProfile(user.uid, { avatar, leaderboardOptIn: optIn, showHabit });
       // The public profile only ever holds first name and avatar.
-      await savePublicProfile(user.uid, { firstName, avatar, leaderboardOptIn: optIn });
+      await savePublicProfile(user.uid, { firstName, avatar, leaderboardOptIn: optIn, showHabit });
       setMessage("Saved.");
     } catch (err) {
       console.error(err);
@@ -96,7 +97,11 @@ export default function Account() {
         <h2>Privacy</h2>
         <label className="checkbox">
           <input type="checkbox" checked={optIn} onChange={(e) => setOptIn(e.target.checked)} />
-          <span>Show me on the Habit Lab leaderboard and to my pod (first name and avatar only)</span>
+          <span>Show me on the Habit Lab leaderboard and to my pod (first name, avatar and streak)</span>
+        </label>
+        <label className="checkbox">
+          <input type="checkbox" checked={showHabit} onChange={(e) => setShowHabit(e.target.checked)} />
+          <span>Show which habit my streak is for (for example “alcohol-free”) next to my name</span>
         </label>
         <p className="muted small">
           Your surname, email and phone number are never shown to other members.

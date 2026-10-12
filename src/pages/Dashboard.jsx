@@ -112,6 +112,8 @@ export default function Dashboard() {
       firstName,
       avatar: profile?.avatar || null,
       leaderboardOptIn: Boolean(profile?.leaderboardOptIn),
+      showHabit: profile?.showHabit !== false, // shown unless the member turned it off
+      habitType: current?.cohort.habitType || null, // which streak this is, e.g. "alcohol"
       streak,
       lastYesDate,
       badges,

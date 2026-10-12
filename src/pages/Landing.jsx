@@ -116,7 +116,7 @@ function SignUpForm() {
 
       <label className="checkbox">
         <input type="checkbox" name="leaderboardOptIn" checked={form.leaderboardOptIn} onChange={update} />
-        <span>Show me on the Habit Lab leaderboard (first name and avatar only)</span>
+        <span>Show me on the Habit Lab leaderboard (first name, avatar, streak and the habit I’m working on). You can change this any time.</span>
       </label>
 
       {error && <p className="form-error" role="alert">{error}</p>}
