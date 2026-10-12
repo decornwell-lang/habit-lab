@@ -97,18 +97,6 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
-    // Pod encouragement notes. Only members of the cohort can read them; you can
-    // only post as yourself, into a cohort you belong to, up to 140 characters.
-    match /podNotes/{id} {
-      allow read: if isAdmin()
-        || (signedIn() && request.auth.uid in get(/databases/$(database)/documents/cohorts/$(resource.data.cohortId)).data.memberIds);
-      allow create: if signedIn()
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.text is string && request.resource.data.text.size() <= 140
-        && request.auth.uid in get(/databases/$(database)/documents/cohorts/$(request.resource.data.cohortId)).data.memberIds;
-      allow delete: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
-    }
-
     // Messages from the owner (Admin → Messages).
     match /notices/{id} {
       allow read: if signedIn();

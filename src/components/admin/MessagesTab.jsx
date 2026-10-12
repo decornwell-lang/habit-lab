@@ -4,7 +4,6 @@
 import { useEffect, useState } from "react";
 import { addNotice, getNotices } from "../../lib/data.js";
 import { apiPost } from "../../lib/api.js";
-import PodNotesAdmin from "./PodNotesAdmin.jsx";
 
 export default function MessagesTab({ cohorts, users }) {
   const [form, setForm] = useState({ title: "", body: "", cohortId: "" });
@@ -96,7 +95,6 @@ export default function MessagesTab({ cohorts, users }) {
         </table>
       </div>
 
-      <PodNotesAdmin cohorts={cohorts} />
     </section>
   );
 }

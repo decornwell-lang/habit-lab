@@ -1,6 +1,6 @@
 // My Pod: members choose to join a small pod (up to 4 people) in their cohort.
 // Inside the pod they can choose to share their phone number with the pod
-// (so they can start a WhatsApp group), send encouragement notes, leave,
+// (so they can start a WhatsApp group), leave,
 // or ask David to change their pod.
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -11,7 +11,6 @@ import {
 import { effectiveStreak } from "../../lib/streaks.js";
 import { whatsAppLink } from "../../lib/phone.js";
 import Avatar from "../Avatar.jsx";
-import PodNotes from "./PodNotes.jsx";
 
 export default function MyPod({ uid, profile, current, today }) {
   const cohortId = current.cohort.id;
@@ -82,7 +81,7 @@ export default function MyPod({ uid, profile, current, today }) {
         <h2>Walk alongside a few others</h2>
         <p className="muted">
           A pod is a small group of up to {POD_SIZE} people from your cohort. You'll see each other's first names and
-          streaks, send short notes of encouragement, and can choose to share your number to start a WhatsApp group.
+          streaks, and can choose to share your number to start a WhatsApp group together.
         </p>
         <fieldset className="question pod-types">
           <legend>What kind of pod feels right for you?</legend>
@@ -171,8 +170,6 @@ export default function MyPod({ uid, profile, current, today }) {
           <p className="muted small">Once two or more of you share your numbers, you can start a WhatsApp group together.</p>
         )}
       </div>
-
-      <PodNotes uid={uid} profile={profile} cohortId={cohortId} podId={pod.id} podIds={pod.memberIds} />
 
       <PodChangeRequest uid={uid} profile={profile} cohortId={cohortId} podId={pod.id} />
 
