@@ -1,112 +1,18 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Habit Lab — Turn habits into experiments</title>
-  <meta name="description" content="Habit Lab helps you test small changes to your routine, track them for a week, and keep only what works.">
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <header class="site-header">
-    <div class="container">
-      <a href="index.html" class="logo"><span class="logo-mark">⚗</span>Habit Lab</a>
-      <a href="signup.html" class="btn btn-primary btn-small">Sign up</a>
-    </div>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div class="container">
-        <div>
-          <span class="eyebrow">Free while in beta</span>
-          <h1>Stop forcing habits. Start testing them.</h1>
-          <p class="lead">Habit Lab treats every new habit as a small experiment. Pick a change, run it for seven days, and let your own results tell you what to keep.</p>
-          <div class="hero-actions">
-            <a href="signup.html" class="btn btn-primary">Start your first experiment</a>
-            <a href="#how" class="btn btn-ghost">See how it works</a>
-          </div>
-        </div>
-
-        <div class="experiment-card" aria-label="Example experiment">
-          <p class="label">Experiment #3</p>
-          <h3>Morning walk before coffee</h3>
-          <div class="hypothesis">“If I walk for 10 minutes first thing, I’ll feel more focused by 10am.”</div>
-          <div class="days" aria-hidden="true">
-            <div class="day done"></div><div class="day done"></div><div class="day done"></div>
-            <div class="day"></div><div class="day done"></div><div class="day done"></div>
-            <div class="day"></div>
-          </div>
-          <div class="card-footer">
-            <span>Day 6 of 7</span>
-            <span><strong>5</strong> check-ins</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="how" class="section-alt">
-      <div class="container">
-        <h2 class="section-title">How it works</h2>
-        <p class="section-sub">Three steps, one week, and no all-or-nothing streaks.</p>
-        <div class="steps">
-          <div class="step">
-            <div class="step-num">1</div>
-            <h3>Make a hypothesis</h3>
-            <p>Choose one small change and write down what you expect it to do for you.</p>
-          </div>
-          <div class="step">
-            <div class="step-num">2</div>
-            <h3>Run it for 7 days</h3>
-            <p>Check in each day with a single tap, plus a quick note on how it went.</p>
-          </div>
-          <div class="step">
-            <div class="step-num">3</div>
-            <h3>Review the results</h3>
-            <p>See what changed, then keep the habit, tweak it, or drop it without guilt.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="container">
-        <h2 class="section-title">Built for real life</h2>
-        <p class="section-sub">Habit Lab is designed around learning, not perfection.</p>
-        <div class="features">
-          <div class="feature">
-            <div class="feature-icon">🧪</div>
-            <h3>Experiment library</h3>
-            <p>Start from proven ideas for sleep, focus, movement, and mood, or write your own.</p>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">📈</div>
-            <h3>Honest insights</h3>
-            <p>Simple charts show how each habit affected the things you care about.</p>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">🌱</div>
-            <h3>No streak shame</h3>
-            <p>A missed day is just a data point, so it never resets your progress.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="container">
-        <div class="cta">
-          <h2>Your first experiment takes two minutes</h2>
-          <p>Create a free account and pick a habit to test this week.</p>
-          <a href="signup.html" class="btn">Create free account</a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container">© <span id="year"></span> Habit Lab</div>
-  </footer>
-  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f8f5ef" />
+    <title>The Habit Lab · David Ernest Cornwell</title>
+    <meta name="description" content="The Habit Lab: guided cohorts for changing habits, with weekly meditation, daily check-ins and live sessions." />
+    <!-- Fonts: Lora (serif) for headings, Inter (sans-serif) for body text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500;600&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

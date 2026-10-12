@@ -1,0 +1,96 @@
+/* Theme: colours, fonts and shared building blocks.
+   Change the look of the whole app by editing the values below. */
+:root {
+  --bg: #f8f5ef;          /* off-white background */
+  --surface: #ffffff;     /* cards */
+  --text: #2f3a40;        /* dark slate */
+  --text-muted: #66727a;
+  --border: #e6e0d4;
+  --sage: #7f9c86;        /* soft sage green: main accent */
+  --sage-dark: #5f7d67;   /* buttons and links (readable on white) */
+  --sage-soft: #e7eee8;
+  --terracotta: #c27c5e;  /* muted terracotta: highlights */
+  --terracotta-soft: #f5e6de;
+
+  --font-heading: "Lora", Georgia, serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --radius: 16px;
+  --space: 20px;
+  --tap: 48px;            /* minimum tap-target height */
+  --shadow: 0 1px 2px rgba(47, 58, 64, 0.04), 0 6px 20px rgba(47, 58, 64, 0.06);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 0 12px;
+}
+h1 { font-size: 2.2rem; }
+h2 { font-size: 1.4rem; }
+
+a { color: var(--sage-dark); }
+
+/* Page wrapper: mobile first, 16px side gutter, centred on wide screens */
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--terracotta);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.muted { color: var(--text-muted); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px var(--space);
+  margin: 24px 0;
+}
+
+.checklist { padding-left: 0; list-style: none; margin: 0 0 20px; }
+.checklist li { padding: 4px 0; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  padding: 0 24px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  width: 100%;
+}
+.btn-primary { background: var(--sage-dark); color: #fff; }
+.btn-primary:hover { background: #4f6b57; }
+
+@media (min-width: 720px) {
+  h1 { font-size: 2.8rem; }
+  .page { padding-top: 56px; }
+}

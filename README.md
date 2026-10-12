@@ -1,12 +1,31 @@
-# Habit Lab
+# The Habit Lab · David Ernest Cornwell
 
-A web app that treats new habits as small, seven-day experiments.
+Mobile-first web app for paid habit-change cohorts: weekly meditation, daily check-ins, streaks and badges, and live sessions.
 
-## Pages
-- `index.html`: landing page
-- `signup.html` + `signup.js`: sign-up form with validation
-- `welcome.html`: confirmation shown after sign-up
+Built with React + Vite, Firebase (Authentication and Firestore), Stripe (Checkout), and deployed on Vercel.
 
-It's a static site with no build step. Open `index.html` in a browser to view it, or deploy the folder to Vercel as is.
+## Run it on your Mac
+```bash
+npm install
+npm run dev
+```
+Then open http://localhost:5173.
 
-> Note: sign-up details are currently kept only in the visitor's browser (localStorage). Real accounts need a backend, which comes in a later step.
+## Secret keys
+Copy `.env.example` to `.env.local` and fill in the Firebase (and later Stripe) values. `.env.local` is never uploaded to GitHub. On Vercel, add the same names under **Settings → Environment Variables**.
+
+## Where things live
+- `src/App.jsx`: list of pages (routes)
+- `src/pages/`: one file per page
+- `src/firebase.js`: Firebase connection
+- `src/styles/theme.css`: colours, fonts, spacing (change the look here)
+
+## Build progress
+1. ✅ Project setup (Vite, React, Firebase placeholders, Vercel-ready)
+2. ⬜ Landing page, sign-up, log in, hamburger menu
+3. ⬜ Dashboard shell
+4. ⬜ Daily check-in, streaks, leaderboard
+5. ⬜ Cohorts and Stripe checkout, pre-cohort assignment
+6. ⬜ Badges and the start-again path
+7. ⬜ Admin dashboard
+8. ⬜ Bio and other menu pages
