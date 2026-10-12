@@ -10,7 +10,7 @@ export const site = {
   productTagline: "Let go of old patterns. A new self emerges.",
   logo: "/images/logo-dec.png",
 
-  photo: "/images/david-placeholder.svg",
+  photo: "/images/david.jpg",
   photoAlt: "Portrait of David Ernest Cornwell",
 
   // Landing page
