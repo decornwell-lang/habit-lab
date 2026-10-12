@@ -620,6 +620,14 @@ a { color: var(--primary); }
 .btn-whatsapp { gap: 10px; margin-top: 16px; background: #1fa855; color: #fff; }
 .btn-whatsapp svg { width: 22px; height: 22px; flex-shrink: 0; }
 .btn-whatsapp:hover { background: #178a45; }
+.pod-group { margin: 14px 0 6px; }
+.pod-group .btn-whatsapp { margin-top: 0; }
+.pod-group-setup { padding: 16px; border-radius: 14px; background: var(--accent-soft); }
+.pod-group-setup h3 { margin: 0 0 4px; font-size: 1.05rem; }
+.pod-group-setup .steps-list { margin-bottom: 12px; }
+.pod-group .link-btn { font-size: 0.85rem; }
+.people .person-name .muted { display: block; font-weight: 400; }
+.wa-chat { width: auto; min-height: 36px; padding: 0 14px; margin-top: 0; font-size: 0.85rem; }
 .wa-link { display: block; font-size: 0.85rem; font-weight: 500; color: #128c4b; text-decoration: none; }
 .wa-link:hover { text-decoration: underline; }
 .pod-types { display: grid; gap: 8px; margin: 18px 0 6px; }

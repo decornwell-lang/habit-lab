@@ -112,6 +112,9 @@ export default function PodsTab({ cohorts, users }) {
             {cohortPods.map((p, i) => (
               <div key={p.id} className="admin-pod">
                 <h3>{podLabel(p, i)}</h3>
+                <p className="muted small">
+                  {p.whatsappGroupLink ? <a href={p.whatsappGroupLink} target="_blank" rel="noreferrer">WhatsApp group linked</a> : "No WhatsApp group yet"}
+                </p>
                 {p.memberIds.length === 0 && <p className="muted small">Empty</p>}
                 <ul className="plain-list">
                   {p.memberIds.map((uid) => {

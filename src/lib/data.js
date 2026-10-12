@@ -128,7 +128,8 @@ export async function addNotice(data) {
 
 // ---------- Pods ----------
 // Members choose to join a pod. Each pod holds up to POD_SIZE members.
-//   pods/{podId}                  { cohortId, type ("mixed" | "women" | "men"), memberIds, createdAt }
+//   pods/{podId}                  { cohortId, type ("mixed" | "women" | "men"), memberIds, createdAt,
+//                                   whatsappGroupLink, groupLinkSetBy }
 //   pods/{podId}/members/{uid}    { firstName, avatar, phone (only if shared, else null) }
 // Only members of a pod can read its member cards, so a shared phone number
 // is seen by that pod and nobody else (except the owner).
@@ -174,6 +175,12 @@ export async function leavePod(podId, uid) {
 
 export async function getPodMembers(podId) {
   return list(await getDocs(collection(db, "pods", podId, "members")));
+}
+
+// Saves (or removes, with null) the pod's WhatsApp group invite link.
+// Any member of the pod can set it; see src/lib/phone.js for the link check.
+export async function setPodGroupLink(podId, link, uid) {
+  await updateDoc(doc(db, "pods", podId), { whatsappGroupLink: link || null, groupLinkSetBy: link ? uid : null });
 }
 
 // Shares (phone) or hides (null) the member's number with their pod.
