@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
+import InstallApp from "./InstallApp.jsx";
 
 const links = [
   { to: "/", label: "Home" },
@@ -67,6 +68,7 @@ export default function Menu({ open, onClose }) {
             </li>
           ))}
           <li className="menu-divider" />
+          <li><InstallApp variant="menu" /></li>
           <li>
             {user ? (
               <button className="menu-link-btn" onClick={handleLogOut}>Log out</button>

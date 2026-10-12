@@ -7,14 +7,9 @@
 import { getMessaging, getToken, onMessage, isSupported } from "firebase/messaging";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { app, db, firebaseConfig } from "../firebase.js";
+import { isIOS, isInstalled } from "./install.js";
 
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
-
-export const isIOS = () =>
-  /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-
-export const isInstalled = () =>
-  window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
 
 // Returns one of:
 //   "on"             notifications are on

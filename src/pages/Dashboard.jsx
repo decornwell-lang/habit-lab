@@ -25,6 +25,7 @@ import Celebration from "../components/dashboard/Celebration.jsx";
 import StartAgain from "../components/dashboard/StartAgain.jsx";
 import Messages from "../components/dashboard/Messages.jsx";
 import NotificationSettings from "../components/NotificationSettings.jsx";
+import InstallApp from "../components/InstallApp.jsx";
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -123,6 +124,7 @@ export default function Dashboard() {
       {error && <p className="form-error" role="alert">{error}</p>}
 
       <Messages cohortIds={data.memberships.map((m) => m.cohortId)} />
+      <InstallApp />
 
       {celebrate && (
         <Celebration

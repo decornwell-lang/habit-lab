@@ -3,6 +3,7 @@
 // `compact` hides it completely once notifications are on (used on the dashboard).
 import { useEffect, useState } from "react";
 import { pushStatus, enablePush, saveToken } from "../lib/push.js";
+import { IosInstallSteps } from "./InstallApp.jsx";
 
 export default function NotificationSettings({ uid, compact = false }) {
   const [status, setStatus] = useState(null);
@@ -50,12 +51,10 @@ export default function NotificationSettings({ uid, compact = false }) {
         <>
           <h2>Get messages from David</h2>
           <p className="muted small">On iPhone, notifications work once The Habit Lab is on your Home Screen:</p>
-          <ol className="steps-list">
-            <li>Tap the <strong>Share</strong> button in Safari (the square with an arrow).</li>
-            <li>Choose <strong>Add to Home Screen</strong>, then <strong>Add</strong>.</li>
-            <li>Open The Habit Lab from your Home Screen and log in.</li>
-            <li>Come back here and tap <strong>Turn on notifications</strong>.</li>
-          </ol>
+          <IosInstallSteps />
+          <p className="muted small">
+            Then open The Habit Lab from your Home Screen, log in, and tap <strong>Turn on notifications</strong> in My account.
+          </p>
         </>
       )}
       {status === "blocked" && (

@@ -411,6 +411,16 @@ a { color: var(--sage-dark); }
 .steps-list { padding-left: 20px; margin: 8px 0 0; font-size: 0.95rem; }
 .steps-list li { margin-bottom: 6px; }
 
+/* ---------- Add to Home Screen ---------- */
+.install-card { display: grid; grid-template-columns: 56px 1fr; gap: 4px 14px; align-items: center; }
+.install-card > .btn, .install-card > .steps-list { grid-column: 1 / -1; }
+.install-icon { width: 56px; height: 56px; border-radius: 14px; }
+.install-text h2 { font-size: 1.15rem; margin-bottom: 2px; }
+.install-text p { margin: 0; }
+.install-steps { margin: 14px 0 4px; }
+.inline-icon { vertical-align: -3px; color: var(--sage-dark); }
+.menu-install { padding: 0 14px 8px; font-size: 0.9rem; }
+
 /* ---------- Sharing badges ---------- */
 .share-panel { margin: 12px 0 4px; text-align: center; }
 .share-preview {
