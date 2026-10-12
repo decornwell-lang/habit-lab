@@ -1,0 +1,88 @@
+{
+  "_howToEdit": "Change any wording below and save. Each habit has 5 weeks. 'dailyPrompt' is shown every day of that week, and 'openQuestion' is the free-text question in the daily check-in. The 'default' set is used for habit types that don't have their own.",
+
+  "commitmentQuestion": "Did you maintain your commitment today?",
+  "cravingQuestion": "How strong were cravings or impulses today?",
+
+  "habits": {
+    "smoking": {
+      "weeks": [
+        {
+          "week": 1,
+          "theme": "Foundations",
+          "focus": "Intention, identity and triggers",
+          "dailyPrompt": "Notice one moment today when you would usually have reached for a cigarette. What was happening just before it?",
+          "openQuestion": "What intention are you holding for this week, in your own words?"
+        },
+        {
+          "week": 2,
+          "theme": "Urges",
+          "focus": "Noticing cravings in the body, and urge surfing",
+          "dailyPrompt": "When an urge arrives today, pause and breathe with it for ten slow breaths before doing anything else.",
+          "openQuestion": "Where did you notice the urge in your body?"
+        },
+        {
+          "week": 3,
+          "theme": "Identity and lapses",
+          "focus": "What a slip teaches, and returning to practice",
+          "dailyPrompt": "Whatever happened today, notice how you speak to yourself about it.",
+          "openQuestion": "What did today teach you about returning to your practice?"
+        },
+        {
+          "week": 4,
+          "theme": "Consolidation",
+          "focus": "What has changed, and what is sticking",
+          "dailyPrompt": "Notice one thing that feels easier now than it did at the start.",
+          "openQuestion": "What is starting to stick, and what is helping it stick?"
+        },
+        {
+          "week": 5,
+          "theme": "Integration",
+          "focus": "A final reflection, overlap and integration",
+          "dailyPrompt": "Take a quiet moment to notice who you are becoming without cigarettes.",
+          "openQuestion": "What do you want to carry forward after the cohort ends?"
+        }
+      ]
+    },
+
+    "default": {
+      "weeks": [
+        {
+          "week": 1,
+          "theme": "Foundations",
+          "focus": "Intention, identity and triggers",
+          "dailyPrompt": "Notice one moment today when the old habit called to you. What was happening just before it?",
+          "openQuestion": "What intention are you holding for this week, in your own words?"
+        },
+        {
+          "week": 2,
+          "theme": "Urges",
+          "focus": "Noticing impulses in the body",
+          "dailyPrompt": "When an impulse arrives today, pause and breathe with it for ten slow breaths.",
+          "openQuestion": "Where did you notice the impulse in your body?"
+        },
+        {
+          "week": 3,
+          "theme": "Identity and lapses",
+          "focus": "What a slip teaches, and returning to practice",
+          "dailyPrompt": "Whatever happened today, notice how you speak to yourself about it.",
+          "openQuestion": "What did today teach you about returning to your practice?"
+        },
+        {
+          "week": 4,
+          "theme": "Consolidation",
+          "focus": "What has changed, and what is sticking",
+          "dailyPrompt": "Notice one thing that feels easier now than it did at the start.",
+          "openQuestion": "What is starting to stick, and what is helping it stick?"
+        },
+        {
+          "week": 5,
+          "theme": "Integration",
+          "focus": "A final reflection",
+          "dailyPrompt": "Take a quiet moment to notice what has changed for you.",
+          "openQuestion": "What do you want to carry forward after the cohort ends?"
+        }
+      ]
+    }
+  }
+}

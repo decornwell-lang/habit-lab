@@ -1,6 +1,6 @@
-// AuthContext: keeps track of who is logged in, and provides sign-up,
-// log-in, log-out and password reset to every page.
-// Use it in a page with:  const { user, signUp } = useAuth();
+// AuthContext: keeps track of who is logged in (and their profile), and
+// provides sign-up, log-in, log-out and password reset to every page.
+// Use it in a page with:  const { user, profile, isAdmin, signUp } = useAuth();
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   createUserWithEmailAndPassword,
@@ -10,30 +10,52 @@ import {
   updateProfile,
   onAuthStateChanged,
 } from "firebase/auth";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, onSnapshot, serverTimestamp } from "firebase/firestore";
 import { auth, db, isFirebaseConfigured } from "../firebase.js";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null); // the users/{uid} document
   // `loading` is true until Firebase has told us whether someone is logged in.
   const [loading, setLoading] = useState(isFirebaseConfigured);
 
   useEffect(() => {
     if (!auth) return;
-    return onAuthStateChanged(auth, (u) => {
+    let stopProfile = () => {};
+    const stopAuth = onAuthStateChanged(auth, (u) => {
+      stopProfile();
       setUser(u);
-      setLoading(false);
+      if (!u) {
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+      // Keep the profile up to date live (e.g. after changing settings).
+      stopProfile = onSnapshot(
+        doc(db, "users", u.uid),
+        (snap) => {
+          setProfile(snap.exists() ? snap.data() : null);
+          setLoading(false);
+        },
+        () => setLoading(false)
+      );
     });
+    return () => {
+      stopProfile();
+      stopAuth();
+    };
   }, []);
 
-  // Creates the login and a member profile in Firestore (collection "users").
+  // Creates the login, the private profile ("users") and the public
+  // profile ("publicProfiles": first name and avatar only).
   async function signUp({ firstName, surname, email, password, leaderboardOptIn }) {
     requireFirebase();
     const cred = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = cred.user.uid;
     await updateProfile(cred.user, { displayName: firstName });
-    await setDoc(doc(db, "users", cred.user.uid), {
+    await setDoc(doc(db, "users", uid), {
       firstName,
       surname,
       email,
@@ -41,6 +63,15 @@ export function AuthProvider({ children }) {
       avatar: null,
       role: "member",
       createdAt: serverTimestamp(),
+    });
+    await setDoc(doc(db, "publicProfiles", uid), {
+      firstName,
+      avatar: null,
+      leaderboardOptIn: Boolean(leaderboardOptIn),
+      streak: 0,
+      lastYesDate: null,
+      badges: [],
+      updatedAt: serverTimestamp(),
     });
     return cred.user;
   }
@@ -59,8 +90,10 @@ export function AuthProvider({ children }) {
     return sendPasswordResetEmail(auth, email);
   }
 
+  const isAdmin = profile?.role === "admin";
+
   return (
-    <AuthContext.Provider value={{ user, loading, signUp, logIn, logOut, resetPassword }}>
+    <AuthContext.Provider value={{ user, profile, isAdmin, loading, signUp, logIn, logOut, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );

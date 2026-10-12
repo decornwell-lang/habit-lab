@@ -13,7 +13,7 @@ const links = [
 ];
 
 export default function Menu({ open, onClose }) {
-  const { user, logOut } = useAuth();
+  const { user, isAdmin, logOut } = useAuth();
   const navigate = useNavigate();
   const closeRef = useRef(null);
 
@@ -54,7 +54,12 @@ export default function Menu({ open, onClose }) {
 
         <ul className="menu-links">
           {user && (
-            <li><NavLink to="/dashboard">My dashboard</NavLink></li>
+            <>
+              <li><NavLink to="/dashboard">My dashboard</NavLink></li>
+              <li><NavLink to="/account">My account</NavLink></li>
+              {isAdmin && <li><NavLink to="/admin">Admin</NavLink></li>}
+              <li className="menu-divider" />
+            </>
           )}
           {links.map((l) => (
             <li key={l.to}>
