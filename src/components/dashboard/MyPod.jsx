@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   getMyPod, joinPod, leavePod, getPodMembers, setPodPhone, getVisibleProfiles,
-  addPodRequest, getMyOpenPodRequest, POD_SIZE,
+  addPodRequest, getMyOpenPodRequest, POD_SIZE, POD_TYPES, podTypeLabel,
 } from "../../lib/data.js";
 import { effectiveStreak } from "../../lib/streaks.js";
 import { whatsAppLink } from "../../lib/phone.js";
@@ -58,7 +58,9 @@ export default function MyPod({ uid, profile, current, today }) {
     }
   }
 
-  const handleJoin = () => run(() => joinPod(cohortId, uid, { firstName: profile?.firstName || "Member", avatar: profile?.avatar }));
+  const [podType, setPodType] = useState("mixed");
+  const handleJoin = () =>
+    run(() => joinPod(cohortId, uid, { firstName: profile?.firstName || "Member", avatar: profile?.avatar }, podType));
   const handleLeave = () => {
     if (window.confirm("Leave your pod? You can join a new one at any time.")) run(() => leavePod(pod.id, uid));
   };
@@ -82,6 +84,18 @@ export default function MyPod({ uid, profile, current, today }) {
           A pod is a small group of up to {POD_SIZE} people from your cohort. You'll see each other's first names and
           streaks, send short notes of encouragement, and can choose to share your number to start a WhatsApp group.
         </p>
+        <fieldset className="question pod-types">
+          <legend>What kind of pod feels right for you?</legend>
+          {POD_TYPES.map((t) => (
+            <label key={t.id} className={`pod-type ${podType === t.id ? "selected" : ""}`}>
+              <input type="radio" name="podType" value={t.id} checked={podType === t.id} onChange={() => setPodType(t.id)} />
+              <span>
+                <strong>{t.label}</strong>
+                <small>{t.hint}</small>
+              </span>
+            </label>
+          ))}
+        </fieldset>
         <button className="btn btn-primary" onClick={handleJoin} disabled={busy}>{busy ? "Joining…" : "Join a pod"}</button>
         <p className="muted small center">Joining is optional. You can leave at any time.</p>
         {error && <p className="form-error">{error}</p>}
@@ -106,7 +120,7 @@ export default function MyPod({ uid, profile, current, today }) {
   return (
     <section className="card">
       <p className="card-label">My Pod · {pod.memberIds.length} of {POD_SIZE}</p>
-      <h2>Your pod</h2>
+      <h2>Your {podTypeLabel(pod.type).toLowerCase()}</h2>
 
       <ul className="people">
         {members.map((m) => (
@@ -122,7 +136,11 @@ export default function MyPod({ uid, profile, current, today }) {
           </li>
         ))}
       </ul>
-      {pod.memberIds.length < POD_SIZE && <p className="muted small">There's room for more. New members will join your pod.</p>}
+      {pod.memberIds.length < POD_SIZE && (
+        <p className="muted small">
+          There's room for more. Your pod will fill as others choose a {podTypeLabel(pod.type).toLowerCase()}.
+        </p>
+      )}
 
       {/* Phone sharing */}
       <div className="pod-section">

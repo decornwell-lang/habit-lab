@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   getAllPods, getPodMembers, getPodRequests, resolvePodRequest, adminMovePodMember, adminCreatePod, POD_SIZE,
+  POD_TYPES, podTypeLabel,
 } from "../../lib/data.js";
 
 export default function PodsTab({ cohorts, users }) {
@@ -44,15 +45,15 @@ export default function PodsTab({ cohorts, users }) {
     }
   }
 
-  async function newPod(cohortId) {
-    await adminCreatePod(cohortId);
+  async function newPod(cohortId, type) {
+    await adminCreatePod(cohortId, type);
     await load();
   }
 
   if (!pods) return <p className="muted">Loading…</p>;
 
   const open = requests.filter((r) => r.status === "open");
-  const podLabel = (p, i) => `Pod ${i + 1} (${p.memberIds.length}/${POD_SIZE})`;
+  const podLabel = (p, i) => `Pod ${i + 1} · ${podTypeLabel(p.type)} (${p.memberIds.length}/${POD_SIZE})`;
 
   return (
     <section>
@@ -126,7 +127,11 @@ export default function PodsTab({ cohorts, users }) {
                 </ul>
               </div>
             ))}
-            <button className="btn btn-ghost btn-small" onClick={() => newPod(c.id)}>Start a new empty pod</button>
+            <div className="share-links" style={{ justifyContent: "flex-start" }}>
+              {POD_TYPES.map((t) => (
+                <button key={t.id} className="btn btn-ghost btn-small" onClick={() => newPod(c.id, t.id)}>New {t.label.toLowerCase()}</button>
+              ))}
+            </div>
           </div>
         );
       })}

@@ -129,7 +129,7 @@ export async function addNotice(data) {
 
 // ---------- Pods ----------
 // Members choose to join a pod. Each pod holds up to POD_SIZE members.
-//   pods/{podId}                  { cohortId, memberIds, createdAt }
+//   pods/{podId}                  { cohortId, type ("mixed" | "women" | "men"), memberIds, createdAt }
 //   pods/{podId}/members/{uid}    { firstName, avatar, phone (only if shared, else null) }
 // Only members of a pod can read its member cards, so a shared phone number
 // is seen by that pod and nobody else (except the owner).
@@ -144,13 +144,23 @@ export async function getMyPod(cohortId, uid) {
   return (await getPods(cohortId)).find((p) => p.memberIds?.includes(uid)) || null;
 }
 
-// Puts the member in the oldest pod with space, or starts a new pod.
-export async function joinPod(cohortId, uid, card) {
-  const open = (await getPods(cohortId)).find((p) => (p.memberIds?.length || 0) < POD_SIZE);
+// Pod types a member can choose when joining. Edit the wording here.
+export const POD_TYPES = [
+  { id: "mixed", label: "Mixed pod", hint: "No preference: anyone in your cohort" },
+  { id: "women", label: "Women's pod", hint: "For anyone who identifies as a woman" },
+  { id: "men", label: "Men's pod", hint: "For anyone who identifies as a man" },
+];
+export const podTypeLabel = (id) => (POD_TYPES.find((t) => t.id === (id || "mixed")) || POD_TYPES[0]).label;
+
+// Puts the member in the oldest pod of the chosen type with space, or starts a new one.
+export async function joinPod(cohortId, uid, card, type = "mixed") {
+  const open = (await getPods(cohortId)).find(
+    (p) => (p.type || "mixed") === type && (p.memberIds?.length || 0) < POD_SIZE
+  );
   const batch = writeBatch(db);
   const podRef = open ? doc(db, "pods", open.id) : doc(collection(db, "pods"));
   if (open) batch.update(podRef, { memberIds: arrayUnion(uid) });
-  else batch.set(podRef, { cohortId, memberIds: [uid], createdAt: serverTimestamp() });
+  else batch.set(podRef, { cohortId, type, memberIds: [uid], createdAt: serverTimestamp() });
   batch.set(doc(db, "pods", podRef.id, "members", uid), { firstName: card.firstName, avatar: card.avatar || null, phone: null });
   await batch.commit();
   return podRef.id;
@@ -194,8 +204,8 @@ export async function adminMovePodMember({ uid, fromPodId, toPodId }) {
 }
 
 // Owner only: start a new, empty pod in a cohort.
-export async function adminCreatePod(cohortId) {
-  const ref = await addDoc(collection(db, "pods"), { cohortId, memberIds: [], createdAt: serverTimestamp() });
+export async function adminCreatePod(cohortId, type = "mixed") {
+  const ref = await addDoc(collection(db, "pods"), { cohortId, type, memberIds: [], createdAt: serverTimestamp() });
   return ref.id;
 }
 
