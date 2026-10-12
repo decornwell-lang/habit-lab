@@ -3,12 +3,21 @@
 // (for example "/images/david.jpg").
 
 export const site = {
-  ownerName: "David Ernest Cornwell",
+  // The app is David Ernest Cornwell; The Habit Lab is one of its products.
+  brandName: "David Ernest Cornwell",
+  brandRole: "UKCP-registered psychotherapist",
   productName: "The Habit Lab",
+  productTagline: "Let go of old patterns. A new self emerges.",
+  logo: "/images/logo-dec.png",
+
   photo: "/images/david-placeholder.svg",
   photoAlt: "Portrait of David Ernest Cornwell",
+
+  // Landing page
   intro:
-    "Let go of old patterns, and a new self emerges. Guided by UKCP-registered psychotherapist David Ernest Cornwell, The Habit Lab helps you change one habit at a time, together, with a weekly breathing meditation, a short daily check-in and a live session every Monday.",
+    "Body-centred psychotherapy, mindfulness and lasting change. David works with people seeking depth, with a focus on trauma, addiction, and how stress lives in the body.",
+  productIntro:
+    "David's guided programme for changing one habit at a time, together: a weekly breathing meditation, a short daily check-in, a live session every Monday, and a small pod of members walking alongside you.",
   signUpTitle: "Join The Habit Lab",
-  signUpSubtitle: "Create your free account. You can choose a cohort once you're in.",
+  signUpSubtitle: "Create your account. You can choose a cohort once you're in.",
 };

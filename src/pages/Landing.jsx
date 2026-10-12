@@ -16,9 +16,17 @@ export default function Landing() {
       </div>
 
       <div className="landing-body">
-        <p className="eyebrow">{site.ownerName}</p>
-        <h1>{site.productName}</h1>
+        <p className="eyebrow">{site.brandRole}</p>
+        <h1>{site.brandName}</h1>
         <p className="intro">{site.intro}</p>
+        <Link to="/about" className="text-link">About David →</Link>
+
+        <section className="product-intro">
+          <p className="card-label">{site.productName}</p>
+          <h2>{site.productTagline}</h2>
+          <p>{site.productIntro}</p>
+          <Link to="/habit-lab" className="text-link">How The Habit Lab works →</Link>
+        </section>
 
         {user ? (
           <div className="card">

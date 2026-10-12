@@ -1,12 +1,12 @@
 {
-  "name": "The Habit Lab",
-  "short_name": "Habit Lab",
-  "description": "Change one habit at a time, together.",
+  "name": "David Ernest Cornwell",
+  "short_name": "DE Cornwell",
+  "description": "Psychotherapy, mindfulness and The Habit Lab with David Ernest Cornwell.",
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#f8f5ef",
-  "theme_color": "#f8f5ef",
+  "background_color": "#0a0e28",
+  "theme_color": "#0a0e28",
   "icons": [
     { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },

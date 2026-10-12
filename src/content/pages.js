@@ -88,8 +88,8 @@ export const pages = {
       },
       {
         heading: "Instagram",
-        body: "@natural.bornhealers",
-        links: [{ label: "Follow on Instagram", href: "https://www.instagram.com/natural.bornhealers/" }],
+        body: "@davidernestcornwell",
+        links: [{ label: "Follow on Instagram", href: "https://www.instagram.com/davidernestcornwell/" }],
       },
       {
         heading: "Website",

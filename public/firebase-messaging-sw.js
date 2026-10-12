@@ -10,7 +10,7 @@ const messaging = firebase.messaging();
 
 // Show the notification when a message arrives in the background.
 messaging.onBackgroundMessage((payload) => {
-  const { title = "The Habit Lab", body = "", link = "/dashboard" } = payload.data || {};
+  const { title = "David Ernest Cornwell", body = "", link = "/dashboard" } = payload.data || {};
   return self.registration.showNotification(title, {
     body,
     icon: "/icons/icon-192.png",

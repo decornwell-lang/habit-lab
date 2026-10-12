@@ -1,4 +1,4 @@
-# The Habit Lab · David Ernest Cornwell
+# David Ernest Cornwell (web app, including The Habit Lab)
 
 Mobile-first web app for paid habit-change cohorts: weekly meditation, daily check-ins, streaks and badges, and live sessions.
 

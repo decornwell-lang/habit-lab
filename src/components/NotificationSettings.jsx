@@ -50,10 +50,10 @@ export default function NotificationSettings({ uid, compact = false }) {
       {status === "needs-install" && (
         <>
           <h2>Get messages from David</h2>
-          <p className="muted small">On iPhone, notifications work once The Habit Lab is on your Home Screen:</p>
+          <p className="muted small">On iPhone, notifications work once the app is on your Home Screen:</p>
           <IosInstallSteps />
           <p className="muted small">
-            Then open The Habit Lab from your Home Screen, log in, and tap <strong>Turn on notifications</strong> in My account.
+            Then open the app from your Home Screen, log in, and tap <strong>Turn on notifications</strong> in My account.
           </p>
         </>
       )}

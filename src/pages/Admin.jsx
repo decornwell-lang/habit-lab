@@ -36,7 +36,7 @@ export default function Admin() {
   return (
     <main className="page page-wide">
       <p className="eyebrow">Admin</p>
-      <h1>Habit Lab admin</h1>
+      <h1>Admin</h1>
 
       <div className="tabs" role="tablist">
         {TABS.map((t) => (

@@ -17,7 +17,7 @@ export function IosInstallSteps() {
         Scroll down and tap <strong>Add to Home Screen</strong>.
       </li>
       <li>
-        Tap <strong>Add</strong>. The Habit Lab will appear on your Home Screen like any other app.
+        Tap <strong>Add</strong>. The app will appear on your Home Screen like any other app.
       </li>
     </ol>
   );
@@ -70,7 +70,7 @@ export default function InstallApp({ variant = "card" }) {
     <section className="card install-card">
       <img src="/icons/icon-192.png" alt="" className="install-icon" />
       <div className="install-text">
-        <h2>Add The Habit Lab to your Home Screen</h2>
+        <h2>Add the app to your Home Screen</h2>
         <p className="muted small">Open your daily practice in one tap, and get messages from David.</p>
       </div>
       <button className="btn btn-primary" onClick={handleClick}>

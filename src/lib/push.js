@@ -53,7 +53,7 @@ export async function saveToken(uid) {
   if (listening) return token;
   listening = true;
   onMessage(getMessaging(app), ({ data = {} }) => {
-    registration.showNotification(data.title || "The Habit Lab", {
+    registration.showNotification(data.title || "David Ernest Cornwell", {
       body: data.body || "",
       icon: "/icons/icon-192.png",
       data: { link: data.link || "/dashboard" },
