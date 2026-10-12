@@ -7,6 +7,7 @@ import { badgeInfo, sortBadges } from "../lib/streaks.js";
 import { AVATARS } from "../content/avatars.js";
 import Avatar from "../components/Avatar.jsx";
 import ShareBadge from "../components/ShareBadge.jsx";
+import NotificationSettings from "../components/NotificationSettings.jsx";
 
 export default function Account() {
   const { user, profile, logOut } = useAuth();
@@ -104,6 +105,8 @@ export default function Account() {
         {message && <p className="form-success" role="status">{message}</p>}
         <button className="btn btn-primary" disabled={busy}>{busy ? "Saving…" : "Save changes"}</button>
       </form>
+
+      <NotificationSettings uid={user.uid} />
 
       <button
         className="btn btn-ghost"

@@ -7,8 +7,9 @@ import MembersTab from "../components/admin/MembersTab.jsx";
 import CohortsTab from "../components/admin/CohortsTab.jsx";
 import ContentTab from "../components/admin/ContentTab.jsx";
 import CheckinsTab from "../components/admin/CheckinsTab.jsx";
+import MessagesTab from "../components/admin/MessagesTab.jsx";
 
-const TABS = ["Members", "Cohorts", "Content", "Check-ins"];
+const TABS = ["Members", "Cohorts", "Content", "Check-ins", "Messages"];
 
 export default function Admin() {
   const [tab, setTab] = useState("Members");
@@ -61,6 +62,7 @@ export default function Admin() {
       {data && tab === "Cohorts" && <CohortsTab cohorts={data.cohorts} reload={load} />}
       {data && tab === "Content" && <ContentTab settings={data.settings} reload={load} />}
       {data && tab === "Check-ins" && <CheckinsTab data={data} selectedUid={selectedUid} setSelectedUid={setSelectedUid} />}
+      {data && tab === "Messages" && <MessagesTab cohorts={data.cohorts} users={data.users} />}
     </main>
   );
 }

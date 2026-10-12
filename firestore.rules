@@ -63,6 +63,12 @@ service cloud.firestore {
             && request.resource.data.memberIds.toSet().difference(resource.data.memberIds.toSet()) == [request.auth.uid].toSet());
     }
 
+    // Messages from the owner (Admin → Messages).
+    match /notices/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
     // Zoom link, session date, weekly media links.
     match /settings/{docId} {
       allow read: if signedIn();

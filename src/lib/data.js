@@ -10,9 +10,10 @@
 //   publicProfiles/{uid}              first name, avatar, streak, badges (shown to others only if opted in)
 //   cohorts/{cohortId}                cohort details and member list
 //   settings/content                  Zoom link, session date, weekly media links
+//   notices/{id}                      messages from the owner (also sent as push notifications)
 import {
   doc, getDoc, getDocs, setDoc, updateDoc, addDoc, collection, collectionGroup,
-  query, where, writeBatch, arrayUnion, serverTimestamp,
+  query, where, orderBy, limit, writeBatch, arrayUnion, serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase.js";
 
@@ -110,6 +111,18 @@ export async function getContentSettings() {
 
 export async function saveContentSettings(data) {
   await setDoc(doc(db, "settings", "content"), data, { merge: true });
+}
+
+// ---------- Messages from the owner ----------
+//   notices/{id}  { title, body, link, cohortId (null = everyone), createdAt }
+export async function getNotices(max = 20) {
+  const snap = await getDocs(query(collection(db, "notices"), orderBy("createdAt", "desc"), limit(max)));
+  return list(snap);
+}
+
+export async function addNotice(data) {
+  const ref = await addDoc(collection(db, "notices"), { ...data, createdAt: serverTimestamp() });
+  return ref.id;
 }
 
 // ---------- Admin only ----------

@@ -403,6 +403,14 @@ a { color: var(--sage-dark); }
 .cohort-list p { margin: 0; }
 .joined { color: var(--sage-dark); font-weight: 600; white-space: nowrap; }
 
+/* ---------- Messages and notifications ---------- */
+.card-message { border-left: 4px solid var(--terracotta); }
+.message + .message { border-top: 1px solid var(--border); margin-top: 12px; padding-top: 12px; }
+.message h3 { margin: 0 0 4px; font-size: 1.1rem; }
+.message p { margin: 0 0 4px; }
+.steps-list { padding-left: 20px; margin: 8px 0 0; font-size: 0.95rem; }
+.steps-list li { margin-bottom: 6px; }
+
 /* ---------- Sharing badges ---------- */
 .share-panel { margin: 12px 0 4px; text-align: center; }
 .share-preview {

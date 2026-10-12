@@ -23,6 +23,8 @@ import JoinCohort from "../components/dashboard/JoinCohort.jsx";
 import Leaderboard from "../components/dashboard/Leaderboard.jsx";
 import Celebration from "../components/dashboard/Celebration.jsx";
 import StartAgain from "../components/dashboard/StartAgain.jsx";
+import Messages from "../components/dashboard/Messages.jsx";
+import NotificationSettings from "../components/NotificationSettings.jsx";
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -120,6 +122,8 @@ export default function Dashboard() {
       {notice && <p className="notice notice-good" role="status">{notice}</p>}
       {error && <p className="form-error" role="alert">{error}</p>}
 
+      <Messages cohortIds={data.memberships.map((m) => m.cohortId)} />
+
       {celebrate && (
         <Celebration
           uid={user.uid}
@@ -160,6 +164,7 @@ export default function Dashboard() {
       <MyPod uid={user.uid} current={current} today={today} />
       <JoinCohort uid={user.uid} cohorts={data.cohorts} memberships={data.memberships} onJoined={load} />
       <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={today} />
+      <NotificationSettings uid={user.uid} compact />
 
       <p className="form-foot">
         <Link to="/account">My account and privacy settings</Link>
