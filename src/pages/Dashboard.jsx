@@ -33,6 +33,7 @@ import StreakCard from "../components/dashboard/StreakCard.jsx";
 import UpcomingEvents from "../components/dashboard/UpcomingEvents.jsx";
 import BreathePause from "../components/dashboard/BreathePause.jsx";
 import JourneyMap from "../components/dashboard/JourneyMap.jsx";
+import AddPhoneCard from "../components/dashboard/AddPhoneCard.jsx";
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -134,6 +135,8 @@ export default function Dashboard() {
 
       {notice && <p className="notice notice-good" role="status">{notice}</p>}
       {error && <p className="form-error" role="alert">{error}</p>}
+
+      <AddPhoneCard uid={user.uid} profile={profile} />
 
       {/* Shown on any tab, straight after a check-in */}
       {celebrate && (

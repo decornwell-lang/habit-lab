@@ -613,6 +613,15 @@ a { color: var(--primary); }
 .journey-legend li { display: flex; align-items: center; gap: 6px; }
 .journey-legend .dot { width: 14px; }
 
+/* ---------- Pods ---------- */
+.pod-section { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+.pod-section h3 { font-size: 1.05rem; margin: 0 0 8px; }
+.pod-section .btn { margin-top: 4px; }
+.wa-link { display: block; font-size: 0.85rem; font-weight: 500; color: #128c4b; text-decoration: none; }
+.wa-link:hover { text-decoration: underline; }
+.admin-pod { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.admin-pod h3 { font-size: 1rem; margin: 0 0 4px; }
+
 /* ---------- Pod notes ---------- */
 .pod-notes { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
 .pod-notes h3 { font-size: 1.05rem; margin: 0 0 8px; }

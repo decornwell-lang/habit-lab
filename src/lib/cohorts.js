@@ -46,24 +46,6 @@ export function pickCurrentCohort(cohorts, memberships, today) {
   );
 }
 
-// Pods: cohort members are grouped in order of joining into pods of about 4,
-// balanced so sizes differ by at most one (e.g. 6 members = two pods of 3).
-// Pods can change while people are still joining, then settle once the cohort starts.
-export function podFor(memberIds = [], uid, targetSize = 4) {
-  if (!memberIds.includes(uid)) return [];
-  const count = Math.max(1, Math.round(memberIds.length / targetSize));
-  const base = Math.floor(memberIds.length / count);
-  const extra = memberIds.length % count;
-  let start = 0;
-  for (let i = 0; i < count; i++) {
-    const size = base + (i < extra ? 1 : 0);
-    const pod = memberIds.slice(start, start + size);
-    if (pod.includes(uid)) return pod;
-    start += size;
-  }
-  return [];
-}
-
 export function formatPrice(cohort) {
   const amount = Number(cohort.price) || 0;
   if (!amount) return "Free";

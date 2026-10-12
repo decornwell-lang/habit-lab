@@ -8,6 +8,7 @@ import { AVATARS } from "../content/avatars.js";
 import Avatar from "../components/Avatar.jsx";
 import ShareBadge from "../components/ShareBadge.jsx";
 import NotificationSettings from "../components/NotificationSettings.jsx";
+import { isValidPhone, normalizePhone } from "../lib/phone.js";
 
 export default function Account() {
   const { user, profile, logOut } = useAuth();
@@ -15,6 +16,7 @@ export default function Account() {
   const [avatar, setAvatar] = useState(profile?.avatar || null);
   const [optIn, setOptIn] = useState(Boolean(profile?.leaderboardOptIn));
   const [showHabit, setShowHabit] = useState(profile?.showHabit !== false);
+  const [phone, setPhone] = useState(profile?.phone || "");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [badges, setBadges] = useState([]);
@@ -29,11 +31,15 @@ export default function Account() {
 
   async function handleSave(e) {
     e.preventDefault();
-    setBusy(true);
     setMessage("");
+    if (phone.trim() && !isValidPhone(phone)) {
+      return setMessage("Please enter your mobile number with the country code, for example +44 7700 900123.");
+    }
+    setBusy(true);
     try {
-      await updateUserProfile(user.uid, { avatar, leaderboardOptIn: optIn, showHabit });
-      // The public profile only ever holds first name and avatar.
+      // The phone number is private: it's only shown to a pod if shared from the pod card.
+      await updateUserProfile(user.uid, { avatar, leaderboardOptIn: optIn, showHabit, phone: phone.trim() ? normalizePhone(phone) : null });
+      // The public profile never holds surname, email or phone.
       await savePublicProfile(user.uid, { firstName, avatar, leaderboardOptIn: optIn, showHabit });
       setMessage("Saved.");
     } catch (err) {
@@ -94,6 +100,13 @@ export default function Account() {
           ))}
         </div>
 
+        <h2>Mobile number</h2>
+        <div className="field">
+          <label htmlFor="phone">Mobile number (with country code)</label>
+          <input id="phone" type="tel" autoComplete="tel" placeholder="+44 7700 900123" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <p className="hint">Private. Only shared with your pod if you switch that on in your pod.</p>
+        </div>
+
         <h2>Privacy</h2>
         <label className="checkbox">
           <input type="checkbox" checked={optIn} onChange={(e) => setOptIn(e.target.checked)} />
@@ -104,7 +117,8 @@ export default function Account() {
           <span>Show which habit my streak is for (for example “alcohol-free”) next to my name</span>
         </label>
         <p className="muted small">
-          Your surname, email and phone number are never shown to other members.
+          Your surname and email are never shown to other members. Your phone number is only shown to your pod, and
+          only if you choose to share it.
         </p>
 
         {message && <p className="form-success" role="status">{message}</p>}

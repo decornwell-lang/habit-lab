@@ -9,7 +9,7 @@ const QUICK_NOTES = ["🌿 Keep going", "🙏 Thinking of you today", "🌊 Ride
 const MAX_LENGTH = 140;
 const SHOW_FOR_DAYS = 7;
 
-export default function PodNotes({ uid, profile, cohortId, podIds }) {
+export default function PodNotes({ uid, profile, cohortId, podId, podIds }) {
   const [notes, setNotes] = useState(null);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -20,7 +20,8 @@ export default function PodNotes({ uid, profile, cohortId, podIds }) {
     try {
       const cutoff = Date.now() / 1000 - SHOW_FOR_DAYS * 86400;
       const all = await getPodNotes(cohortId);
-      setNotes(all.filter((n) => podKey.split(",").includes(n.uid) && (n.createdAt?.seconds || Infinity) > cutoff));
+      const inPod = (n) => (n.podId ? n.podId === podId : podKey.split(",").includes(n.uid));
+      setNotes(all.filter((n) => inPod(n) && (n.createdAt?.seconds || Infinity) > cutoff));
     } catch (err) {
       console.error(err);
       setNotes([]);
@@ -29,7 +30,7 @@ export default function PodNotes({ uid, profile, cohortId, podIds }) {
 
   useEffect(() => {
     load();
-  }, [cohortId, podKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [cohortId, podId, podKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function send(message) {
     const clean = message.trim().slice(0, MAX_LENGTH);
@@ -37,7 +38,7 @@ export default function PodNotes({ uid, profile, cohortId, podIds }) {
     setBusy(true);
     setError("");
     try {
-      await addPodNote({ cohortId, uid, firstName: profile?.firstName || "A pod member", avatar: profile?.avatar || null, text: clean });
+      await addPodNote({ cohortId, podId, uid, firstName: profile?.firstName || "A pod member", avatar: profile?.avatar || null, text: clean });
       setText("");
       await load();
     } catch (err) {

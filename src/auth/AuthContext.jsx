@@ -50,7 +50,7 @@ export function AuthProvider({ children }) {
 
   // Creates the login, the private profile ("users") and the public
   // profile ("publicProfiles": first name and avatar only).
-  async function signUp({ firstName, surname, email, password, leaderboardOptIn }) {
+  async function signUp({ firstName, surname, email, password, phone, leaderboardOptIn }) {
     requireFirebase();
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     const uid = cred.user.uid;
@@ -59,6 +59,7 @@ export function AuthProvider({ children }) {
       firstName,
       surname,
       email,
+      phone: phone || null, // private: only shared with a pod if the member chooses
       leaderboardOptIn: Boolean(leaderboardOptIn),
       avatar: null,
       role: "member",

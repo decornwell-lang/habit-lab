@@ -12,9 +12,10 @@
 //   settings/content                  Zoom link, session date, weekly media links
 //   notices/{id}                      messages from the owner (also sent as push notifications)
 //   podNotes/{id}                     short encouragement notes between pod members
+//   pods/{podId} (+ /members/{uid})   pods members choose to join, and their shared contact cards
 import {
   doc, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, collection, collectionGroup,
-  query, where, orderBy, limit, writeBatch, arrayUnion, serverTimestamp,
+  query, where, orderBy, limit, writeBatch, arrayUnion, arrayRemove, serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase.js";
 
@@ -124,6 +125,97 @@ export async function getNotices(max = 20) {
 export async function addNotice(data) {
   const ref = await addDoc(collection(db, "notices"), { ...data, createdAt: serverTimestamp() });
   return ref.id;
+}
+
+// ---------- Pods ----------
+// Members choose to join a pod. Each pod holds up to POD_SIZE members.
+//   pods/{podId}                  { cohortId, memberIds, createdAt }
+//   pods/{podId}/members/{uid}    { firstName, avatar, phone (only if shared, else null) }
+// Only members of a pod can read its member cards, so a shared phone number
+// is seen by that pod and nobody else (except the owner).
+export const POD_SIZE = 4;
+
+export async function getPods(cohortId) {
+  const pods = list(await getDocs(query(collection(db, "pods"), where("cohortId", "==", cohortId))));
+  return pods.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+}
+
+export async function getMyPod(cohortId, uid) {
+  return (await getPods(cohortId)).find((p) => p.memberIds?.includes(uid)) || null;
+}
+
+// Puts the member in the oldest pod with space, or starts a new pod.
+export async function joinPod(cohortId, uid, card) {
+  const open = (await getPods(cohortId)).find((p) => (p.memberIds?.length || 0) < POD_SIZE);
+  const batch = writeBatch(db);
+  const podRef = open ? doc(db, "pods", open.id) : doc(collection(db, "pods"));
+  if (open) batch.update(podRef, { memberIds: arrayUnion(uid) });
+  else batch.set(podRef, { cohortId, memberIds: [uid], createdAt: serverTimestamp() });
+  batch.set(doc(db, "pods", podRef.id, "members", uid), { firstName: card.firstName, avatar: card.avatar || null, phone: null });
+  await batch.commit();
+  return podRef.id;
+}
+
+export async function leavePod(podId, uid) {
+  const batch = writeBatch(db);
+  batch.delete(doc(db, "pods", podId, "members", uid));
+  batch.update(doc(db, "pods", podId), { memberIds: arrayRemove(uid) });
+  await batch.commit();
+}
+
+export async function getPodMembers(podId) {
+  return list(await getDocs(collection(db, "pods", podId, "members")));
+}
+
+// Shares (phone) or hides (null) the member's number with their pod.
+export async function setPodPhone(podId, uid, phone) {
+  await updateDoc(doc(db, "pods", podId, "members", uid), { phone: phone || null });
+}
+
+export async function getAllPods() {
+  return list(await getDocs(collection(db, "pods")));
+}
+
+// Owner only: move a member from one pod to another (or out of a pod when toPodId is null).
+export async function adminMovePodMember({ uid, fromPodId, toPodId }) {
+  const batch = writeBatch(db);
+  let card = { firstName: "", avatar: null, phone: null };
+  if (fromPodId) {
+    const old = await getDoc(doc(db, "pods", fromPodId, "members", uid));
+    if (old.exists()) card = old.data();
+    batch.delete(doc(db, "pods", fromPodId, "members", uid));
+    batch.update(doc(db, "pods", fromPodId), { memberIds: arrayRemove(uid) });
+  }
+  if (toPodId) {
+    batch.update(doc(db, "pods", toPodId), { memberIds: arrayUnion(uid) });
+    batch.set(doc(db, "pods", toPodId, "members", uid), card);
+  }
+  await batch.commit();
+}
+
+// Owner only: start a new, empty pod in a cohort.
+export async function adminCreatePod(cohortId) {
+  const ref = await addDoc(collection(db, "pods"), { cohortId, memberIds: [], createdAt: serverTimestamp() });
+  return ref.id;
+}
+
+// ---------- Pod change requests ----------
+//   podRequests/{id}  { uid, firstName, cohortId, podId, reason, status: "open" | "done", createdAt }
+export async function addPodRequest(data) {
+  await addDoc(collection(db, "podRequests"), { ...data, status: "open", createdAt: serverTimestamp() });
+}
+
+export async function getMyOpenPodRequest(uid) {
+  const mine = list(await getDocs(query(collection(db, "podRequests"), where("uid", "==", uid))));
+  return mine.find((r) => r.status === "open") || null;
+}
+
+export async function getPodRequests() {
+  return list(await getDocs(collection(db, "podRequests"))).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+}
+
+export async function resolvePodRequest(id) {
+  await updateDoc(doc(db, "podRequests", id), { status: "done", resolvedAt: serverTimestamp() });
 }
 
 // ---------- Pod encouragement notes ----------

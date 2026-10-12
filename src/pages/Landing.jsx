@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth, friendlyAuthError } from "../auth/AuthContext.jsx";
 import { isFirebaseConfigured } from "../firebase.js";
 import { site } from "../content/site.js";
+import { isValidPhone, normalizePhone } from "../lib/phone.js";
 
 export default function Landing() {
   const { user } = useAuth();
@@ -49,6 +50,7 @@ function SignUpForm() {
     surname: "",
     email: "",
     password: "",
+    phone: "",
     leaderboardOptIn: false, // off by default, as the brief requires
   });
   const [error, setError] = useState("");
@@ -66,6 +68,9 @@ function SignUpForm() {
     // Simple checks before contacting Firebase
     if (!form.firstName.trim() || !form.surname.trim()) return setError("Please enter your first name and surname.");
     if (form.password.length < 8) return setError("Please choose a password with at least 8 characters.");
+    if (form.phone.trim() && !isValidPhone(form.phone)) {
+      return setError("Please enter your mobile number with the country code, for example +44 7700 900123.");
+    }
 
     setBusy(true);
     try {
@@ -74,6 +79,7 @@ function SignUpForm() {
         firstName: form.firstName.trim(),
         surname: form.surname.trim(),
         email: form.email.trim(),
+        phone: form.phone.trim() ? normalizePhone(form.phone) : null,
       });
       navigate("/dashboard");
     } catch (err) {
@@ -112,6 +118,15 @@ function SignUpForm() {
         <label htmlFor="password">Password</label>
         <input id="password" name="password" type="password" autoComplete="new-password" minLength={8} value={form.password} onChange={update} required />
         <p className="hint">At least 8 characters.</p>
+      </div>
+
+      <div className="field">
+        <label htmlFor="phone">Mobile number</label>
+        <input id="phone" name="phone" type="tel" autoComplete="tel" placeholder="+44 7700 900123" value={form.phone} onChange={update} />
+        <p className="hint">
+          Include your country code. Optional. It stays private unless you choose to share it with your pod, for a
+          WhatsApp group.
+        </p>
       </div>
 
       <label className="checkbox">
