@@ -29,7 +29,6 @@ export default function Layout() {
         </button>
         <Link to="/" className="wordmark" aria-label={`${site.brandName}, home`}>
           <img src={site.logo} alt="" />
-          <span>{site.brandName}</span>
         </Link>
         <span className="header-spacer" />
       </header>
