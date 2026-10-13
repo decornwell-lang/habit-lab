@@ -804,3 +804,23 @@ td.actions { white-space: nowrap; }
   .landing-photo img { height: 100%; max-height: none; aspect-ratio: auto; }
   .landing-body { align-self: center; padding: 48px; }
 }
+
+/* Folds: tap-to-open rows on the Home tab (Folds.jsx) */
+.folds { padding: 0; overflow: hidden; margin: 16px 0; }
+.fold + .fold { border-top: 1px solid var(--border); }
+.fold-row {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  min-height: 48px; padding: 10px var(--space);
+  border: none; background: none; font: inherit; color: var(--text); text-align: left; cursor: pointer;
+}
+.fold-title { flex: 1; font-weight: 600; }
+.fold-summary { color: var(--text-muted); font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%; }
+.fold-summary.highlight { color: var(--teal); font-weight: 600; }
+.fold-row svg { color: var(--text-muted); flex-shrink: 0; transition: transform 0.2s; }
+.fold.open .fold-row svg { transform: rotate(90deg); }
+.fold-body { padding: 0 var(--space) 16px; }
+.fold-body > .card, .fold-body > * > .card { border: none; box-shadow: none; background: none; padding: 0; margin: 0; }
+.fold-body .card-label { display: none; }
+.dashboard .streak-card { margin: 12px 0; padding: 18px var(--space); }
+.dashboard .streak-card > .btn { margin-top: 12px; }
+.dashboard > .eyebrow { margin-bottom: 0; }

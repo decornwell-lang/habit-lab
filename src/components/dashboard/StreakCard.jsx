@@ -25,7 +25,7 @@ export default function StreakCard({ streak, badges = [], current, weekTitle }) 
           <p className="card-label">My streak · {label}</p>
           <h2>{cohort.name}</h2>
           {progress.state === "active" && (
-            <p className="muted small">Day {progress.day} of {cohort.durationDays} · {weekTitle}</p>
+            <p className="muted small">Day {progress.day} of {cohort.durationDays}</p>
           )}
           {progress.state === "upcoming" && <p className="muted small">Begins {formatDate(progress.start)}</p>}
           {progress.state === "finished" && <p className="muted small">Finished {formatDate(progress.end)}</p>}
@@ -33,8 +33,8 @@ export default function StreakCard({ streak, badges = [], current, weekTitle }) 
       </div>
 
       {streak > 0 && (
-        <button className="btn btn-share" onClick={() => setSharing((s) => !s)}>
-          {sharing ? "Close" : "Share my streak"}
+        <button className="btn btn-share btn-small" onClick={() => setSharing((s) => !s)}>
+          {sharing ? "Close" : "Share"}
         </button>
       )}
       {sharing && (

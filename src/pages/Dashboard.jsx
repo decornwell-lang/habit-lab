@@ -33,6 +33,7 @@ import UpcomingEvents from "../components/dashboard/UpcomingEvents.jsx";
 import BreathePause from "../components/dashboard/BreathePause.jsx";
 import JourneyMap from "../components/dashboard/JourneyMap.jsx";
 import AddPhoneCard from "../components/dashboard/AddPhoneCard.jsx";
+import Folds from "../components/dashboard/Folds.jsx";
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -154,6 +155,33 @@ export default function Dashboard() {
   }
 
   const streak = computeStreak(data.checkins, checkinDay);
+  const checkedIn = Boolean(data.checkins[checkinDay]);
+
+  // Home rows, top to bottom. Each opens to show its card.
+  const homeItems = [
+    current && checkinProgress?.state === "active" && {
+      id: "checkin",
+      title: "Check-in",
+      summary: checkedIn ? "✓ Done" : "Open",
+      highlight: !checkedIn,
+      content: (
+        <DailyCheckin uid={user.uid} current={current} content={checkinContent} progress={checkinProgress}
+          existing={data.checkins[checkinDay]} streak={streak} day={checkinDay} onSaved={handleCheckinSaved} />
+      ),
+    },
+    {
+      id: "meditation",
+      title: "Meditation",
+      summary: data.practised ? "✓ Done" : content.title,
+      content: <TodaysPractice uid={user.uid} content={content} practised={data.practised} today={today} />,
+    },
+    { id: "reflection", title: "Reflection", summary: `Week ${week}`, content: <WeeklyReflection content={content} /> },
+    { id: "live", title: "Live session", summary: shortDateTime(data.settings.nextSessionAt), content: <LiveSession settings={data.settings} /> },
+    active && { id: "breathe", title: "Craving?", summary: "1 min", content: <BreathePause /> },
+    current && { id: "pod", title: "My pod", content: <MyPod uid={user.uid} profile={profile} current={current} today={checkinDay} /> },
+    { id: "leaderboard", title: "Leaderboard", content: <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} /> },
+    current && { id: "journey", title: "Journey", summary: active ? `Day ${current.progress.day}` : "", content: <JourneyMap current={current} checkins={data.checkins} /> },
+  ].filter(Boolean);
   const tabTitle = TABS.find((t) => t.id === tab)?.label;
 
   return (
@@ -186,24 +214,13 @@ export default function Dashboard() {
         }} />
       )}
 
-      {/* Home: everything except upcoming events */}
+      {/* Home: streak, then everything else as rows that open when tapped */}
       {tab === "home" && (
         <>
           {current ? (
             <>
               <StreakCard streak={streak} badges={data.publicProfile?.badges} current={current} weekTitle={content.title} />
               {current.progress.state === "upcoming" && <PreCohort current={current} />}
-              <DailyCheckin
-                uid={user.uid}
-                current={current}
-                content={checkinContent}
-                progress={checkinProgress}
-                existing={data.checkins[checkinDay]}
-                streak={streak}
-                day={checkinDay}
-                onSaved={handleCheckinSaved}
-              />
-              {current.progress.state === "active" && <BreathePause />}
             </>
           ) : (
             <section className="card center">
@@ -211,12 +228,7 @@ export default function Dashboard() {
               <button className="btn btn-primary" onClick={() => setTab("upcoming")}>See cohorts</button>
             </section>
           )}
-          <TodaysPractice uid={user.uid} content={content} practised={data.practised} today={today} />
-          <WeeklyReflection content={content} />
-          <LiveSession settings={data.settings} />
-          {current && <MyPod uid={user.uid} profile={profile} current={current} today={checkinDay} />}
-          <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} />
-          {current && <JourneyMap current={current} checkins={data.checkins} />}
+          <Folds items={homeItems} />
           <NotificationSettings uid={user.uid} compact />
           <InstallApp />
         </>
@@ -237,4 +249,11 @@ export default function Dashboard() {
       <DashboardTabs active={tab} onChange={setTab} />
     </main>
   );
+}
+
+// e.g. "Mon 19:00" for the Live session row
+function shortDateTime(iso) {
+  const date = new Date(iso);
+  if (!iso || isNaN(date)) return "";
+  return date.toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" });
 }
