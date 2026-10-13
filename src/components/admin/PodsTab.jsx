@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { cleanGroupLink } from "../../lib/phone.js";
 import {
-  getAllPods, getPodMembers, getPodRequests, resolvePodRequest, adminMovePodMember, adminCreatePods, adminUpdatePod, adminAssignGroupLinks, POD_SIZE,
+  getAllPods, getPodMembers, getPodRequests, resolvePodRequest, adminMovePodMember, adminCreatePods, adminUpdatePod, adminAssignGroupLinks, sortPods, POD_SIZE,
   POD_TYPES, podTypeLabel,
 } from "../../lib/data.js";
 
@@ -23,8 +23,7 @@ export default function PodsTab({ cohorts, users }) {
   async function load() {
     const [all, reqs] = await Promise.all([getAllPods(), getPodRequests()]);
     const withCards = await Promise.all(all.map(async (p) => ({ ...p, cards: await getPodMembers(p.id).catch(() => []) })));
-    withCards.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
-    setPods(withCards);
+    setPods(sortPods(withCards));
     setRequests(reqs);
   }
 
@@ -56,7 +55,7 @@ export default function PodsTab({ cohorts, users }) {
   if (!pods) return <p className="muted">Loading…</p>;
 
   const open = requests.filter((r) => r.status === "open");
-  const podLabel = (p, i) => `Pod ${i + 1} · ${podTypeLabel(p.type)} (${p.memberIds.length}/${POD_SIZE})`;
+  const podLabel = (p, i) => `Pod ${p.number ?? i + 1} · ${podTypeLabel(p.type)} (${p.memberIds.length}/${POD_SIZE})`;
 
   return (
     <section>
@@ -168,7 +167,7 @@ function AdminPodRow({ pod, index, nameOf, onMove, onSaved }) {
   return (
     <div className={`admin-pod ${pod.whatsappGroupLink ? "" : "needs-link"}`}>
       <div className="admin-pod-head">
-        <h3>Pod {index + 1} <span className="muted small">({pod.memberIds.length}/{POD_SIZE})</span></h3>
+        <h3>Pod {pod.number ?? index + 1} <span className="muted small">({pod.memberIds.length}/{POD_SIZE})</span></h3>
         <select value={pod.type || "mixed"} onChange={(e) => saveType(e.target.value)} aria-label="Pod type">
           {POD_TYPES.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
         </select>
@@ -210,10 +209,14 @@ function BulkLinks({ cohortId, onDone }) {
     if (!lines.length) return setError("Paste at least one link.");
     if (bad.length) return setError(`These aren't WhatsApp group links: ${bad.join(", ")}`);
     const unique = [...new Set(links)];
-    const { assigned, created } = await adminAssignGroupLinks(cohortId, unique, type);
+    const { assigned, created, renumbered } = await adminAssignGroupLinks(cohortId, unique, type);
     setText("");
     setOpen(false);
-    onDone(`${unique.length} links added: ${assigned} to existing pods, ${created} new ${created === 1 ? "pod" : "pods"} created.`);
+    const parts = [];
+    if (renumbered) parts.push(`${renumbered} already linked (numbered to match your list)`);
+    if (assigned) parts.push(`${assigned} added to existing pods`);
+    if (created) parts.push(`${created} new ${created === 1 ? "pod" : "pods"} created`);
+    onDone(`${unique.length} links: ${parts.join(", ")}.`);
   }
 
   if (!open) {
@@ -226,7 +229,7 @@ function BulkLinks({ cohortId, onDone }) {
         <label>WhatsApp group links, one per line</label>
         <textarea rows={6} value={text} onChange={(e) => { setText(e.target.value); setError(""); }}
           placeholder={"https://chat.whatsapp.com/…\nhttps://chat.whatsapp.com/…"} />
-        <p className="hint">Links go to pods that don't have one yet; extra links create new pods.</p>
+        <p className="hint">Paste them in order (Pod 1 first). Links go to pods without one; extra links create new pods. Pasting links that are already in use just renumbers those pods to match.</p>
       </div>
       <div className="field">
         <label>Type for any new pods</label>

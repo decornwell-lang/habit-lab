@@ -128,16 +128,21 @@ export async function addNotice(data) {
 
 // ---------- Pods ----------
 // Members choose to join a pod. Each pod holds up to POD_SIZE members.
-//   pods/{podId}                  { cohortId, type ("mixed" | "women" | "men"), memberIds, createdAt,
+//   pods/{podId}                  { cohortId, number, type ("mixed" | "women" | "men"), memberIds, createdAt,
 //                                   whatsappGroupLink, groupLinkSetBy }
 //   pods/{podId}/members/{uid}    { firstName, avatar, phone (only if shared, else null) }
 // Only members of a pod can read its member cards, so a shared phone number
 // is seen by that pod and nobody else (except the owner).
 export const POD_SIZE = 4;
 
+// Pods are kept in order of their number (Pod 1, Pod 2...), then by when they were made.
+export const sortPods = (pods) =>
+  [...pods].sort(
+    (a, b) => (a.number ?? Infinity) - (b.number ?? Infinity) || (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0)
+  );
+
 export async function getPods(cohortId) {
-  const pods = list(await getDocs(query(collection(db, "pods"), where("cohortId", "==", cohortId))));
-  return pods.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+  return sortPods(list(await getDocs(query(collection(db, "pods"), where("cohortId", "==", cohortId)))));
 }
 
 export async function getMyPod(cohortId, uid) {
@@ -216,34 +221,49 @@ export async function adminUpdatePod(podId, data) {
 
 // Owner only: create several empty pods at once (e.g. 8 for a new cohort).
 export async function adminCreatePods(cohortId, count, type = "mixed") {
+  const existing = await getPods(cohortId);
+  const start = existing.reduce((max, p, i) => Math.max(max, p.number ?? i + 1), 0);
   const batch = writeBatch(db);
   for (let i = 0; i < count; i++) {
-    batch.set(doc(collection(db, "pods")), { cohortId, type, memberIds: [], whatsappGroupLink: null, createdAt: serverTimestamp() });
+    batch.set(doc(collection(db, "pods")), {
+      cohortId, type, number: start + i + 1, memberIds: [], whatsappGroupLink: null, createdAt: serverTimestamp(),
+    });
   }
   await batch.commit();
 }
 
-// Owner only: give each WhatsApp group link to a pod in this cohort that doesn't
-// have one yet (oldest first), creating new pods for any links left over.
-// Returns { assigned, created }.
+// Owner only: paste WhatsApp group links in order (Pod 1, Pod 2...).
+// - A link already used by a pod keeps its pod, and gets renumbered to match its position.
+// - A new link goes to a pod that doesn't have one yet, or a new pod is created.
+// Pods not in the pasted list keep their numbers, and pasted pods are numbered after them.
+// Returns { assigned, created, renumbered }.
 export async function adminAssignGroupLinks(cohortId, links, type = "mixed") {
-  const waiting = (await getPods(cohortId)).filter((p) => !p.whatsappGroupLink);
+  const pods = await getPods(cohortId);
+  const pasted = new Set(links);
+  const keep = pods.filter((p) => p.whatsappGroupLink && !pasted.has(p.whatsappGroupLink)).length;
+  const waiting = pods.filter((p) => !p.whatsappGroupLink);
   const batch = writeBatch(db);
   let assigned = 0;
   let created = 0;
+  let renumbered = 0;
   links.forEach((link, i) => {
-    if (waiting[i]) {
-      batch.update(doc(db, "pods", waiting[i].id), { whatsappGroupLink: link, groupLinkSetBy: "admin" });
+    const number = keep + i + 1;
+    const existing = pods.find((p) => p.whatsappGroupLink === link);
+    if (existing) {
+      batch.update(doc(db, "pods", existing.id), { number });
+      renumbered++;
+    } else if (waiting.length) {
+      batch.update(doc(db, "pods", waiting.shift().id), { whatsappGroupLink: link, groupLinkSetBy: "admin", number });
       assigned++;
     } else {
       batch.set(doc(collection(db, "pods")), {
-        cohortId, type, memberIds: [], whatsappGroupLink: link, groupLinkSetBy: "admin", createdAt: serverTimestamp(),
+        cohortId, type, number, memberIds: [], whatsappGroupLink: link, groupLinkSetBy: "admin", createdAt: serverTimestamp(),
       });
       created++;
     }
   });
   await batch.commit();
-  return { assigned, created };
+  return { assigned, created, renumbered };
 }
 
 // Owner only: start a new, empty pod in a cohort.
