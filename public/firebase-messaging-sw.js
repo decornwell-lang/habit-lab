@@ -10,12 +10,12 @@ const messaging = firebase.messaging();
 
 // Show the notification when a message arrives in the background.
 messaging.onBackgroundMessage((payload) => {
-  const { title = "David Ernest Cornwell", body = "", link = "/dashboard" } = payload.data || {};
+  const { title = "David Ernest Cornwell", body = "", link = "/dashboard", kind = "message" } = payload.data || {};
   return self.registration.showNotification(title, {
     body,
     icon: "/icons/icon-192.png",
     badge: "/icons/icon-192.png",
-    tag: "david-message", // a new message replaces the previous one, so only the latest is shown
+    tag: kind === "reminder" ? "checkin-reminder" : "david-message", // a new one replaces the previous one
     renotify: true,
     data: { link },
   });
