@@ -1,30 +1,28 @@
-// NoticeBanner: shows David's latest message as a banner at the top of every
-// page, once. It disappears after a few seconds (or when tapped), and the
-// member's profile remembers it was seen, so it never shows again on any device.
+// NoticeBanner: shows David's latest message (only the latest) as a banner at
+// the top of every page. It stays until the member taps "Got it"; then their
+// profile remembers it was read, so it never shows again on any device.
 // Messages are written in Admin → Messages.
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { getNotices, getMemberships, updateUserProfile } from "../lib/data.js";
 
-const SHOW_FOR_SECONDS = 10;
 const IGNORE_OLDER_THAN_DAYS = 14;
 
 export default function NoticeBanner() {
   const { user, profile } = useAuth();
   const [notice, setNotice] = useState(null);
   const [leaving, setLeaving] = useState(false);
-  const timer = useRef(null);
 
   function show(n) {
     setLeaving(false);
-    setNotice(n);
-    clearTimeout(timer.current);
-    timer.current = setTimeout(dismiss, SHOW_FOR_SECONDS * 1000);
+    setNotice(n); // a newer message replaces any message still showing
   }
 
-  function dismiss() {
+  // Tapping "Got it" marks the message as read, then the banner slides away.
+  function markRead() {
+    if (user && notice?.id) updateUserProfile(user.uid, { lastSeenNoticeId: notice.id }).catch(() => {});
     setLeaving(true);
-    setTimeout(() => setNotice(null), 300); // let the slide-out finish
+    setTimeout(() => setNotice(null), 300);
   }
 
   // On log-in: find the newest message for this member that they haven't seen.
@@ -37,10 +35,7 @@ export default function NoticeBanner() {
         const mine = new Set(memberships.map((m) => m.cohortId));
         const cutoff = Date.now() - IGNORE_OLDER_THAN_DAYS * 86400000;
         const latest = notices.find((n) => (!n.cohortId || mine.has(n.cohortId)) && (n.createdAt?.toMillis?.() || 0) > cutoff);
-        if (!cancelled && latest && latest.id !== profile.lastSeenNoticeId) {
-          show(latest);
-          updateUserProfile(user.uid, { lastSeenNoticeId: latest.id }).catch(() => {});
-        }
+        if (!cancelled && latest && latest.id !== profile.lastSeenNoticeId) show(latest);
       } catch {
         // No messages to show.
       }
@@ -54,22 +49,19 @@ export default function NoticeBanner() {
   useEffect(() => {
     const onLive = (e) => show(e.detail);
     window.addEventListener("habitlab:notice", onLive);
-    return () => {
-      window.removeEventListener("habitlab:notice", onLive);
-      clearTimeout(timer.current);
-    };
+    return () => window.removeEventListener("habitlab:notice", onLive);
   }, []);
 
   if (!notice) return null;
 
   return (
-    <div className={`notice-banner ${leaving ? "leaving" : ""}`} role="status" aria-live="polite" onClick={dismiss}>
+    <div className={`notice-banner ${leaving ? "leaving" : ""}`} role="status" aria-live="polite">
       <div className="notice-banner-inner">
         <span className="notice-banner-from">Message from David</span>
         <strong>{notice.title}</strong>
         {notice.body && <span className="notice-banner-body">{notice.body}</span>}
       </div>
-      <button className="notice-banner-close" aria-label="Close message" onClick={dismiss}>×</button>
+      <button className="notice-banner-ok" onClick={markRead}>Got it</button>
     </div>
   );
 }

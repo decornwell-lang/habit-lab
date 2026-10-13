@@ -546,7 +546,6 @@ a { color: var(--primary); }
   color: #fff;
   border-left: 5px solid var(--gold);
   box-shadow: 0 12px 32px rgba(10, 14, 40, 0.3);
-  cursor: pointer;
   animation: notice-in 0.35s ease-out;
 }
 .notice-banner.leaving { animation: notice-out 0.3s ease-in forwards; }
@@ -555,7 +554,19 @@ a { color: var(--primary); }
 .notice-banner-inner { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .notice-banner-from { color: var(--gold); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
 .notice-banner-body { color: #d8dcea; font-size: 0.95rem; }
-.notice-banner-close { border: none; background: none; color: #fff; font-size: 1.6rem; line-height: 1; cursor: pointer; padding: 0 4px; }
+.notice-banner { align-items: center; }
+.notice-banner-ok {
+  flex-shrink: 0;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: var(--gold);
+  color: var(--dark-blue);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
 @media (prefers-reduced-motion: reduce) { .notice-banner, .notice-banner.leaving { animation: none; } }
 .update-banner {
   position: sticky;

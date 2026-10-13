@@ -36,7 +36,7 @@ export default handle(async (req, res) => {
     const batch = targets.slice(i, i + 500);
     const response = await getMessaging().sendEachForMulticast({
       tokens: batch.map((t) => t.token),
-      data: { title: notice.title, body: notice.body || "", link: notice.link || "/dashboard" },
+      data: { noticeId, title: notice.title, body: notice.body || "", link: notice.link || "/dashboard" },
       webpush: { headers: { Urgency: "high" } },
     });
     sent += response.successCount;

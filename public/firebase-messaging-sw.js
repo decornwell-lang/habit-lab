@@ -15,6 +15,8 @@ messaging.onBackgroundMessage((payload) => {
     body,
     icon: "/icons/icon-192.png",
     badge: "/icons/icon-192.png",
+    tag: "david-message", // a new message replaces the previous one, so only the latest is shown
+    renotify: true,
     data: { link },
   });
 });
