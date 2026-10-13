@@ -7,10 +7,10 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import {
   getCohorts, getMemberships, getCheckins, getPublicProfile, savePublicProfile,
-  getContentSettings, hasPractised,
+  getContentSettings, hasPractised, updateUserProfile,
 } from "../lib/data.js";
 import { apiPost } from "../lib/api.js";
-import { todayKey, addDays } from "../lib/dates.js";
+import { todayKey, addDays, timeZoneName } from "../lib/dates.js";
 import { pickCurrentCohort } from "../lib/cohorts.js";
 import { weekContent } from "../lib/content.js";
 import { computeStreak, badgesForStreak } from "../lib/streaks.js";
@@ -71,6 +71,29 @@ export default function Dashboard() {
   useEffect(() => {
     load();
   }, [load]);
+
+  // If the app stays open past 07:00, reload so the new day's check-in appears.
+  useEffect(() => {
+    let loadedFor = todayKey();
+    const refreshIfNewDay = () => {
+      if (document.visibilityState === "visible" && todayKey() !== loadedFor) {
+        loadedFor = todayKey();
+        load();
+      }
+    };
+    document.addEventListener("visibilitychange", refreshIfNewDay);
+    const timer = setInterval(refreshIfNewDay, 5 * 60 * 1000);
+    return () => {
+      document.removeEventListener("visibilitychange", refreshIfNewDay);
+      clearInterval(timer);
+    };
+  }, [load]);
+
+  // Remember the member's time zone (used for 07:00 reminders in future).
+  useEffect(() => {
+    const zone = timeZoneName();
+    if (zone && profile && profile.timeZone !== zone) updateUserProfile(user.uid, { timeZone: zone }).catch(() => {});
+  }, [profile?.timeZone, user.uid]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Coming back from Stripe Checkout
   useEffect(() => {

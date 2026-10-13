@@ -3,7 +3,7 @@
 // The craving scale (1-5) is set in src/content/prompts.json.
 import { useState } from "react";
 import { saveCheckin } from "../../lib/data.js";
-import { formatDate } from "../../lib/dates.js";
+import { formatDate, isBeforeDayStarts, dayStartLabel } from "../../lib/dates.js";
 import { COMMITMENT_QUESTION, CRAVING_QUESTION, CRAVING_SCALE } from "../../lib/content.js";
 
 const scaleValues = Array.from({ length: CRAVING_SCALE.max - CRAVING_SCALE.min + 1 }, (_, i) => CRAVING_SCALE.min + i);
@@ -89,14 +89,20 @@ export default function DailyCheckin({ uid, current, content, existing, streak, 
     }
   }
 
+  // Between midnight and 07:00 the check-in is still for "yesterday" (see src/lib/dates.js).
+  const lateNight = isBeforeDayStarts();
+  const cardLabel = lateNight
+    ? `Yesterday's check-in · Day ${progress.day} · open until ${dayStartLabel()}`
+    : `Daily Check-in · Day ${progress.day}`;
+
   const streakLine =
     streak > 0 ? `Current streak: ${streak} ${streak === 1 ? "day" : "days"}` : "Your streak begins with your next Yes.";
 
   if (!editing) {
     return (
       <section className="card">
-        <p className="card-label">Daily Check-in · Day {progress.day}</p>
-        <h2>Today's check-in is saved</h2>
+        <p className="card-label">{cardLabel}</p>
+        <h2>{lateNight ? "Yesterday's" : "Today's"} check-in is saved</h2>
         <p className="streak">{streakLine}</p>
         <ul className="summary">
           <li>Commitment kept today: <strong>{existing?.maintained ? "Yes" : "No"}</strong></li>
@@ -108,14 +114,15 @@ export default function DailyCheckin({ uid, current, content, existing, streak, 
             <WhatsAppIcon /> Share with my pod
           </a>
         )}
-        <button className="btn btn-ghost" onClick={() => setEditing(true)}>Change today's answers</button>
+        <button className="btn btn-ghost" onClick={() => setEditing(true)}>Change {lateNight ? "yesterday's" : "today's"} answers</button>
+        <p className="muted small center">Your next check-in opens at {dayStartLabel()}.</p>
       </section>
     );
   }
 
   return (
     <section className="card">
-      <p className="card-label">Daily Check-in · Day {progress.day}</p>
+      <p className="card-label">{cardLabel}</p>
       <h2>{content.dailyPrompt}</h2>
       <p className="streak">{streakLine}</p>
 
