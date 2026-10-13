@@ -61,7 +61,7 @@ export default handle(async (req, res) => {
 
     const response = await getMessaging().sendEachForMulticast({
       tokens: user.fcmTokens,
-      data: { kind: "reminder", title: TITLE, body: BODY.replace("{day}", cohortDay), link: "/dashboard?tab=practice" },
+      data: { kind: "reminder", title: TITLE, body: BODY.replace("{day}", cohortDay), link: "/dashboard" },
       webpush: { headers: { Urgency: "high" } },
     });
     devices += response.successCount;

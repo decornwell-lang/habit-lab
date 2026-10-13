@@ -1,5 +1,5 @@
-// Dashboard: the members' home page, split into four tabs (see DashboardTabs.jsx):
-//   Community · This week · My practice · Upcoming
+// Dashboard: the members' home page, with two tabs (see DashboardTabs.jsx):
+//   Home (everything) · Upcoming
 // The open tab is part of the address (e.g. /dashboard?tab=week), so links
 // and notifications can open a specific tab.
 import { useCallback, useEffect, useState } from "react";
@@ -90,7 +90,7 @@ export default function Dashboard() {
     };
   }, [load]);
 
-  // Remember the member's time zone (used for 07:00 reminders in future).
+  // Remember the member's time zone (used for the 18:00 reminder).
   useEffect(() => {
     const zone = timeZoneName();
     if (zone && profile && profile.timeZone !== zone) updateUserProfile(user.uid, { timeZone: zone }).catch(() => {});
@@ -159,7 +159,7 @@ export default function Dashboard() {
   return (
     <main className="page dashboard">
       <p className="eyebrow">Hello, {firstName}</p>
-      <h1>{tabTitle}</h1>
+      {tab !== DEFAULT_TAB && <h1>{tabTitle}</h1>}
 
       {notice && <p className="notice notice-good" role="status">{notice}</p>}
       {error && <p className="form-error" role="alert">{error}</p>}
@@ -186,32 +186,13 @@ export default function Dashboard() {
         }} />
       )}
 
-      {/* 1. Community: leaderboard and notification settings (messages appear as a banner, see NoticeBanner.jsx) */}
-      {tab === "community" && (
-        <>
-          <NotificationSettings uid={user.uid} compact />
-          <InstallApp />
-          <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} />
-        </>
-      )}
-
-      {/* 2. This week: meditation, reflection and the Zoom session */}
-      {tab === "week" && (
-        <>
-          <TodaysPractice uid={user.uid} content={content} practised={data.practised} today={today} />
-          <WeeklyReflection content={content} />
-          <LiveSession settings={data.settings} />
-        </>
-      )}
-
-      {/* 3. My practice: streak, check-in, cohort and pod */}
-      {tab === "practice" && (
+      {/* Home: everything except upcoming events */}
+      {tab === "home" && (
         <>
           {current ? (
             <>
               <StreakCard streak={streak} badges={data.publicProfile?.badges} current={current} weekTitle={content.title} />
               {current.progress.state === "upcoming" && <PreCohort current={current} />}
-              {current.progress.state === "active" && <BreathePause />}
               <DailyCheckin
                 uid={user.uid}
                 current={current}
@@ -222,21 +203,26 @@ export default function Dashboard() {
                 day={checkinDay}
                 onSaved={handleCheckinSaved}
               />
-              <JourneyMap current={current} checkins={data.checkins} />
-              <MyPod uid={user.uid} profile={profile} current={current} today={checkinDay} />
+              {current.progress.state === "active" && <BreathePause />}
             </>
           ) : (
             <section className="card center">
-              <p className="card-label">My practice</p>
-              <h2>You haven't joined a cohort yet</h2>
-              <p className="muted">Your streak, daily check-in and pod will appear here once you join.</p>
-              <button className="btn btn-primary" onClick={() => setTab("upcoming")}>See upcoming cohorts</button>
+              <h2>Join a cohort</h2>
+              <button className="btn btn-primary" onClick={() => setTab("upcoming")}>See cohorts</button>
             </section>
           )}
+          <TodaysPractice uid={user.uid} content={content} practised={data.practised} today={today} />
+          <WeeklyReflection content={content} />
+          <LiveSession settings={data.settings} />
+          {current && <MyPod uid={user.uid} profile={profile} current={current} today={checkinDay} />}
+          <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} />
+          {current && <JourneyMap current={current} checkins={data.checkins} />}
+          <NotificationSettings uid={user.uid} compact />
+          <InstallApp />
         </>
       )}
 
-      {/* 4. Upcoming: events and cohorts to join */}
+      {/* Upcoming: events and cohorts to join */}
       {tab === "upcoming" && (
         <>
           <UpcomingEvents settings={data.settings} cohorts={data.cohorts} memberships={data.memberships} onOpenTab={setTab} />
@@ -245,7 +231,7 @@ export default function Dashboard() {
       )}
 
       <p className="form-foot">
-        <Link to="/account">My account and privacy settings</Link>
+        <Link to="/account">My account</Link>
       </p>
 
       <DashboardTabs active={tab} onChange={setTab} />

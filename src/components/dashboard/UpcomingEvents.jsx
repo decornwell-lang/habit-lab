@@ -14,7 +14,7 @@ export default function UpcomingEvents({ settings, cohorts, memberships, onOpenT
       label: formatDateTime(settings.nextSessionAt),
       title: "Live session",
       detail: "Zoom",
-      action: { text: "Details", onClick: () => onOpenTab("week") },
+      action: { text: "Details", onClick: () => onOpenTab("home") },
     });
   }
 
