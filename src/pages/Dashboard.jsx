@@ -10,8 +10,8 @@ import {
   getContentSettings, hasPractised, updateUserProfile,
 } from "../lib/data.js";
 import { apiPost } from "../lib/api.js";
-import { todayKey, addDays, timeZoneName } from "../lib/dates.js";
-import { pickCurrentCohort } from "../lib/cohorts.js";
+import { todayKey, checkinDayKey, addDays, timeZoneName } from "../lib/dates.js";
+import { pickCurrentCohort, cohortProgress } from "../lib/cohorts.js";
 import { weekContent } from "../lib/content.js";
 import { computeStreak, badgesForStreak } from "../lib/streaks.js";
 
@@ -42,7 +42,8 @@ export default function Dashboard() {
   const [celebrate, setCelebrate] = useState(null); // badge id to celebrate
   const [startAgain, setStartAgain] = useState(false);
   const [params, setParams] = useSearchParams();
-  const today = todayKey();
+  const today = todayKey(); // calendar day: practice, meditation, cohort day number
+  const checkinDay = checkinDayKey(); // the check-in that's open now (opens 18:00, see dates.js)
 
   const tab = TABS.some((t) => t.id === params.get("tab")) ? params.get("tab") : DEFAULT_TAB;
   function setTab(id) {
@@ -71,12 +72,13 @@ export default function Dashboard() {
     load();
   }, [load]);
 
-  // If the app stays open past 07:00, reload so the new day's check-in appears.
+  // If the app stays open past midnight or 18:00, reload so the new day / check-in appears.
   useEffect(() => {
-    let loadedFor = todayKey();
+    const dayStamp = () => `${todayKey()}|${checkinDayKey()}`;
+    let loadedFor = dayStamp();
     const refreshIfNewDay = () => {
-      if (document.visibilityState === "visible" && todayKey() !== loadedFor) {
-        loadedFor = todayKey();
+      if (document.visibilityState === "visible" && dayStamp() !== loadedFor) {
+        loadedFor = dayStamp();
         load();
       }
     };
@@ -120,13 +122,17 @@ export default function Dashboard() {
   const week = active ? current.progress.week : Number(data.settings.currentWeek) || 1;
   const habitType = current?.cohort.habitType || "smoking";
   const content = weekContent(habitType, week, data.settings);
+  // The open check-in can be yesterday's (before 18:00), so it has its own day and week.
+  const checkinProgress = current ? cohortProgress(current.cohort, current.membership, checkinDay) : null;
+  const checkinContent =
+    checkinProgress?.state === "active" ? weekContent(habitType, checkinProgress.week, data.settings) : content;
   const firstName = profile?.firstName || user.displayName || "friend";
 
   // Called after a check-in is saved: update streak, badges and the public profile.
   async function handleCheckinSaved(date, checkin) {
     const checkins = { ...data.checkins, [date]: checkin };
-    const streak = computeStreak(checkins, today);
-    const lastYesDate = streak === 0 ? null : checkins[today]?.maintained ? today : addDays(today, -1);
+    const streak = computeStreak(checkins, checkinDay);
+    const lastYesDate = streak === 0 ? null : checkins[checkinDay]?.maintained ? checkinDay : addDays(checkinDay, -1);
     const earned = new Set(data.publicProfile?.badges || []);
     const newBadges = badgesForStreak(streak).filter((b) => !earned.has(b));
     const badges = [...earned, ...newBadges];
@@ -147,7 +153,7 @@ export default function Dashboard() {
     else if (newBadges.length) setCelebrate(newBadges.at(-1));
   }
 
-  const streak = computeStreak(data.checkins, today);
+  const streak = computeStreak(data.checkins, checkinDay);
   const tabTitle = TABS.find((t) => t.id === tab)?.label;
 
   return (
@@ -185,7 +191,7 @@ export default function Dashboard() {
         <>
           <NotificationSettings uid={user.uid} compact />
           <InstallApp />
-          <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={today} />
+          <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} />
         </>
       )}
 
@@ -209,14 +215,15 @@ export default function Dashboard() {
               <DailyCheckin
                 uid={user.uid}
                 current={current}
-                content={content}
-                existing={data.checkins[today]}
+                content={checkinContent}
+                progress={checkinProgress}
+                existing={data.checkins[checkinDay]}
                 streak={streak}
-                today={today}
+                day={checkinDay}
                 onSaved={handleCheckinSaved}
               />
               <JourneyMap current={current} checkins={data.checkins} />
-              <MyPod uid={user.uid} profile={profile} current={current} today={today} />
+              <MyPod uid={user.uid} profile={profile} current={current} today={checkinDay} />
             </>
           ) : (
             <section className="card center">

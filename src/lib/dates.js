@@ -1,10 +1,10 @@
 // Date helpers. Days are stored as "YYYY-MM-DD" strings in the member's
 // own time zone (from their phone or computer clock).
 
-// A practice day starts at this hour, in each member's own time zone.
-// Before it (midnight to 06:59), the app still treats it as the previous day,
-// so a late-night check-in counts for the day just lived. Change it here.
-export const DAY_STARTS_AT_HOUR = 7;
+// The daily check-in opens at this hour (in each member's own time zone) and
+// stays open until the same time the next day. Check-in for a day therefore
+// runs from 18:00 that day to 17:59 the next. Change the hour here.
+export const CHECKIN_OPENS_AT_HOUR = 18;
 
 export function toKey(date = new Date()) {
   const y = date.getFullYear();
@@ -13,14 +13,19 @@ export function toKey(date = new Date()) {
   return `${y}-${m}-${d}`;
 }
 
-// The current practice day (it switches over at DAY_STARTS_AT_HOUR, not midnight).
-export const todayKey = (now = new Date()) => toKey(new Date(now.getTime() - DAY_STARTS_AT_HOUR * 3600000));
+// Today's date (normal midnight-to-midnight day): used for practice and cohort days.
+export const todayKey = (now = new Date()) => toKey(now);
 
-// True between midnight and the start of the practice day (e.g. 00:00–06:59).
-export const isBeforeDayStarts = (now = new Date()) => now.getHours() < DAY_STARTS_AT_HOUR;
+// The day whose check-in is open right now. Before 18:00 it's yesterday's;
+// from 18:00 it's today's.
+export const checkinDayKey = (now = new Date()) =>
+  now.getHours() >= CHECKIN_OPENS_AT_HOUR ? toKey(now) : addDays(toKey(now), -1);
 
-// "07:00" in a friendly form.
-export const dayStartLabel = () => `${String(DAY_STARTS_AT_HOUR).padStart(2, "0")}:00`;
+// True before today's check-in opens (00:00–17:59).
+export const isBeforeCheckinOpens = (now = new Date()) => now.getHours() < CHECKIN_OPENS_AT_HOUR;
+
+// "18:00" in a friendly form.
+export const checkinOpensLabel = () => `${String(CHECKIN_OPENS_AT_HOUR).padStart(2, "0")}:00`;
 
 // The member's time zone name, e.g. "Europe/Madrid".
 export const timeZoneName = () => Intl.DateTimeFormat().resolvedOptions().timeZone || null;

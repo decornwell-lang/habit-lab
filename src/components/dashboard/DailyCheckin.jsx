@@ -3,7 +3,7 @@
 // The craving scale (1-5) is set in src/content/prompts.json.
 import { useState } from "react";
 import { saveCheckin } from "../../lib/data.js";
-import { formatDate, isBeforeDayStarts, dayStartLabel } from "../../lib/dates.js";
+import { formatDate, isBeforeCheckinOpens, checkinOpensLabel, todayKey } from "../../lib/dates.js";
 import { COMMITMENT_QUESTION, CRAVING_QUESTION, CRAVING_SCALE } from "../../lib/content.js";
 
 const scaleValues = Array.from({ length: CRAVING_SCALE.max - CRAVING_SCALE.min + 1 }, (_, i) => CRAVING_SCALE.min + i);
@@ -36,8 +36,10 @@ function WhatsAppIcon() {
   );
 }
 
-export default function DailyCheckin({ uid, current, content, existing, streak, today, onSaved }) {
-  const { cohort, progress } = current;
+// `day` is the check-in day that's open now and `progress` is where that day sits
+// in the cohort (see checkinDayKey in src/lib/dates.js: check-ins open at 18:00).
+export default function DailyCheckin({ uid, current, progress, content, existing, streak, day, onSaved }) {
+  const { cohort } = current;
   const [editing, setEditing] = useState(!existing);
   const [maintained, setMaintained] = useState(existing?.maintained ?? null);
   const [craving, setCraving] = useState(existing?.craving ?? null);
@@ -49,7 +51,11 @@ export default function DailyCheckin({ uid, current, content, existing, streak, 
     return (
       <section className="card">
         <p className="card-label">Daily Check-in</p>
-        <p className="muted">Your daily check-ins begin on {formatDate(progress.start)}, day 1 of {cohort.name}.</p>
+        <p className="muted">
+          {progress.start === todayKey()
+            ? `Your first check-in opens today at ${checkinOpensLabel()}.`
+            : `Your daily check-ins begin on ${formatDate(progress.start)}, from ${checkinOpensLabel()}.`}
+        </p>
       </section>
     );
   }
@@ -78,8 +84,8 @@ export default function DailyCheckin({ uid, current, content, existing, streak, 
         question: content.openQuestion,
         answer: answer.trim(),
       };
-      await saveCheckin(uid, today, checkin);
-      await onSaved(today, checkin);
+      await saveCheckin(uid, day, checkin);
+      await onSaved(day, checkin);
       setEditing(false);
     } catch (err) {
       console.error(err);
@@ -89,11 +95,12 @@ export default function DailyCheckin({ uid, current, content, existing, streak, 
     }
   }
 
-  // Between midnight and 07:00 the check-in is still for "yesterday" (see src/lib/dates.js).
-  const lateNight = isBeforeDayStarts();
-  const cardLabel = lateNight
-    ? `Yesterday's check-in · Day ${progress.day} · open until ${dayStartLabel()}`
-    : `Daily Check-in · Day ${progress.day}`;
+  // Before 18:00 the open check-in is yesterday's; from 18:00 it's today's.
+  const forYesterday = isBeforeCheckinOpens();
+  const opens = checkinOpensLabel();
+  const cardLabel = forYesterday
+    ? `Yesterday's check-in · Day ${progress.day} · open until ${opens}`
+    : `Today's check-in · Day ${progress.day}`;
 
   const streakLine =
     streak > 0 ? `Current streak: ${streak} ${streak === 1 ? "day" : "days"}` : "Your streak begins with your next Yes.";
@@ -102,10 +109,10 @@ export default function DailyCheckin({ uid, current, content, existing, streak, 
     return (
       <section className="card">
         <p className="card-label">{cardLabel}</p>
-        <h2>{lateNight ? "Yesterday's" : "Today's"} check-in is saved</h2>
+        <h2>{forYesterday ? "Yesterday's" : "Today's"} check-in is saved</h2>
         <p className="streak">{streakLine}</p>
         <ul className="summary">
-          <li>Commitment kept today: <strong>{existing?.maintained ? "Yes" : "No"}</strong></li>
+          <li>Commitment kept: <strong>{existing?.maintained ? "Yes" : "No"}</strong></li>
           <li>Cravings: <strong>{existing?.craving} / {CRAVING_SCALE.max}</strong></li>
           {existing?.answer && <li>“{existing.answer}”</li>}
         </ul>
@@ -114,8 +121,10 @@ export default function DailyCheckin({ uid, current, content, existing, streak, 
             <WhatsAppIcon /> Share with my pod
           </a>
         )}
-        <button className="btn btn-ghost" onClick={() => setEditing(true)}>Change {lateNight ? "yesterday's" : "today's"} answers</button>
-        <p className="muted small center">Your next check-in opens at {dayStartLabel()}.</p>
+        <button className="btn btn-ghost" onClick={() => setEditing(true)}>Change {forYesterday ? "yesterday's" : "today's"} answers</button>
+        <p className="muted small center">
+          {forYesterday ? `Today's check-in opens at ${opens}.` : `Your next check-in opens tomorrow at ${opens}.`}
+        </p>
       </section>
     );
   }

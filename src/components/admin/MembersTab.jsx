@@ -3,11 +3,11 @@ import { useState } from "react";
 import { joinCohortDirectly, getAllCheckins } from "../../lib/data.js";
 import { downloadCsv } from "../../lib/csv.js";
 import { effectiveStreak, badgeInfo, sortBadges } from "../../lib/streaks.js";
-import { todayKey, toKey } from "../../lib/dates.js";
+import { todayKey, checkinDayKey, toKey } from "../../lib/dates.js";
 
 // Joins the data for one table row.
 function buildRows({ users, profiles, memberships, cohorts }) {
-  const today = todayKey();
+  const today = checkinDayKey(); // streaks count by check-in day
   return users
     .map((u) => {
       const p = profiles.find((x) => x.id === u.id) || {};
