@@ -19,7 +19,7 @@ export class HttpError extends Error {
 function firebase() {
   if (!getApps().length) {
     const key = process.env.FIREBASE_SERVICE_ACCOUNT;
-    if (!key) throw new HttpError(500, "Payments aren't set up yet (missing FIREBASE_SERVICE_ACCOUNT).");
+    if (!key) throw new HttpError(500, "The server key isn't set up yet (FIREBASE_SERVICE_ACCOUNT is missing in Vercel). Payments and push notifications need it.");
     initializeApp({ credential: cert(JSON.parse(key)) });
   }
   return { auth: getAuth(), db: getFirestore() };
@@ -29,7 +29,7 @@ export const db = () => firebase().db;
 
 export function stripe() {
   const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) throw new HttpError(500, "Payments aren't set up yet (missing STRIPE_SECRET_KEY).");
+  if (!key) throw new HttpError(500, "Payments aren't set up yet (STRIPE_SECRET_KEY is missing in Vercel).");
   return new Stripe(key);
 }
 
