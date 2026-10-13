@@ -22,15 +22,13 @@ export default function StartAgain({ uid, current, onDone }) {
   return (
     <section className="card card-gentle">
       <h2>Every return is part of the practice.</h2>
-      <p className="muted">
-        Nothing is lost. Your check-ins and badges are kept, and you can pick up again whenever you're ready.
-      </p>
+      <p className="muted">Nothing is lost.</p>
       <button className="btn btn-primary" onClick={() => onDone(false)} disabled={busy}>
-        Continue the cohort from today
+        Continue from today
       </button>
       {canRestart && (
         <button className="btn btn-ghost" onClick={restart} disabled={busy}>
-          {busy ? "Restarting…" : "Restart the cohort from day 1"}
+          {busy ? "Restarting…" : "Restart from day 1"}
         </button>
       )}
     </section>

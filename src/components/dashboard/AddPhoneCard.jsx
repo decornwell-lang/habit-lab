@@ -22,7 +22,7 @@ export default function AddPhoneCard({ uid, profile }) {
 
   async function save(e) {
     e.preventDefault();
-    if (!isValidPhone(phone)) return setError("Please include your country code, for example +44 7700 900123.");
+    if (!isValidPhone(phone)) return setError("Add country code, e.g. +44.");
     setBusy(true);
     try {
       await updateUserProfile(uid, { phone: normalizePhone(phone) }); // the profile updates live, hiding this card
@@ -44,11 +44,8 @@ export default function AddPhoneCard({ uid, profile }) {
 
   return (
     <section className="card card-accent">
-      <p className="card-label">One quick thing</p>
-      <h2>Add your mobile number</h2>
-      <p className="muted small">
-        So your pod can start a WhatsApp group together. It stays private unless you choose to share it with your pod.
-      </p>
+      <h2>Add your mobile</h2>
+      <p className="muted small">Private. For your pod's WhatsApp.</p>
       <form className="note-form" onSubmit={save}>
         <input type="tel" autoComplete="tel" aria-label="Mobile number" placeholder="+44 7700 900123" value={phone} onChange={(e) => setPhone(e.target.value)} />
         <button className="btn btn-primary btn-small" disabled={busy}>Save</button>

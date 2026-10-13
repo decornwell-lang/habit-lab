@@ -151,9 +151,9 @@ export async function getMyPod(cohortId, uid) {
 
 // Pod types a member can choose when joining. Edit the wording here.
 export const POD_TYPES = [
-  { id: "mixed", label: "Mixed pod", hint: "No preference: anyone in your cohort" },
-  { id: "women", label: "Women's pod", hint: "For anyone who identifies as a woman" },
-  { id: "men", label: "Men's pod", hint: "For anyone who identifies as a man" },
+  { id: "mixed", label: "Mixed pod", hint: "Anyone" },
+  { id: "women", label: "Women's pod", hint: "Women" },
+  { id: "men", label: "Men's pod", hint: "Men" },
 ];
 export const podTypeLabel = (id) => (POD_TYPES.find((t) => t.id === (id || "mixed")) || POD_TYPES[0]).label;
 

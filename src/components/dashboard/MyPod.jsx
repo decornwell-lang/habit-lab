@@ -61,7 +61,7 @@ export default function MyPod({ uid, profile, current, today }) {
   const handleJoin = () =>
     run(() => joinPod(cohortId, uid, { firstName: profile?.firstName || "Member", avatar: profile?.avatar }, podType));
   const handleLeave = () => {
-    if (window.confirm("Leave your pod? You can join a new one at any time.")) run(() => leavePod(pod.id, uid));
+    if (window.confirm("Leave your pod?")) run(() => leavePod(pod.id, uid));
   };
 
   if (pod === undefined) {
@@ -78,13 +78,10 @@ export default function MyPod({ uid, profile, current, today }) {
     return (
       <section className="card">
         <p className="card-label">My Pod</p>
-        <h2>Walk alongside a few others</h2>
-        <p className="muted">
-          A pod is a small group of up to {POD_SIZE} people from your cohort. You'll see each other's first names and
-          streaks, and can choose to share your number to start a WhatsApp group together.
-        </p>
+        <h2>Join a small group</h2>
+        <p className="muted small">Up to {POD_SIZE} people, with a WhatsApp group.</p>
         <fieldset className="question pod-types">
-          <legend>What kind of pod feels right for you?</legend>
+          <legend>Choose a pod</legend>
           {POD_TYPES.map((t) => (
             <label key={t.id} className={`pod-type ${podType === t.id ? "selected" : ""}`}>
               <input type="radio" name="podType" value={t.id} checked={podType === t.id} onChange={() => setPodType(t.id)} />
@@ -96,7 +93,6 @@ export default function MyPod({ uid, profile, current, today }) {
           ))}
         </fieldset>
         <button className="btn btn-primary" onClick={handleJoin} disabled={busy}>{busy ? "Joining…" : "Join a pod"}</button>
-        <p className="muted small center">Joining is optional. You can leave at any time.</p>
         {error && <p className="form-error">{error}</p>}
       </section>
     );
@@ -132,16 +128,16 @@ export default function MyPod({ uid, profile, current, today }) {
       </ul>
       {pod.memberIds.length < POD_SIZE && (
         <p className="muted small">
-          There's room for more. Your pod will fill as others choose a {podTypeLabel(pod.type).toLowerCase()}.
+          More members will join.
         </p>
       )}
 
       {/* Optional one-to-one chats */}
       <div className="pod-section">
-        <h3>One-to-one chats</h3>
+        <h3>Direct messages</h3>
         {!profile?.phone ? (
           <p className="muted small">
-            Want your pod to be able to message you directly? <Link to="/account">Add your mobile number in My account</Link>.
+            <Link to="/account">Add your number</Link> to allow direct messages.
           </p>
         ) : (
           <label className="checkbox">
@@ -152,8 +148,7 @@ export default function MyPod({ uid, profile, current, today }) {
               onChange={(e) => run(() => setPodPhone(pod.id, uid, e.target.checked ? profile.phone : null))}
             />
             <span>
-              Let my pod message me on WhatsApp. Your number isn't shown in the app, but people you chat with will see
-              it in WhatsApp.
+              Let my pod message me on WhatsApp
             </span>
           </label>
         )}
@@ -162,7 +157,7 @@ export default function MyPod({ uid, profile, current, today }) {
       <PodChangeRequest uid={uid} profile={profile} cohortId={cohortId} podId={pod.id} />
 
       <p className="center">
-        <button className="link-btn" onClick={handleLeave} disabled={busy}>Leave this pod</button>
+        <button className="link-btn" onClick={handleLeave} disabled={busy}>Leave pod</button>
       </p>
       {error && <p className="form-error">{error}</p>}
     </section>
@@ -193,19 +188,19 @@ function PodChangeRequest({ uid, profile, cohortId, podId }) {
   }
 
   if (pending) {
-    return <p className="notice notice-good small">Your request to change pod has been sent to David. He'll be in touch.</p>;
+    return <p className="notice notice-good small">Request sent to David.</p>;
   }
 
   return (
     <div className="pod-section">
       {!open ? (
-        <button className="link-btn" onClick={() => setOpen(true)}>Pod not working for you? Ask David to change it</button>
+        <button className="link-btn" onClick={() => setOpen(true)}>Ask to change pod</button>
       ) : (
         <form onSubmit={submit}>
           <div className="field">
-            <label htmlFor="pod-reason">What would help? (only David sees this)</label>
+            <label htmlFor="pod-reason">Why? (only David sees this)</label>
             <textarea id="pod-reason" rows={3} maxLength={500} value={reason} onChange={(e) => setReason(e.target.value)}
-              placeholder="For example: different time zone, or I'd like a quieter pod." />
+              placeholder="Optional" />
           </div>
           <button className="btn btn-primary btn-small" disabled={busy}>{busy ? "Sending…" : "Send request"}</button>
           <button type="button" className="btn btn-text" onClick={() => setOpen(false)}>Cancel</button>
@@ -228,7 +223,7 @@ function PodGroupLink({ pod, uid, members, onSaved }) {
   async function save(e) {
     e.preventDefault();
     const clean = cleanGroupLink(link);
-    if (!clean) return setError("That doesn't look like a WhatsApp group link. It should start with https://chat.whatsapp.com/");
+    if (!clean) return setError("Not a WhatsApp group link.");
     setBusy(true);
     setError("");
     try {
@@ -245,7 +240,7 @@ function PodGroupLink({ pod, uid, members, onSaved }) {
   }
 
   async function remove() {
-    if (!window.confirm("Remove the group link from the app? The WhatsApp group itself isn't affected.")) return;
+    if (!window.confirm("Remove this link?")) return;
     await setPodGroupLink(pod.id, null, uid).catch(console.error);
     await onSaved();
   }
@@ -269,21 +264,19 @@ function PodGroupLink({ pod, uid, members, onSaved }) {
   if (!editing && !diy) {
     return (
       <div className="pod-group pod-group-setup">
-        <h3>Your pod's WhatsApp group is on its way</h3>
-        <p className="muted small">David will add the link here soon, and you'll see a button to join.</p>
-        <button className="link-btn" onClick={() => setDiy(true)}>Or set it up yourself</button>
+        <h3>WhatsApp group coming soon</h3>
+        <button className="link-btn" onClick={() => setDiy(true)}>Set it up yourself</button>
       </div>
     );
   }
 
   return (
     <div className="pod-group pod-group-setup">
-      <h3>Start your pod's WhatsApp group</h3>
-      <p className="muted small">Only one of you needs to do this:</p>
+      <h3>Add your pod's WhatsApp group</h3>
       <ol className="steps-list">
-        <li>In WhatsApp, tap <strong>New group</strong>. Name it something like “Habit Lab pod”. If WhatsApp asks you to add at least one person, add anyone you trust; you can remove them afterwards.</li>
-        <li>Open the group, tap its name, then <strong>Invite via link</strong> (or <strong>Invite to group via link</strong>), then <strong>Copy link</strong>.</li>
-        <li>Paste the link here and tap <strong>Save</strong>. Everyone in your pod will see a button to join.</li>
+        <li>In WhatsApp: <strong>New group</strong></li>
+        <li>Group info → <strong>Invite via link</strong> → <strong>Copy</strong></li>
+        <li>Paste it here</li>
       </ol>
       <form className="note-form" onSubmit={save}>
         <input aria-label="WhatsApp group invite link" placeholder="https://chat.whatsapp.com/…" value={link} onChange={(e) => setLink(e.target.value)} />

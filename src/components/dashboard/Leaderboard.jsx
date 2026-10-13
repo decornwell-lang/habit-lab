@@ -28,7 +28,7 @@ export default function Leaderboard({ uid, optedIn, today }) {
       {!rows ? (
         <p className="muted">Loading…</p>
       ) : rows.length === 0 ? (
-        <p className="muted">No one is on the leaderboard yet.</p>
+        <p className="muted">No one yet.</p>
       ) : (
         <ol className="people leaderboard">
           {rows.map((p) => (

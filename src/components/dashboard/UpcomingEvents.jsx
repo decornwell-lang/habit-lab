@@ -12,8 +12,8 @@ export default function UpcomingEvents({ settings, cohorts, memberships, onOpenT
     events.push({
       when: new Date(settings.nextSessionAt),
       label: formatDateTime(settings.nextSessionAt),
-      title: "Monday live session",
-      detail: "On Zoom with David",
+      title: "Live session",
+      detail: "Zoom",
       action: { text: "Details", onClick: () => onOpenTab("week") },
     });
   }
@@ -32,9 +32,9 @@ export default function UpcomingEvents({ settings, cohorts, memberships, onOpenT
 
   return (
     <section className="card">
-      <p className="card-label">Upcoming events</p>
+      <p className="card-label">Upcoming</p>
       {events.length === 0 ? (
-        <p className="muted">Nothing scheduled yet. New dates will appear here.</p>
+        <p className="muted">Nothing yet.</p>
       ) : (
         <ul className="event-list">
           {events.map((e) => (
@@ -48,7 +48,7 @@ export default function UpcomingEvents({ settings, cohorts, memberships, onOpenT
         </ul>
       )}
       <p className="small">
-        <Link to="/offerings" className="text-link">Retreats and other offerings →</Link>
+        <Link to="/offerings" className="text-link">Retreats →</Link>
       </p>
     </section>
   );

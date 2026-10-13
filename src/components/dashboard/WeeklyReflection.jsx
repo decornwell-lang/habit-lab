@@ -2,15 +2,12 @@
 export default function WeeklyReflection({ content }) {
   return (
     <section className="card">
-      <p className="card-label">This Week's Reflection</p>
+      <p className="card-label">Reflection</p>
       <h2>{content.title}</h2>
-      <p className="muted small">{content.focus}</p>
       <a className="btn btn-primary" href={content.reflectionUrl} target="_blank" rel="noreferrer">
-        Download this week's reflection (PDF)
+        Download (PDF)
       </a>
-      <p className="small muted center">
-        Work through this on your own, and bring what came up to Monday's live session.
-      </p>
+      <p className="small muted center">Bring it to Monday's session.</p>
     </section>
   );
 }

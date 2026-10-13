@@ -22,11 +22,11 @@ export default function BreathePause() {
     <>
       <section className="card breathe-card">
         <div>
-          <p className="card-label">Craving right now?</p>
+          <p className="card-label">Craving?</p>
           <h2>Breathe with the urge</h2>
-          <p className="muted small">One minute of guided breathing. Let the wave rise and pass.</p>
+          <p className="muted small">One minute. Let it pass.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setOpen(true)}>Start one minute</button>
+        <button className="btn btn-primary" onClick={() => setOpen(true)}>Start</button>
       </section>
       {open && <BreatheOverlay onClose={() => setOpen(false)} />}
     </>
@@ -69,8 +69,8 @@ function BreatheOverlay({ onClose }) {
       {phase === "done" ? (
         <div className="breathe-done">
           <p className="breathe-word">The wave passed.</p>
-          <p className="breathe-prompt">You're still here. Every urge you sit with makes the next one a little smaller.</p>
-          <button className="btn btn-primary" onClick={onClose}>Back to my practice</button>
+          <p className="breathe-prompt">You're still here.</p>
+          <button className="btn btn-primary" onClick={onClose}>Done</button>
         </div>
       ) : (
         <>

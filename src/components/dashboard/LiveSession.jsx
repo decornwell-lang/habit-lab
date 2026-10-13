@@ -6,13 +6,12 @@ export default function LiveSession({ settings }) {
   const when = formatDateTime(settings.nextSessionAt);
   return (
     <section className="card">
-      <p className="card-label">Monday Live Session</p>
-      <h2>{when || "Date to be confirmed"}</h2>
-      <p className="muted small">One hour together on Zoom, to share what came up during the week.</p>
+      <p className="card-label">Live session</p>
+      <h2>{when || "Date to come"}</h2>
       {settings.zoomLink ? (
         <a className="btn btn-primary" href={settings.zoomLink} target="_blank" rel="noreferrer">Join on Zoom</a>
       ) : (
-        <p className="muted small">The Zoom link will appear here before the session.</p>
+        <p className="muted small">Link coming soon.</p>
       )}
     </section>
   );

@@ -22,11 +22,10 @@ export default function Celebration({ uid, badgeId, onDone, onNotRightNow }) {
       <div className="badge-big">{badge.icon}</div>
       <p className="card-label">New badge</p>
       <h2>{badge.label}</h2>
-      <p className="muted">You've practised for {badge.label.toLowerCase()} in a row. Take a moment to notice that.</p>
       {sharing ? (
         <ShareBadge badgeId={badgeId} />
       ) : (
-        <button className="btn btn-ghost btn-small" onClick={() => setSharing(true)}>Share this badge</button>
+        <button className="btn btn-ghost btn-small" onClick={() => setSharing(true)}>Share</button>
       )}
       <p className="question-title">Still in your practice?</p>
       <div className="segmented">

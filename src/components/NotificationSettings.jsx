@@ -37,11 +37,10 @@ export default function NotificationSettings({ uid, compact = false }) {
   return (
     <section className="card">
       <p className="card-label">Notifications</p>
-      {status === "on" && <p className="done-badge">✓ Notifications are on for this device.</p>}
+      {status === "on" && <p className="done-badge">✓ Notifications on</p>}
       {status === "off" && (
         <>
-          <h2>Get messages from David</h2>
-          <p className="muted small">Reminders and news about your cohort, straight to this device.</p>
+          <h2>Get reminders</h2>
           <button className="btn btn-primary" onClick={turnOn} disabled={busy}>
             {busy ? "Turning on…" : "Turn on notifications"}
           </button>
@@ -49,22 +48,18 @@ export default function NotificationSettings({ uid, compact = false }) {
       )}
       {status === "needs-install" && (
         <>
-          <h2>Get messages from David</h2>
-          <p className="muted small">On iPhone, notifications work once the app is on your Home Screen:</p>
+          <h2>Get reminders</h2>
+          <p className="muted small">First add the app to your Home Screen:</p>
           <IosInstallSteps />
-          <p className="muted small">
-            Then open the app from your Home Screen, log in, and tap <strong>Turn on notifications</strong> in My account.
-          </p>
         </>
       )}
       {status === "blocked" && (
         <p className="muted small">
-          Notifications are blocked for this site. To allow them, open your browser's settings for this site and set
-          Notifications to Allow, then reload.
+          Notifications are blocked. Allow them in your browser settings.
         </p>
       )}
       {status === "unsupported" && (
-        <p className="muted small">This browser can't receive notifications. Messages will still appear in the app.</p>
+        <p className="muted small">Not supported on this browser.</p>
       )}
       {error && <p className="form-error">{error}</p>}
     </section>

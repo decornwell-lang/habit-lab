@@ -33,7 +33,7 @@ export default function Account() {
     e.preventDefault();
     setMessage("");
     if (phone.trim() && !isValidPhone(phone)) {
-      return setMessage("Please enter your mobile number with the country code, for example +44 7700 900123.");
+      return setMessage("Add country code, e.g. +44.");
     }
     setBusy(true);
     try {
@@ -59,7 +59,7 @@ export default function Account() {
       <section className="card">
         <h2>My badges</h2>
         {badges.length === 0 ? (
-          <p className="muted small">Your first badge arrives with your first “Yes” check-in.</p>
+          <p className="muted small">None yet.</p>
         ) : (
           <ul className="badge-list">
             {badges.map((id) => {
@@ -82,8 +82,7 @@ export default function Account() {
       </section>
 
       <form className="card" onSubmit={handleSave}>
-        <h2>Your avatar</h2>
-        <p className="muted small">This is what other members see next to your first name.</p>
+        <h2>Avatar</h2>
         <div className="avatar-grid" role="radiogroup" aria-label="Choose an avatar">
           {AVATARS.map((a) => (
             <button
@@ -102,24 +101,21 @@ export default function Account() {
 
         <h2>Mobile number</h2>
         <div className="field">
-          <label htmlFor="phone">Mobile number (with country code)</label>
+          <label htmlFor="phone">Mobile</label>
           <input id="phone" type="tel" autoComplete="tel" placeholder="+44 7700 900123" value={phone} onChange={(e) => setPhone(e.target.value)} />
-          <p className="hint">Private. Only shared with your pod if you switch that on in your pod.</p>
+          <p className="hint">Private. Include country code.</p>
         </div>
 
         <h2>Privacy</h2>
         <label className="checkbox">
           <input type="checkbox" checked={optIn} onChange={(e) => setOptIn(e.target.checked)} />
-          <span>Show me on the Habit Lab leaderboard and to my pod (first name, avatar and streak)</span>
+          <span>Show me on the leaderboard</span>
         </label>
         <label className="checkbox">
           <input type="checkbox" checked={showHabit} onChange={(e) => setShowHabit(e.target.checked)} />
-          <span>Show which habit my streak is for (for example “alcohol-free”) next to my name</span>
+          <span>Show my habit</span>
         </label>
-        <p className="muted small">
-          Your surname and email are never shown to other members. Your phone number is only shown to your pod, and
-          only if you choose to share it.
-        </p>
+        <p className="muted small">Surname and email are never shown.</p>
 
         {message && <p className="form-success" role="status">{message}</p>}
         <button className="btn btn-primary" disabled={busy}>{busy ? "Saving…" : "Save changes"}</button>

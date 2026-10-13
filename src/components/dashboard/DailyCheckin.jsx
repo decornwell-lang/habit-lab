@@ -53,8 +53,8 @@ export default function DailyCheckin({ uid, current, progress, content, existing
         <p className="card-label">Daily Check-in</p>
         <p className="muted">
           {progress.start === todayKey()
-            ? `Your first check-in opens today at ${checkinOpensLabel()}.`
-            : `Your daily check-ins begin on ${formatDate(progress.start)}, from ${checkinOpensLabel()}.`}
+            ? `Opens today at ${checkinOpensLabel()}.`
+            : `Starts ${formatDate(progress.start)}.`}
         </p>
       </section>
     );
@@ -63,7 +63,7 @@ export default function DailyCheckin({ uid, current, progress, content, existing
     return (
       <section className="card">
         <p className="card-label">Daily Check-in</p>
-        <p className="muted">{cohort.name} has finished. Thank you for practising together.</p>
+        <p className="muted">{cohort.name} has finished. Thank you.</p>
       </section>
     );
   }
@@ -103,16 +103,16 @@ export default function DailyCheckin({ uid, current, progress, content, existing
     : `Today's check-in · Day ${progress.day}`;
 
   const streakLine =
-    streak > 0 ? `Current streak: ${streak} ${streak === 1 ? "day" : "days"}` : "Your streak begins with your next Yes.";
+    streak > 0 ? `${streak} ${streak === 1 ? "day" : "days"}` : "Starts with your next Yes.";
 
   if (!editing) {
     return (
       <section className="card">
         <p className="card-label">{cardLabel}</p>
-        <h2>{forYesterday ? "Yesterday's" : "Today's"} check-in is saved</h2>
+        <h2>✓ Saved</h2>
         <p className="streak">{streakLine}</p>
         <ul className="summary">
-          <li>Commitment kept: <strong>{existing?.maintained ? "Yes" : "No"}</strong></li>
+          <li>Kept: <strong>{existing?.maintained ? "Yes" : "No"}</strong></li>
           <li>Cravings: <strong>{existing?.craving} / {CRAVING_SCALE.max}</strong></li>
           {existing?.answer && <li>“{existing.answer}”</li>}
         </ul>
@@ -121,9 +121,9 @@ export default function DailyCheckin({ uid, current, progress, content, existing
             <WhatsAppIcon /> Share with my pod
           </a>
         )}
-        <button className="btn btn-ghost" onClick={() => setEditing(true)}>Change {forYesterday ? "yesterday's" : "today's"} answers</button>
+        <button className="btn btn-ghost" onClick={() => setEditing(true)}>Edit</button>
         <p className="muted small center">
-          {forYesterday ? `Today's check-in opens at ${opens}.` : `Your next check-in opens tomorrow at ${opens}.`}
+          Next: {forYesterday ? "today" : "tomorrow"}, {opens}
         </p>
       </section>
     );

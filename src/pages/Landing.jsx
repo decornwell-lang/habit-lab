@@ -20,19 +20,19 @@ export default function Landing() {
         <p className="eyebrow">{site.brandRole}</p>
         <h1>{site.brandName}</h1>
         <p className="intro">{site.intro}</p>
-        <Link to="/about" className="text-link">About David →</Link>
+        <Link to="/about" className="text-link">About →</Link>
 
         <section className="product-intro">
           <p className="card-label">{site.productName}</p>
           <h2>{site.productTagline}</h2>
           <p>{site.productIntro}</p>
-          <Link to="/habit-lab" className="text-link">How The Habit Lab works →</Link>
+          <Link to="/habit-lab" className="text-link">How it works →</Link>
         </section>
 
         {user ? (
           <div className="card">
-            <h2>Welcome back, {user.displayName || "friend"}</h2>
-            <Link to="/dashboard" className="btn btn-primary">Go to my dashboard</Link>
+            <h2>Welcome back</h2>
+            <Link to="/dashboard" className="btn btn-primary">Open dashboard</Link>
           </div>
         ) : (
           <SignUpForm />
@@ -66,10 +66,10 @@ function SignUpForm() {
     setError("");
 
     // Simple checks before contacting Firebase
-    if (!form.firstName.trim() || !form.surname.trim()) return setError("Please enter your first name and surname.");
-    if (form.password.length < 8) return setError("Please choose a password with at least 8 characters.");
+    if (!form.firstName.trim() || !form.surname.trim()) return setError("Enter your name.");
+    if (form.password.length < 8) return setError("Password needs 8+ characters.");
     if (form.phone.trim() && !isValidPhone(form.phone)) {
-      return setError("Please enter your mobile number with the country code, for example +44 7700 900123.");
+      return setError("Add country code, e.g. +44.");
     }
 
     setBusy(true);
@@ -92,7 +92,7 @@ function SignUpForm() {
   return (
     <form className="card" onSubmit={handleSubmit} noValidate>
       <h2>{site.signUpTitle}</h2>
-      <p className="muted small">{site.signUpSubtitle}</p>
+      {site.signUpSubtitle && <p className="muted small">{site.signUpSubtitle}</p>}
 
       {!isFirebaseConfigured && (
         <p className="notice">Preview mode: accounts will work once Firebase is connected.</p>
@@ -117,21 +117,18 @@ function SignUpForm() {
       <div className="field">
         <label htmlFor="password">Password</label>
         <input id="password" name="password" type="password" autoComplete="new-password" minLength={8} value={form.password} onChange={update} required />
-        <p className="hint">At least 8 characters.</p>
+        <p className="hint">8+ characters</p>
       </div>
 
       <div className="field">
         <label htmlFor="phone">Mobile number</label>
         <input id="phone" name="phone" type="tel" autoComplete="tel" placeholder="+44 7700 900123" value={form.phone} onChange={update} />
-        <p className="hint">
-          Include your country code. Optional. It stays private unless you choose to share it with your pod, for a
-          WhatsApp group.
-        </p>
+        <p className="hint">Optional. Include country code.</p>
       </div>
 
       <label className="checkbox">
         <input type="checkbox" name="leaderboardOptIn" checked={form.leaderboardOptIn} onChange={update} />
-        <span>Show me on the Habit Lab leaderboard (first name, avatar, streak and the habit I’m working on). You can change this any time.</span>
+        <span>Show me on the leaderboard</span>
       </label>
 
       {error && <p className="form-error" role="alert">{error}</p>}

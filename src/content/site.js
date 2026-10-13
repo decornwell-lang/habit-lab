@@ -15,9 +15,9 @@ export const site = {
 
   // Landing page
   intro:
-    "Body-centred psychotherapy, mindfulness and lasting change. David works with people seeking depth, with a focus on trauma, addiction, and how stress lives in the body.",
+    "Body-centred psychotherapy and mindfulness for lasting change.",
   productIntro:
-    "David's guided programme for changing one habit at a time, together: a weekly breathing meditation, a short daily check-in, a live session every Monday, and a small pod of members walking alongside you.",
+    "Change one habit, together. Weekly meditation, daily check-ins, live sessions.",
   signUpTitle: "Join The Habit Lab",
-  signUpSubtitle: "Create your account. You can choose a cohort once you're in.",
+  signUpSubtitle: "",
 };

@@ -34,9 +34,9 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
 
   return (
     <section className="card">
-      <p className="card-label">Join a Cohort</p>
+      <p className="card-label">Cohorts</p>
       {open.length === 0 ? (
-        <p className="muted">New cohorts will be announced here soon.</p>
+        <p className="muted">None open yet.</p>
       ) : (
         <ul className="cohort-list">
           {open.map((c) => (

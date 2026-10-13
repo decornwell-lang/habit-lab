@@ -20,9 +20,8 @@ export default function TodaysPractice({ uid, content, practised, today }) {
 
   return (
     <section className="card">
-      <p className="card-label">Today's Practice</p>
+      <p className="card-label">Meditation</p>
       <h2>{content.title}</h2>
-      <p className="muted small">15-minute mindfulness of breathing meditation</p>
 
       {video?.type === "iframe" && (
         <div className="video">
@@ -37,13 +36,13 @@ export default function TodaysPractice({ uid, content, practised, today }) {
       {video?.type === "link" && (
         <a className="btn btn-ghost" href={video.src} target="_blank" rel="noreferrer">Open this week's meditation</a>
       )}
-      {!video && <div className="video video-empty">This week's meditation will appear here soon.</div>}
+      {!video && <div className="video video-empty">Coming soon</div>}
 
       {done ? (
-        <p className="done-badge">✓ Practised today. Well done.</p>
+        <p className="done-badge">✓ Practised today</p>
       ) : (
         <button className="btn btn-primary" onClick={handleMark} disabled={busy}>
-          {busy ? "Saving…" : "Mark as practised today"}
+          {busy ? "Saving…" : "Mark as practised"}
         </button>
       )}
     </section>

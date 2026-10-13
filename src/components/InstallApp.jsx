@@ -11,13 +11,13 @@ export function IosInstallSteps() {
   return (
     <ol className="steps-list install-steps">
       <li>
-        Tap the <strong>Share</strong> button <ShareIcon /> (at the bottom in Safari, or top right in Chrome).
+        Tap <strong>Share</strong> <ShareIcon />
       </li>
       <li>
-        Scroll down and tap <strong>Add to Home Screen</strong>.
+        <strong>Add to Home Screen</strong>
       </li>
       <li>
-        Tap <strong>Add</strong>. The app will appear on your Home Screen like any other app.
+        Tap <strong>Add</strong>
       </li>
     </ol>
   );
@@ -70,11 +70,10 @@ export default function InstallApp({ variant = "card" }) {
     <section className="card install-card">
       <img src="/icons/icon-192.png" alt="" className="install-icon" />
       <div className="install-text">
-        <h2>Add the app to your Home Screen</h2>
-        <p className="muted small">Open your daily practice in one tap, and get messages from David.</p>
+        <h2>Add to Home Screen</h2>
       </div>
       <button className="btn btn-primary" onClick={handleClick}>
-        {mode === "prompt" ? "Add to Home Screen" : showSteps ? "Hide instructions" : "Show me how"}
+        {mode === "prompt" ? "Add" : showSteps ? "Hide" : "Show me how"}
       </button>
       {showSteps && <IosInstallSteps />}
       <button className="btn btn-text" onClick={dismiss}>Not now</button>
