@@ -7,7 +7,8 @@
 import { useEffect, useState } from "react";
 import { makeShareImage } from "../lib/shareImage.js";
 
-export default function ShareCard({ image, text, fileName }) {
+// `simple` hides "Download image" and "Copy text" (used on the streak card).
+export default function ShareCard({ image, text, fileName, simple = false }) {
   const [blob, setBlob] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const [message, setMessage] = useState("");
@@ -64,14 +65,14 @@ export default function ShareCard({ image, text, fileName }) {
       )}
 
       <div className="share-links">
-        {previewUrl && <a className="btn btn-ghost btn-small" href={previewUrl} download={fileName}>Download image</a>}
-        <button type="button" className="btn btn-ghost btn-small" onClick={copyText}>Copy text</button>
+        {!simple && previewUrl && <a className="btn btn-ghost btn-small" href={previewUrl} download={fileName}>Download image</a>}
+        {!simple && <button type="button" className="btn btn-ghost btn-small" onClick={copyText}>Copy text</button>}
         {!canShareImage &&
           links.map((l) => (
             <a key={l.label} className="btn btn-ghost btn-small" href={l.href} target="_blank" rel="noreferrer">{l.label}</a>
           ))}
       </div>
-      {!canShareImage && (
+      {!canShareImage && !simple && (
         <p className="muted small">For Instagram, download the image and post it from your phone.</p>
       )}
       {message && <p className="small muted" role="status">{message}</p>}
