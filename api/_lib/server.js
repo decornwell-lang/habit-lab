@@ -16,11 +16,39 @@ export class HttpError extends Error {
   }
 }
 
+// Reads the service account key. Tolerates extra text pasted after the key
+// (e.g. pasted twice) by reading only the first complete { ... } block.
+function readServiceAccount(raw) {
+  const text = raw.trim();
+  try {
+    return JSON.parse(text);
+  } catch {
+    let depth = 0;
+    let inString = false;
+    for (let i = text.indexOf("{"); i >= 0 && i < text.length; i++) {
+      const ch = text[i];
+      if (inString) {
+        if (ch === "\\") i++;
+        else if (ch === '"') inString = false;
+      } else if (ch === '"') inString = true;
+      else if (ch === "{") depth++;
+      else if (ch === "}" && --depth === 0) {
+        try {
+          return JSON.parse(text.slice(text.indexOf("{"), i + 1));
+        } catch {
+          break;
+        }
+      }
+    }
+    throw new HttpError(500, "The server key in Vercel (FIREBASE_SERVICE_ACCOUNT) isn't valid. Paste the whole .json file once, with nothing else.");
+  }
+}
+
 function firebase() {
   if (!getApps().length) {
     const key = process.env.FIREBASE_SERVICE_ACCOUNT;
     if (!key) throw new HttpError(500, "The server key isn't set up yet (FIREBASE_SERVICE_ACCOUNT is missing in Vercel). Payments and push notifications need it.");
-    initializeApp({ credential: cert(JSON.parse(key)) });
+    initializeApp({ credential: cert(readServiceAccount(key)) });
   }
   return { auth: getAuth(), db: getFirestore() };
 }
