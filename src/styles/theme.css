@@ -530,6 +530,33 @@ a { color: var(--primary); }
 .event-list p { margin: 0; }
 .event-date { color: var(--label); font-weight: 600; font-size: 0.85rem; }
 
+.notice-banner {
+  position: fixed;
+  top: 72px;
+  left: 50%;
+  z-index: 40;
+  width: min(560px, calc(100% - 24px));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 14px 14px 18px;
+  border-radius: 16px;
+  background: var(--dark-blue);
+  color: #fff;
+  border-left: 5px solid var(--gold);
+  box-shadow: 0 12px 32px rgba(10, 14, 40, 0.3);
+  cursor: pointer;
+  animation: notice-in 0.35s ease-out;
+}
+.notice-banner.leaving { animation: notice-out 0.3s ease-in forwards; }
+@keyframes notice-in { from { opacity: 0; transform: translate(-50%, -16px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes notice-out { to { opacity: 0; transform: translate(-50%, -16px); } }
+.notice-banner-inner { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.notice-banner-from { color: var(--gold); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.notice-banner-body { color: #d8dcea; font-size: 0.95rem; }
+.notice-banner-close { border: none; background: none; color: #fff; font-size: 1.6rem; line-height: 1; cursor: pointer; padding: 0 4px; }
+@media (prefers-reduced-motion: reduce) { .notice-banner, .notice-banner.leaving { animation: none; } }
 .update-banner {
   position: sticky;
   top: 64px;

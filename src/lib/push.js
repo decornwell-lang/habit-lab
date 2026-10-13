@@ -52,12 +52,10 @@ export async function saveToken(uid) {
   // Messages that arrive while the app is open are shown too (set up once).
   if (listening) return token;
   listening = true;
+  // While the app is open, show the message as the in-app banner (NoticeBanner.jsx)
+  // instead of a system notification.
   onMessage(getMessaging(app), ({ data = {} }) => {
-    registration.showNotification(data.title || "David Ernest Cornwell", {
-      body: data.body || "",
-      icon: "/icons/icon-192.png",
-      data: { link: data.link || "/dashboard" },
-    });
+    window.dispatchEvent(new CustomEvent("habitlab:notice", { detail: { title: data.title || "Message", body: data.body || "" } }));
   });
   return token;
 }

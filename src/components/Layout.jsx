@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import Menu from "./Menu.jsx";
 import UpdateBanner from "./UpdateBanner.jsx";
+import NoticeBanner from "./NoticeBanner.jsx";
 import { site } from "../content/site.js";
 
 export default function Layout() {
@@ -34,6 +35,7 @@ export default function Layout() {
       </header>
 
       <UpdateBanner />
+      <NoticeBanner />
       <Menu open={menuOpen} onClose={() => setMenuOpen(false)} />
 
       <Outlet />

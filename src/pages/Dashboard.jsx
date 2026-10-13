@@ -25,7 +25,6 @@ import JoinCohort from "../components/dashboard/JoinCohort.jsx";
 import Leaderboard from "../components/dashboard/Leaderboard.jsx";
 import Celebration from "../components/dashboard/Celebration.jsx";
 import StartAgain from "../components/dashboard/StartAgain.jsx";
-import Messages from "../components/dashboard/Messages.jsx";
 import NotificationSettings from "../components/NotificationSettings.jsx";
 import InstallApp from "../components/InstallApp.jsx";
 import DashboardTabs, { TABS, DEFAULT_TAB } from "../components/dashboard/DashboardTabs.jsx";
@@ -181,10 +180,9 @@ export default function Dashboard() {
         }} />
       )}
 
-      {/* 1. Community: leaderboard and notifications */}
+      {/* 1. Community: leaderboard and notification settings (messages appear as a banner, see NoticeBanner.jsx) */}
       {tab === "community" && (
         <>
-          <Messages cohortIds={data.memberships.map((m) => m.cohortId)} />
           <NotificationSettings uid={user.uid} compact />
           <InstallApp />
           <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={today} />
