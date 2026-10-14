@@ -42,11 +42,13 @@ export default function Dashboard() {
   const [celebrate, setCelebrate] = useState(null); // badge id to celebrate
   const [startAgain, setStartAgain] = useState(false);
   const [params, setParams] = useSearchParams();
+  const [tabTaps, setTabTaps] = useState(0); // tapping a tab again starts it afresh (e.g. Breathe → choose a practice)
   const today = todayKey(); // calendar day: practice, meditation, cohort day number
   const checkinDay = checkinDayKey(); // the check-in that's open now (opens 18:00, see dates.js)
 
   const tab = TABS.some((t) => t.id === params.get("tab")) ? params.get("tab") : DEFAULT_TAB;
   function setTab(id) {
+    setTabTaps((n) => n + 1);
     setParams(id === DEFAULT_TAB ? {} : { tab: id });
     window.scrollTo(0, 0);
   }
@@ -270,7 +272,7 @@ export default function Dashboard() {
       )}
 
       {/* Breathe: coherent breathing or the 3-Step Breathing Space, for a craving */}
-      {tab === "breathe" && <BreatheTab settings={data.settings} />}
+      {tab === "breathe" && <BreatheTab key={tabTaps} settings={data.settings} />}
 
       {/* Upcoming: cohorts that haven't started yet */}
       {tab === "upcoming" && (
