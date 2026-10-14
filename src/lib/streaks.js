@@ -39,6 +39,11 @@ export function badgesForStreak(streak) {
   return ids;
 }
 
+// The next badge to earn after this streak, e.g. 🌿 at 7 days.
+export function nextBadge(streak) {
+  return MILESTONES.find((b) => b.days > streak) || badgeInfo(`y${Math.floor(streak / 365) + 1}`);
+}
+
 export function badgeInfo(id) {
   const found = MILESTONES.find((b) => b.id === id);
   if (found) return found;

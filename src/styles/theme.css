@@ -497,30 +497,36 @@ a { color: var(--primary); }
   .tabbar button { font-size: 0.8rem; }
 }
 
-.streak-card { background: var(--dark-blue); border: none; }
+.streak-card {
+  background: radial-gradient(120% 140% at 0% 0%, var(--navy-blue) 0%, var(--dark-blue) 60%);
+  border: none; color: #fff;
+}
+.streak-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.streak-head .card-label { margin: 0; }
+.streak-share {
+  display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+  border: none; background: rgba(255, 255, 255, 0.1); color: var(--gold); cursor: pointer;
+}
+.streak-share:hover { background: rgba(255, 255, 255, 0.18); }
 .streak-top { display: flex; gap: 18px; align-items: center; }
-.btn-share { margin-top: 18px; background: var(--gold); color: var(--dark-blue); }
-.btn-share:hover { background: #e6c25e; }
+.streak-ring { position: relative; width: 96px; height: 96px; flex-shrink: 0; }
+.streak-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.streak-ring circle { fill: none; stroke-width: 7; }
+.streak-ring .track { stroke: rgba(255, 255, 255, 0.1); }
+.streak-ring .fill { stroke: var(--gold); stroke-linecap: round; transition: stroke-dashoffset 0.8s ease; }
+.streak-ring-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.streak-ring-text .big { font-family: var(--font-heading); font-size: 2.3rem; font-weight: 600; line-height: 1; }
+.streak-ring-text .unit { font-size: 0.7rem; color: var(--gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+.streak-details { flex: 1; min-width: 0; }
+.cohort-bar { height: 5px; margin: 6px 0 10px; border-radius: 99px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+.cohort-bar span { display: block; height: 100%; border-radius: inherit; background: var(--aqua); }
+.streak-next { margin: 0; font-size: 0.82rem; color: #e9d9a8; display: flex; gap: 6px; align-items: center; }
 .streak-card .share-panel { margin-top: 18px; }
 .streak-card .share-panel .muted { color: #c4c9dc; }
 .streak-card .btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.35); }
 .streak-card h2 { color: #fff; font-size: 1.15rem; margin-bottom: 2px; }
 .streak-card .card-label { color: var(--aqua); }
 .streak-card .muted { color: #c4c9dc; }
-.streak-number {
-  flex-shrink: 0;
-  width: 92px;
-  height: 92px;
-  border-radius: 50%;
-  border: 3px solid var(--gold);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-}
-.streak-number .big { font-family: var(--font-heading); font-size: 2.2rem; font-weight: 600; line-height: 1; }
-.streak-number .unit { font-size: 0.6rem; color: var(--gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
 .streak-badges { margin: 6px 0 0; font-size: 1.2rem; }
 
 .event-list { list-style: none; padding: 0; margin: 6px 0 12px; }
@@ -803,10 +809,7 @@ td.actions { white-space: nowrap; }
 .fold-body .card-label { display: none; }
 .fold-body h2 { font-size: 1.2rem; }
 .fold-body > .card + .card { margin-top: 24px; }
-.dashboard .streak-card { margin: 12px 0; padding: 16px var(--space); position: relative; }
-.dashboard .streak-card > .btn-share { position: absolute; top: 14px; right: 14px; margin: 0; min-height: 32px; padding: 0 14px; width: auto; font-size: 0.85rem; }
-.dashboard .streak-card .streak-details { padding-right: 64px; }
-.dashboard .streak-card > .btn { margin-top: 12px; }
+.dashboard .streak-card { margin: 12px 0; padding: 16px var(--space) 18px; }
 .dashboard > .eyebrow { margin-bottom: 0; }
 
 /* Quick answers to the daily prompts (QuickAnswer.jsx) */
