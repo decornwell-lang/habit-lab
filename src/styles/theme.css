@@ -817,7 +817,7 @@ td.actions { white-space: nowrap; }
    header and the tab bar, with a ball that grows on the in-breath and shrinks on the out-breath */
 .breathe-screen {
   position: fixed; top: 64px; left: 0; right: 0; bottom: 0; z-index: 9;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  display: flex; flex-direction: column; align-items: center;
   padding: 16px 20px calc(80px + env(safe-area-inset-bottom)); text-align: center; color: #fff; overflow-y: auto;
   background: radial-gradient(120% 90% at 50% 40%, var(--navy-blue) 0%, var(--dark-blue) 70%);
 }
@@ -875,8 +875,12 @@ td.actions { white-space: nowrap; }
 .breathing-space-video { width: 100%; max-width: 360px; margin: 4px 0 16px; border-radius: 12px; }
 
 /* The 3-Step Breathing Space hourglass (BreathingSpace.jsx) */
-.hourglass { display: grid; grid-template-columns: auto 1fr; gap: 18px; width: 100%; max-width: 360px; height: min(320px, 42vh); text-align: left; }
-.hourglass-shape { height: 100%; width: auto; aspect-ratio: 100 / 240; overflow: visible; }
+.hourglass {
+  --glass-w: min(120px, 17vh); /* the picture is 2.4 times as tall as it is wide */
+  display: grid; grid-template-columns: var(--glass-w) minmax(0, 1fr); gap: 18px;
+  width: 100%; max-width: 360px; min-height: calc(var(--glass-w) * 2.4); align-items: start; text-align: left;
+}
+.hourglass-shape { display: block; width: var(--glass-w); height: calc(var(--glass-w) * 2.4); overflow: visible; }
 .hourglass-part.one { fill: rgba(87, 189, 162, 0.55); }
 .hourglass-part.two { fill: rgba(87, 189, 162, 0.85); }
 .hourglass-part.three { fill: rgba(87, 189, 162, 0.55); }
@@ -884,6 +888,8 @@ td.actions { white-space: nowrap; }
 .hourglass-outline { fill: none; stroke: var(--gold); stroke-width: 2; }
 .hourglass-shape text { fill: var(--dark-blue); font-family: var(--font-heading); font-weight: 700; font-size: 15px; text-anchor: middle; dominant-baseline: central; }
 .hourglass-cap { fill: var(--gold); }
-.hourglass-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-rows: repeat(3, 1fr); }
+.hourglass-steps { list-style: none; margin: 0; padding: 0; min-height: calc(var(--glass-w) * 2.4); display: flex; flex-direction: column; }
+.hourglass-steps li { flex: 1 1 0; } /* grows with larger text sizes instead of overlapping */
 .hourglass-steps li { display: flex; flex-direction: column; justify-content: center; gap: 2px; color: #c4c9dc; font-size: 0.85rem; line-height: 1.35; }
 .hourglass-steps strong { color: #fff; font-size: 1rem; }
+.breathe-inner { margin: auto 0; width: 100%; display: flex; flex-direction: column; align-items: center; }

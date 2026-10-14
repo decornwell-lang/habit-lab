@@ -14,22 +14,24 @@ export default function BreatheTab({ settings }) {
 
   return (
     <section className="breathe-screen" aria-label="Breathing">
-      {practice === "coherent" && <CoherentBreathing />}
-      {practice === "space" && <BreathingSpace url={settings.breathingSpaceUrl} />}
-      {!practice && (
-        <>
-          <h2>Craving?</h2>
-          <p className="breathe-hint">Choose a practice.</p>
-          <div className="breathe-choices">
-            {PRACTICES.map((p) => (
-              <button key={p.id} className="breathe-choice" onClick={() => setPractice(p.id)}>
-                <strong>{p.title}</strong>
-                <span>{p.text}</span>
-              </button>
-            ))}
-          </div>
-        </>
-      )}
+      <div className="breathe-inner">
+        {practice === "coherent" && <CoherentBreathing />}
+        {practice === "space" && <BreathingSpace url={settings.breathingSpaceUrl} />}
+        {!practice && (
+          <>
+            <h2>Craving?</h2>
+            <p className="breathe-hint">Choose a practice.</p>
+            <div className="breathe-choices">
+              {PRACTICES.map((p) => (
+                <button key={p.id} className="breathe-choice" onClick={() => setPractice(p.id)}>
+                  <strong>{p.title}</strong>
+                  <span>{p.text}</span>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
     </section>
   );
 }
