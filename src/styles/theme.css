@@ -830,7 +830,6 @@ td.actions { white-space: nowrap; }
 }
 .breathe-circle.out { transform: scale(0.55); }
 .breathe-circle.in { transform: scale(1.12); }
-.breathe-circle.small { width: min(150px, 16vh); height: min(150px, 16vh); margin: 1.5vh auto 2.5vh; transform: none; }
 .breathe-circle > span { display: flex; flex-direction: column; align-items: center; }
 .breathe-word { font-family: var(--font-heading); font-size: 1.35rem; font-weight: 600; margin: 0; }
 .breathe-count { font-family: var(--font-heading); font-size: 2.6rem; line-height: 1.1; margin-top: 2px; }
@@ -842,7 +841,7 @@ td.actions { white-space: nowrap; }
 .breathe-screen .breathe-text-btn { color: #fff; }
 @media (prefers-reduced-motion: reduce) { .breathe-circle { transition: none; } }
 .breathe-settings {
-  width: 100%; max-width: 340px; margin: 0 auto 16px; padding: 4px 14px;
+  width: 100%; max-width: 340px; margin: 0 auto 12px; padding: 4px 14px;
   border-radius: 16px; background: rgba(255, 255, 255, 0.06);
 }
 .breathe-setting { display: flex; align-items: center; justify-content: space-between; min-height: 48px; gap: 12px; }
@@ -895,3 +894,11 @@ td.actions { white-space: nowrap; }
 .hourglass-steps li { display: flex; flex-direction: column; justify-content: center; gap: 2px; color: #c4c9dc; font-size: 0.85rem; line-height: 1.35; }
 .hourglass-steps strong { color: #fff; font-size: 1rem; }
 .breathe-inner { margin: auto 0; width: 100%; display: flex; flex-direction: column; align-items: center; }
+
+/* Coherent breathing: a fixed spot for the ball and a fixed-height controls area,
+   so the ball stays in the same place before, during and after */
+.breathe-stage { --ball: min(220px, 23vh); display: grid; place-items: center; width: 100%; height: calc(var(--ball) * 1.12); margin: 4px 0 8px; }
+.breathe-stage .breathe-circle { width: var(--ball); height: var(--ball); margin: 0; }
+.breathe-controls { width: 100%; min-height: 212px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+.breathe-controls .breathe-clock { margin-top: 8px; }
+.breathe-word.resting { font-size: 2.3rem; } /* the resting ball is drawn small, so its text is larger */

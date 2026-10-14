@@ -75,49 +75,60 @@ export default function CoherentBreathing() {
     setElapsed(0);
   }
 
+  // The same layout before, during and after, so the ball never moves:
+  // title and hint, then the ball in a fixed spot, then the controls in a fixed-height area.
+  const ballClass = running ? (grown && inPhase ? "in" : "out") : "out";
   return (
     <>
-      {finished ? (
-        <>
-          <p className="breathe-done">The wave passed.</p>
-          <p className="breathe-hint">You're still here.</p>
-          <button className="btn btn-primary" onClick={start}>Breathe again</button>
-        </>
-      ) : running ? (
-        <>
-          <div className={`breathe-circle ${grown && inPhase ? "in" : "out"}`} style={{ "--breath": `${breath}s` }}>
+      <h2>Coherent breathing</h2>
+      <p className="breathe-hint">Gentle, quiet, diaphragmatic belly breathing through your nose.</p>
+
+      <div className="breathe-stage">
+        <div className={`breathe-circle ${ballClass}`} style={{ "--breath": `${breath}s` }}>
+          {running ? (
             <span>
               <span className="breathe-word">{inPhase ? "Inhale" : "Exhale"}</span>
               <span className="breathe-count">{count}</span>
             </span>
-          </div>
-          <p className="breathe-hint">Gentle, quiet belly breaths through your nose.</p>
-          <p className="breathe-clock">{clock} left</p>
-          <button className="btn btn-text breathe-text-btn" onClick={stop}>Stop</button>
-        </>
-      ) : (
-        <>
-          <h2>Coherent breathing</h2>
-          <p className="breathe-hint">Gentle, quiet, diaphragmatic belly breathing through your nose.</p>
-          <div className="breathe-circle small"><span className="breathe-word">{settings.minutes}:00</span></div>
+          ) : (
+            <span className="breathe-word resting">{finished ? "✓" : `${settings.minutes}:00`}</span>
+          )}
+        </div>
+      </div>
 
-          <div className="breathe-settings">
-            <Stepper label="Inhale and exhale" value={`${breath} sec`} range={BREATH_RANGE} current={breath}
-              onChange={(v) => change({ breath: v })} />
-            <Stepper label="Length" value={`${settings.minutes} min`} range={MINUTES_RANGE} current={settings.minutes}
-              onChange={(v) => change({ minutes: v })} />
-            <div className="breathe-setting">
-              <span>Gong</span>
-              <button className={`breathe-toggle ${settings.gong ? "on" : ""}`} onClick={() => change({ gong: !settings.gong })}
-                aria-pressed={settings.gong}>
-                {settings.gong ? "🔔 On" : "🔕 Off"}
-              </button>
+      <div className="breathe-controls">
+        {running && (
+          <>
+            <p className="breathe-clock">{clock} left</p>
+            <button className="btn btn-text breathe-text-btn" onClick={stop}>Stop</button>
+          </>
+        )}
+        {finished && (
+          <>
+            <p className="breathe-done">The wave passed.</p>
+            <p className="breathe-hint">You're still here.</p>
+            <button className="btn btn-primary" onClick={start}>Breathe again</button>
+          </>
+        )}
+        {!running && !finished && (
+          <>
+            <div className="breathe-settings">
+              <Stepper label="Inhale and exhale" value={`${breath} sec`} range={BREATH_RANGE} current={breath}
+                onChange={(v) => change({ breath: v })} />
+              <Stepper label="Length" value={`${settings.minutes} min`} range={MINUTES_RANGE} current={settings.minutes}
+                onChange={(v) => change({ minutes: v })} />
+              <div className="breathe-setting">
+                <span>Gong</span>
+                <button className={`breathe-toggle ${settings.gong ? "on" : ""}`} onClick={() => change({ gong: !settings.gong })}
+                  aria-pressed={settings.gong}>
+                  {settings.gong ? "🔔 On" : "🔕 Off"}
+                </button>
+              </div>
             </div>
-          </div>
-
-          <button className="btn btn-primary" onClick={start}>Start</button>
-        </>
-      )}
+            <button className="btn btn-primary" onClick={start}>Start</button>
+          </>
+        )}
+      </div>
     </>
   );
 }
