@@ -28,7 +28,6 @@ import NotificationSettings from "../components/NotificationSettings.jsx";
 import InstallApp from "../components/InstallApp.jsx";
 import DashboardTabs, { TABS, DEFAULT_TAB } from "../components/dashboard/DashboardTabs.jsx";
 import StreakCard from "../components/dashboard/StreakCard.jsx";
-import UpcomingEvents from "../components/dashboard/UpcomingEvents.jsx";
 import BreathePause from "../components/dashboard/BreathePause.jsx";
 import Folds from "../components/dashboard/Folds.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
@@ -265,7 +264,7 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* Upcoming: events and cohorts to join */}
+      {/* Upcoming: cohorts that haven't started yet */}
       {/* Practices: this week's meditation, weekly assignment and live session */}
       {tab === "practices" && (
         <>
@@ -279,7 +278,6 @@ export default function Dashboard() {
 
       {tab === "upcoming" && (
         <>
-          <UpcomingEvents settings={data.settings} cohorts={data.cohorts} memberships={data.memberships} onOpenTab={setTab} />
           <JoinCohort uid={user.uid} cohorts={data.cohorts} memberships={data.memberships} onJoined={load} />
         </>
       )}

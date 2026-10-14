@@ -551,12 +551,6 @@ a { color: var(--primary); }
 .streak-card .muted { color: #c4c9dc; }
 .streak-badges { margin: 6px 0 0; font-size: 1.2rem; }
 
-.event-list { list-style: none; padding: 0; margin: 6px 0 12px; }
-.event-list li { padding: 12px 0; border-bottom: 1px solid var(--border); }
-.event-list li:last-child { border-bottom: none; }
-.event-list h3 { margin: 0 0 2px; font-size: 1.05rem; }
-.event-list p { margin: 0; }
-.event-date { color: var(--label); font-weight: 600; font-size: 0.85rem; }
 
 .notice-banner {
   position: fixed;
