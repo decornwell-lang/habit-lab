@@ -1,6 +1,6 @@
 // Breathe tab: for a craving. Gentle, quiet, diaphragmatic belly breathing
-// through the nose. The in-breath counts up (1 to 7), the out-breath counts down
-// (6 to 0). The whole tab is the dark blue breathing screen. Members can change the
+// through the nose. The inhale counts up 0 to 7 as the ball grows, the exhale
+// counts down 7 to 0 as it shrinks. The whole tab is the dark blue breathing screen. Members can change the
 // breath (3 to 10 seconds), the length (1 to 10 minutes) and the gong; all are
 // remembered on the device.
 import { useEffect, useRef, useState } from "react";
@@ -24,6 +24,7 @@ export default function BreatheTab() {
   const [startedAt, setStartedAt] = useState(null); // null = not running
   const [elapsed, setElapsed] = useState(0);
   const lastPhase = useRef(null); // to sound the gong when the breath changes
+  const [grown, setGrown] = useState(false); // false for a moment at the start, so the ball starts small and grows
   const breath = settings.breath;
   const totalSeconds = settings.minutes * 60;
 
@@ -57,16 +58,18 @@ export default function BreatheTab() {
   const running = startedAt !== null;
   const finished = !running && elapsed >= totalSeconds;
   const inPhase = elapsed % (breath * 2) < breath;
-  const second = Math.floor(elapsed % breath); // 0 up to breath - 1
-  const count = inPhase ? second + 1 : breath - 1 - second; // in counts up 1 → 7, out counts down 6 → 0
+  const intoBreath = elapsed % breath; // seconds into this inhale or exhale
+  const count = Math.round(inPhase ? intoBreath : breath - intoBreath); // inhale 0 → 7, exhale 7 → 0
   const left = Math.ceil(totalSeconds - elapsed);
   const clock = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
 
   function start() {
     if (settings.gong) unlockAudio().then(() => playGong()); // the beginning
     lastPhase.current = 0;
+    setGrown(false);
     setElapsed(0);
     setStartedAt(Date.now());
+    setTimeout(() => setGrown(true), 50);
   }
   function stop() {
     setStartedAt(null);
@@ -83,9 +86,9 @@ export default function BreatheTab() {
         </>
       ) : running ? (
         <>
-          <div className={`breathe-circle ${inPhase ? "in" : "out"}`} style={{ "--breath": `${breath}s` }}>
+          <div className={`breathe-circle ${grown && inPhase ? "in" : "out"}`} style={{ "--breath": `${breath}s` }}>
             <span>
-              <span className="breathe-word">{inPhase ? "Breathe in" : "Breathe out"}</span>
+              <span className="breathe-word">{inPhase ? "Inhale" : "Exhale"}</span>
               <span className="breathe-count">{count}</span>
             </span>
           </div>
@@ -100,7 +103,7 @@ export default function BreatheTab() {
           <div className="breathe-circle small"><span className="breathe-word">{settings.minutes}:00</span></div>
 
           <div className="breathe-settings">
-            <Stepper label="Breathe in and out" value={`${breath} sec`} range={BREATH_RANGE} current={breath}
+            <Stepper label="Inhale and exhale" value={`${breath} sec`} range={BREATH_RANGE} current={breath}
               onChange={(v) => change({ breath: v })} />
             <Stepper label="Length" value={`${settings.minutes} min`} range={MINUTES_RANGE} current={settings.minutes}
               onChange={(v) => change({ minutes: v })} />
