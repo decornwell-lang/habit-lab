@@ -55,7 +55,7 @@ export function AuthProvider({ children }) {
 
   // Creates the login, the private profile ("users") and the public
   // profile ("publicProfiles": first name and avatar only).
-  async function signUp({ firstName, surname, email, password, phone, leaderboardOptIn }) {
+  async function signUp({ firstName, surname, email, password, phone }) {
     requireFirebase();
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     const uid = cred.user.uid;
@@ -65,7 +65,7 @@ export function AuthProvider({ children }) {
       surname,
       email,
       phone: phone || null, // private: only the owner sees it
-      leaderboardOptIn: Boolean(leaderboardOptIn),
+      leaderboardOptIn: null, // asked on Home once they join a cohort (LeaderboardInvite.jsx)
       avatar: null,
       role: "member",
       createdAt: serverTimestamp(),
@@ -73,7 +73,7 @@ export function AuthProvider({ children }) {
     await setDoc(doc(db, "publicProfiles", uid), {
       firstName,
       avatar: null,
-      leaderboardOptIn: Boolean(leaderboardOptIn),
+      leaderboardOptIn: false,
       streak: 0,
       lastYesDate: null,
       badges: [],

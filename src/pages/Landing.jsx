@@ -5,7 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth, friendlyAuthError } from "../auth/AuthContext.jsx";
 import { isFirebaseConfigured } from "../firebase.js";
 import { site } from "../content/site.js";
-import { isValidPhone, normalizePhone } from "../lib/phone.js";
+import { isValidPhone } from "../lib/phone.js";
+import PhoneInput from "../components/PhoneInput.jsx";
 
 export default function Landing() {
   const { user } = useAuth();
@@ -50,8 +51,7 @@ function SignUpForm() {
     surname: "",
     email: "",
     password: "",
-    phone: "",
-    leaderboardOptIn: false, // off by default, as the brief requires
+    phone: "", // full international number from PhoneInput, e.g. "+447700900123"
   });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -68,9 +68,7 @@ function SignUpForm() {
     // Simple checks before contacting Firebase
     if (!form.firstName.trim() || !form.surname.trim()) return setError("Enter your name.");
     if (form.password.length < 8) return setError("Password needs 8+ characters.");
-    if (form.phone.trim() && !isValidPhone(form.phone)) {
-      return setError("Add country code, e.g. +44.");
-    }
+    if (form.phone && !isValidPhone(form.phone)) return setError("Check your mobile number.");
 
     setBusy(true);
     try {
@@ -79,7 +77,7 @@ function SignUpForm() {
         firstName: form.firstName.trim(),
         surname: form.surname.trim(),
         email: form.email.trim(),
-        phone: form.phone.trim() ? normalizePhone(form.phone) : null,
+        phone: form.phone || null,
       });
       navigate("/dashboard");
     } catch (err) {
@@ -121,15 +119,9 @@ function SignUpForm() {
       </div>
 
       <div className="field">
-        <label htmlFor="phone">Mobile number</label>
-        <input id="phone" name="phone" type="tel" autoComplete="tel" placeholder="+44 7700 900123" value={form.phone} onChange={update} />
-        <p className="hint">Optional. Include country code.</p>
+        <label htmlFor="phone">Mobile number <span className="muted">(optional)</span></label>
+        <PhoneInput value={form.phone} onChange={(phone) => setForm((f) => ({ ...f, phone }))} />
       </div>
-
-      <label className="checkbox">
-        <input type="checkbox" name="leaderboardOptIn" checked={form.leaderboardOptIn} onChange={update} />
-        <span>Show me on the leaderboard</span>
-      </label>
 
       {error && <p className="form-error" role="alert">{error}</p>}
 

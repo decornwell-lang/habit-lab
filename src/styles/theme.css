@@ -858,3 +858,10 @@ td.actions { white-space: nowrap; }
 .badge-seal.locked .seal-inner { stroke: rgba(220, 177, 60, 0.35); }
 .badge-seal.locked .seal-num { fill: rgba(255, 255, 255, 0.8); }
 .badge-seal.locked .seal-unit { fill: rgba(220, 177, 60, 0.85); }
+
+/* Mobile number: country code drop-down + number (PhoneInput.jsx) */
+.phone-input { display: grid; grid-template-columns: auto 1fr; gap: 8px; }
+.field .phone-input select {
+  width: auto; min-height: var(--tap); padding: 0 10px; border: 1px solid var(--border); border-radius: 12px;
+  background: var(--bg); color: var(--text); font: inherit;
+}

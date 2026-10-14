@@ -30,6 +30,7 @@ import StreakCard from "../components/dashboard/StreakCard.jsx";
 import UpcomingEvents from "../components/dashboard/UpcomingEvents.jsx";
 import BreathePause from "../components/dashboard/BreathePause.jsx";
 import Folds from "../components/dashboard/Folds.jsx";
+import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
 import { MorningPrompt, MeditationPrompt, ReflectionPrompt } from "../components/dashboard/DailyPrompts.jsx";
 import WhatsAppIcon from "../components/WhatsAppIcon.jsx";
 
@@ -267,6 +268,7 @@ export default function Dashboard() {
           {current ? (
             <>
               <StreakCard streak={streak} current={current} checkins={data.checkins} />
+              <LeaderboardInvite uid={user.uid} profile={profile} />
               {current.progress.state === "upcoming" && <PreCohort current={current} />}
             </>
           ) : (

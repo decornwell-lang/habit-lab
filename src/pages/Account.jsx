@@ -10,7 +10,8 @@ import ShareBadge from "../components/ShareBadge.jsx";
 import Badge from "../components/Badge.jsx";
 import NotificationSettings from "../components/NotificationSettings.jsx";
 import ChangePassword from "../components/ChangePassword.jsx";
-import { isValidPhone, normalizePhone } from "../lib/phone.js";
+import { isValidPhone } from "../lib/phone.js";
+import PhoneInput from "../components/PhoneInput.jsx";
 
 export default function Account() {
   const { user, profile, logOut } = useAuth();
@@ -36,13 +37,11 @@ export default function Account() {
   async function handleSave(e) {
     e.preventDefault();
     setMessage("");
-    if (phone.trim() && !isValidPhone(phone)) {
-      return setMessage("Add country code, e.g. +44.");
-    }
+    if (phone && !isValidPhone(phone)) return setMessage("Check your mobile number.");
     setBusy(true);
     try {
       // The phone number is private: only the owner sees it.
-      await updateUserProfile(user.uid, { avatar, leaderboardOptIn: optIn, showHabit, phone: phone.trim() ? normalizePhone(phone) : null });
+      await updateUserProfile(user.uid, { avatar, leaderboardOptIn: optIn, showHabit, phone: phone || null });
       // The public profile never holds surname, email or phone.
       await savePublicProfile(user.uid, { firstName, avatar, leaderboardOptIn: optIn, showHabit });
       setMessage("Saved.");
@@ -108,8 +107,8 @@ export default function Account() {
         <h2>Mobile number</h2>
         <div className="field">
           <label htmlFor="phone">Mobile</label>
-          <input id="phone" type="tel" autoComplete="tel" placeholder="+44 7700 900123" value={phone} onChange={(e) => setPhone(e.target.value)} />
-          <p className="hint">Private. Include country code.</p>
+          <PhoneInput value={phone} onChange={setPhone} />
+          <p className="hint">Private.</p>
         </div>
 
         <h2>Privacy</h2>
