@@ -5,8 +5,7 @@ import { useState } from "react";
 import { saveCheckin } from "../../lib/data.js";
 import { formatDate, isBeforeCheckinOpens, checkinOpensLabel, todayKey } from "../../lib/dates.js";
 import { COMMITMENT_QUESTION, CRAVING_QUESTION, CRAVING_SCALE } from "../../lib/content.js";
-import WhatsAppIcon from "../WhatsAppIcon.jsx";
-import { whatsAppShareLink } from "./QuickAnswer.jsx";
+import ShareButton from "../ShareButton.jsx";
 
 const scaleValues = Array.from({ length: CRAVING_SCALE.max - CRAVING_SCALE.min + 1 }, (_, i) => CRAVING_SCALE.min + i);
 
@@ -107,9 +106,7 @@ export default function DailyCheckin({ uid, current, progress, content, existing
           {existing?.answer && <li>“{existing.answer}”</li>}
         </ul>
         {existing && (
-          <a className="btn btn-whatsapp" href={whatsAppShareLink(groupReport({ checkin: existing, progress, content, streak }))} target="_blank" rel="noreferrer">
-            <WhatsAppIcon /> Share in the group
-          </a>
+          <ShareButton text={groupReport({ checkin: existing, progress, content, streak })} />
         )}
         <button className="btn btn-ghost" onClick={() => setEditing(true)}>Edit</button>
         <p className="muted small center">

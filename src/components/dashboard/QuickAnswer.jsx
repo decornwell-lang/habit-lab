@@ -1,11 +1,9 @@
 // A quick answer to a daily prompt: a few tap-to-choose questions and/or a
-// short text, then one button that saves it and opens WhatsApp with the answer
-// ready to share in the cohort group.
+// short text, then one button that saves it and opens the share sheet with the
+// answer ready to send to the cohort's WhatsApp group.
 import { useState } from "react";
 import WhatsAppIcon from "../WhatsAppIcon.jsx";
-
-// Opens WhatsApp with the message ready; the member picks the cohort group.
-export const whatsAppShareLink = (text) => `https://wa.me/?text=${encodeURIComponent(text)}`;
+import ShareButton from "../ShareButton.jsx";
 
 // questions: [{ key, label, choices }]   text: label for the free text (optional)
 // shareText(answer) builds the WhatsApp message. onSave(answer) stores it.
@@ -43,10 +41,7 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
           placeholder={questions.length ? "Anything to add? (optional)" : "A few words is enough"} />
       </div>
       {complete ? (
-        // A real link, so WhatsApp opens straight from the tap; the answer saves at the same time.
-        <a className="btn btn-whatsapp" href={whatsAppShareLink(shareText(answer))} target="_blank" rel="noreferrer" onClick={save}>
-          <WhatsAppIcon /> Share in the group
-        </a>
+        <ShareButton text={shareText(answer)} onShare={save} />
       ) : (
         <button className="btn btn-whatsapp" disabled><WhatsAppIcon /> Share in the group</button>
       )}
