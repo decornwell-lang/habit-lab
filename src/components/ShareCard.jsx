@@ -3,7 +3,7 @@
 // On phones, "Share" opens the phone's own share sheet (Instagram, WhatsApp,
 // Facebook, Messages...) with the image attached. On computers it offers the
 // image to download plus share links.
-//   <ShareCard image={{ icon, title, subtitle }} text="..." fileName="..." />
+//   <ShareCard image={{ badge, title, subtitle }} text="..." fileName="..." />
 import { useEffect, useState } from "react";
 import { makeShareImage } from "../lib/shareImage.js";
 
@@ -15,7 +15,7 @@ export default function ShareCard({ image, text, fileName, simple = false }) {
 
   const siteUrl = window.location.origin;
   const fullText = `${text}\nJoin me: ${siteUrl}`;
-  const imageKey = `${image.icon}|${image.title}|${image.subtitle}`;
+  const imageKey = `${image.badge?.id}|${image.title}|${image.subtitle}`;
 
   useEffect(() => {
     let url = "";

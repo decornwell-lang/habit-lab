@@ -24,14 +24,15 @@ export function effectiveStreak(profile, today) {
 }
 
 // Badge milestones, in days. After one year, a badge is earned every year.
+// Each badge is drawn as a gold seal with `num` and `unit` inside (see Badge.jsx).
 const MILESTONES = [
-  { id: "d1", days: 1, label: "First day", icon: "🌱" },
-  { id: "d7", days: 7, label: "7 days", icon: "🌿" },
-  { id: "d30", days: 30, label: "30 days", icon: "🌳" },
-  { id: "d66", days: 66, label: "66 days", icon: "🏔️" },
-  { id: "m6", days: 182, label: "6 months", icon: "🌕" },
-  { id: "y1", days: 365, label: "1 year", icon: "⭐" },
-];
+  { id: "d1", days: 1, num: 1, unit: "day" },
+  { id: "d7", days: 7, num: 7, unit: "days" },
+  { id: "d30", days: 30, num: 30, unit: "days" },
+  { id: "d66", days: 66, num: 66, unit: "days" },
+  { id: "m6", days: 182, num: 6, unit: "months" },
+  { id: "y1", days: 365, num: 1, unit: "year" },
+].map((b) => ({ ...b, label: `${b.num} ${b.unit}`, name: `${b.num}-${b.unit.replace(/s$/, "")} badge` }));
 
 export function badgesForStreak(streak) {
   const ids = MILESTONES.filter((b) => streak >= b.days).map((b) => b.id);
@@ -39,19 +40,22 @@ export function badgesForStreak(streak) {
   return ids;
 }
 
-// The next badge to earn after this streak, e.g. 🌿 at 7 days.
-export function nextBadge(streak) {
-  return MILESTONES.find((b) => b.days > streak) || badgeInfo(`y${Math.floor(streak / 365) + 1}`);
-}
-
+// { id, days, num, unit, label, name } e.g. { id: "d7", days: 7, num: 7, unit: "days", label: "7 days", name: "7-day badge" }
 export function badgeInfo(id) {
   const found = MILESTONES.find((b) => b.id === id);
   if (found) return found;
   const years = Number(id.slice(1));
-  return { id, days: years * 365, label: `${years} years`, icon: "⭐" };
+  return { id, days: years * 365, num: years, unit: "years", label: `${years} years`, name: `${years}-year badge` };
 }
 
-// Sorts badge ids from smallest to largest milestone.
+// The highest badge earned for this streak, or null before the first one.
+export const currentBadge = (streak) => (streak > 0 ? badgeInfo(badgesForStreak(streak).at(-1)) : null);
+
+// The next badge to earn after this streak.
+export function nextBadge(streak) {
+  return MILESTONES.find((b) => b.days > streak) || badgeInfo(`y${Math.floor(streak / 365) + 1}`);
+}
+
 export function sortBadges(ids = []) {
   return [...ids].sort((a, b) => badgeInfo(a).days - badgeInfo(b).days);
 }

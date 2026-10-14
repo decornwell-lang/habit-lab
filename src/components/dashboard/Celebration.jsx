@@ -4,6 +4,7 @@ import { useState } from "react";
 import { savePracticeCheck } from "../../lib/data.js";
 import { badgeInfo } from "../../lib/streaks.js";
 import ShareBadge from "../ShareBadge.jsx";
+import Badge from "../Badge.jsx";
 
 export default function Celebration({ uid, badgeId, onDone, onNotRightNow }) {
   const badge = badgeInfo(badgeId);
@@ -19,9 +20,9 @@ export default function Celebration({ uid, badgeId, onDone, onNotRightNow }) {
 
   return (
     <section className="card card-celebrate" role="status">
-      <div className="badge-big">{badge.icon}</div>
+      <div className="badge-big"><Badge badge={badge} size={120} /></div>
       <p className="card-label">New badge</p>
-      <h2>{badge.label}</h2>
+      <h2>{badge.name}</h2>
       {sharing ? (
         <ShareBadge badgeId={badgeId} />
       ) : (

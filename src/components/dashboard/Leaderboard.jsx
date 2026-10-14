@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { getLeaderboard } from "../../lib/data.js";
 import { effectiveStreak, badgeInfo, sortBadges } from "../../lib/streaks.js";
 import { habitStreakLabel, habitIcon } from "../../lib/cohorts.js";
+import Badge from "../Badge.jsx";
 import Avatar from "../Avatar.jsx";
 
 export default function Leaderboard({ uid, optedIn, today }) {
@@ -40,8 +41,8 @@ export default function Leaderboard({ uid, optedIn, today }) {
                   <span className="habit-tag">{habitIcon(p.habitType)} {habitStreakLabel(p.habitType)}</span>
                 )}
                 {p.badges?.length > 0 && (
-                  <span className="badges" title={sortBadges(p.badges).map((b) => badgeInfo(b).label).join(", ")}>
-                    {sortBadges(p.badges).map((b) => badgeInfo(b).icon).join("")}
+                  <span className="badges">
+                    <Badge id={sortBadges(p.badges).at(-1)} size={22} /> {badgeInfo(sortBadges(p.badges).at(-1)).name}
                   </span>
                 )}
               </span>

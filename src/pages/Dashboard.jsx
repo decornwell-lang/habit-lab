@@ -29,7 +29,6 @@ import DashboardTabs, { TABS, DEFAULT_TAB } from "../components/dashboard/Dashbo
 import StreakCard from "../components/dashboard/StreakCard.jsx";
 import UpcomingEvents from "../components/dashboard/UpcomingEvents.jsx";
 import BreathePause from "../components/dashboard/BreathePause.jsx";
-import JourneyMap from "../components/dashboard/JourneyMap.jsx";
 import Folds from "../components/dashboard/Folds.jsx";
 import { MorningPrompt, MeditationPrompt, ReflectionPrompt } from "../components/dashboard/DailyPrompts.jsx";
 import WhatsAppIcon from "../components/WhatsAppIcon.jsx";
@@ -230,7 +229,6 @@ export default function Dashboard() {
     },
     active && { id: "breathe", icon: "🌊", title: "Craving?", summary: "1 minute", content: <BreathePause /> },
     { id: "leaderboard", icon: "🏆", tone: "gold", title: "Leaderboard", summary: "Streaks", content: <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} /> },
-    current && { id: "journey", icon: "🗺️", title: "Journey", summary: active ? `Day ${current.progress.day} of ${current.cohort.durationDays}` : "", content: <JourneyMap current={current} checkins={data.checkins} /> },
   ].filter(Boolean);
   const tabTitle = TABS.find((t) => t.id === tab)?.label;
 
@@ -268,7 +266,7 @@ export default function Dashboard() {
         <>
           {current ? (
             <>
-              <StreakCard streak={streak} badges={data.publicProfile?.badges} current={current} weekTitle={content.title} />
+              <StreakCard streak={streak} current={current} checkins={data.checkins} />
               {current.progress.state === "upcoming" && <PreCohort current={current} />}
             </>
           ) : (

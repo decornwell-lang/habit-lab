@@ -22,7 +22,7 @@ function buildRows({ users, profiles, memberships, cohorts }) {
         payment: ms.map((m) => (m.paid ? `Paid${m.amount ? ` ${m.amount}` : ""}` : m.method === "admin" ? "Added by admin" : "Free")).join("; "),
         streak: effectiveStreak(p, today),
         badges: sortBadges(p.badges).map((b) => badgeInfo(b).label).join(", "),
-        badgeIcons: sortBadges(p.badges).map((b) => badgeInfo(b).icon).join(""),
+        topBadge: p.badges?.length ? `${badgeInfo(sortBadges(p.badges).at(-1)).name}` : "",
         cohortIds: ms.map((m) => m.cohortId),
       };
     })
@@ -103,7 +103,7 @@ export default function MembersTab({ data, reload, onViewCheckins }) {
                 <td>{r.cohorts || "—"}</td>
                 <td>{r.payment || "—"}</td>
                 <td>{r.streak}</td>
-                <td title={r.badges}>{r.badgeIcons || "—"}</td>
+                <td title={r.badges}>{r.topBadge || "—"}</td>
                 <td className="actions">
                   <button className="link-btn" onClick={() => onViewCheckins(r.uid)}>Check-ins</button>
                   {addFor === r.uid ? (

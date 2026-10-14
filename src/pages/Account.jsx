@@ -7,6 +7,7 @@ import { badgeInfo, sortBadges } from "../lib/streaks.js";
 import { AVATARS } from "../content/avatars.js";
 import Avatar from "../components/Avatar.jsx";
 import ShareBadge from "../components/ShareBadge.jsx";
+import Badge from "../components/Badge.jsx";
 import NotificationSettings from "../components/NotificationSettings.jsx";
 import { isValidPhone, normalizePhone } from "../lib/phone.js";
 
@@ -67,8 +68,8 @@ export default function Account() {
               return (
                 <li key={id}>
                   <div className="badge-row">
-                    <span className="badge-icon">{b.icon}</span>
-                    <span className="person-name">{b.label}</span>
+                    <Badge badge={b} size={44} />
+                    <span className="person-name">{b.name}</span>
                     <button type="button" className="link-btn" onClick={() => setSharingId(sharingId === id ? null : id)}>
                       {sharingId === id ? "Close" : "Share"}
                     </button>

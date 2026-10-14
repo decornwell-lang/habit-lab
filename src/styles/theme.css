@@ -342,7 +342,7 @@ a { color: var(--primary); }
 .card-accent { border-color: var(--gold); background: #fdf9ee; }
 .card-celebrate { text-align: center; background: var(--gold-soft); border-color: transparent; }
 .card-gentle { background: var(--accent-soft); border-color: transparent; }
-.badge-big { font-size: 3.2rem; line-height: 1; margin-bottom: 8px; }
+.badge-big { display: flex; justify-content: center; margin-bottom: 10px; }
 .question-title { font-weight: 600; margin: 18px 0 10px; }
 
 .video {
@@ -420,8 +420,7 @@ a { color: var(--primary); }
   font-size: 0.78rem;
   font-weight: 600;
 }
-.leaderboard .badges { font-size: 0.95rem; font-weight: 400; margin-top: 2px; }
-.badges { font-size: 1.05rem; letter-spacing: 1px; }
+.leaderboard .badges { display: inline-flex; align-items: center; gap: 4px; margin-top: 3px; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); }
 .streak-count { min-width: 64px; text-align: right; font-weight: 700; color: var(--primary); font-size: 1.1rem; }
 .streak-count small { font-weight: 500; font-size: 0.75rem; color: var(--text-muted); }
 
@@ -509,18 +508,41 @@ a { color: var(--primary); }
 }
 .streak-share:hover { background: rgba(255, 255, 255, 0.18); }
 .streak-top { display: flex; gap: 18px; align-items: center; }
-.streak-ring { position: relative; width: 96px; height: 96px; flex-shrink: 0; }
-.streak-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-.streak-ring circle { fill: none; stroke-width: 7; }
-.streak-ring .track { stroke: rgba(255, 255, 255, 0.1); }
-.streak-ring .fill { stroke: var(--gold); stroke-linecap: round; transition: stroke-dashoffset 0.8s ease; }
-.streak-ring-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.streak-ring-text .big { font-family: var(--font-heading); font-size: 2.3rem; font-weight: 600; line-height: 1; }
-.streak-ring-text .unit { font-size: 0.7rem; color: var(--gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+.streak-top .badge-seal { filter: drop-shadow(0 6px 16px rgba(220, 177, 60, 0.25)); }
+.badge-stack { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; }
+.streak-pill {
+  display: inline-flex; align-items: baseline; gap: 4px; padding: 4px 10px; border-radius: 99px;
+  background: rgba(87, 189, 162, 0.16); color: var(--aqua); font-size: 0.72rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
+}
+.streak-pill strong { font-size: 0.95rem; color: #fff; letter-spacing: 0; }
 .streak-details { flex: 1; min-width: 0; }
-.cohort-bar { height: 5px; margin: 6px 0 10px; border-radius: 99px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
-.cohort-bar span { display: block; height: 100%; border-radius: inherit; background: var(--aqua); }
-.streak-next { margin: 0; font-size: 0.82rem; color: #e9d9a8; display: flex; gap: 6px; align-items: center; }
+.streak-card .streak-details h2 { font-size: 1.3rem; margin: 0 0 4px; }
+.streak-line { margin: 0 0 4px; color: var(--aqua); font-weight: 600; font-size: 0.92rem; text-transform: capitalize; }
+.next-badge { display: flex; align-items: center; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.next-badge .badge-seal { filter: none; }
+.next-badge-text { flex: 1; min-width: 0; }
+.next-badge-text p { margin: 0 0 6px; font-size: 0.85rem; color: #c4c9dc; }
+.next-badge-text strong { color: #fff; font-weight: 600; }
+.next-bar { height: 6px; border-radius: 99px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+.next-bar span { display: block; height: 100%; border-radius: inherit; background: var(--gold); }
+.journey-toggle {
+  display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 14px; padding: 12px 0 0;
+  border: none; border-top: 1px solid rgba(255, 255, 255, 0.1); background: none; font: inherit; font-size: 0.85rem; color: #fff; cursor: pointer;
+}
+.journey-toggle-link { display: inline-flex; align-items: center; gap: 4px; color: var(--aqua); font-weight: 600; }
+.journey-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.streak-card .cohort-bar { height: 5px; margin: 8px 0 0; border-radius: 99px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+.streak-card .cohort-bar span { display: block; height: 100%; border-radius: inherit; background: var(--aqua); }
+.journey-wrap > .card { background: none; border: none; box-shadow: none; padding: 0; margin: 14px 0 0; }
+.journey-wrap .card-label { display: none; }
+.journey-wrap h2 { font-size: 1rem; }
+.journey-wrap .dot { background: rgba(255, 255, 255, 0.08); }
+.journey-wrap .dot.future { background: rgba(255, 255, 255, 0.04); }
+.journey-wrap .dot.kept { background: var(--aqua); }
+.journey-wrap .dot.returned { background: transparent; }
+.journey-wrap .dot.today { background: transparent; box-shadow: inset 0 0 0 2px #fff; }
+.journey-wrap .journey-legend { color: #c4c9dc; }
 .streak-card .share-panel { margin-top: 18px; }
 .streak-card .share-panel .muted { color: #c4c9dc; }
 .streak-card .btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.35); }
@@ -715,7 +737,7 @@ a { color: var(--primary); }
 .badge-list li { border-bottom: 1px solid var(--border); padding: 8px 0; }
 .badge-list li:last-child { border-bottom: none; }
 .badge-row { display: flex; align-items: center; gap: 12px; }
-.badge-icon { font-size: 1.8rem; width: 44px; text-align: center; }
+
 
 /* ---------- Info pages ---------- */
 .bio-photo { width: 100%; max-width: 360px; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); margin-bottom: 24px; }
@@ -822,3 +844,17 @@ td.actions { white-space: nowrap; }
 }
 .choices button.selected { background: var(--teal); border-color: var(--teal); color: #fff; }
 .quick-answer .btn-whatsapp[disabled] { opacity: 0.45; }
+
+/* Badge seal (Badge.jsx) */
+.badge-seal { display: block; flex-shrink: 0; overflow: visible; }
+.badge-seal .seal-edge { fill: var(--gold); }
+.badge-seal .seal-face { fill: var(--dark-blue); }
+.badge-seal .seal-inner { fill: none; stroke: var(--gold); stroke-width: 1.5; opacity: 0.6; }
+.badge-seal text { text-anchor: middle; dominant-baseline: middle; fill: #fff; }
+.badge-seal .seal-num { font-family: var(--font-heading); font-weight: 600; }
+.badge-seal .seal-unit { font-family: var(--font-body, Inter, sans-serif); font-size: 9px; font-weight: 700; letter-spacing: 1.2px; fill: var(--gold); }
+.badge-seal.locked .seal-edge { fill: rgba(220, 177, 60, 0.18); stroke: rgba(220, 177, 60, 0.7); stroke-width: 1.5; }
+.badge-seal.locked .seal-face { fill: rgba(255, 255, 255, 0.04); }
+.badge-seal.locked .seal-inner { stroke: rgba(220, 177, 60, 0.35); }
+.badge-seal.locked .seal-num { fill: rgba(255, 255, 255, 0.8); }
+.badge-seal.locked .seal-unit { fill: rgba(220, 177, 60, 0.85); }

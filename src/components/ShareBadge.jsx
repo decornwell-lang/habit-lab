@@ -6,8 +6,8 @@ export default function ShareBadge({ badgeId }) {
   const badge = badgeInfo(badgeId);
   return (
     <ShareCard
-      image={{ icon: badge.icon, title: badge.label, subtitle: "of practice" }}
-      text={`I just earned my ${badge.label} badge at The Habit Lab with David Ernest Cornwell ${badge.icon}`}
+      image={{ badge, title: `${badge.name}`, subtitle: "of practice" }}
+      text={`I just earned my ${badge.name} at The Habit Lab with David Ernest Cornwell 🏅`}
       fileName={`habit-lab-${badge.id}.png`}
     />
   );
