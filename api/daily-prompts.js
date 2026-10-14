@@ -64,7 +64,7 @@ export default handle(async (req, res) => {
         kind: "prompt",
         title: prompt.title,
         body: prompt.body.replace("{day}", cohortDay),
-        link: `/dashboard?open=${prompt.id}`,
+        link: prompt.link || `/dashboard?open=${prompt.id}`,
       },
       webpush: { headers: { Urgency: "high" } },
     });

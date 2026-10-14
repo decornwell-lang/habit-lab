@@ -1,5 +1,5 @@
-// Dashboard: the members' home page, with two tabs (see DashboardTabs.jsx):
-//   Home (everything) · Upcoming
+// Dashboard: the members' home page, with three tabs (see DashboardTabs.jsx):
+//   Home · Practices (meditation, weekly assignment, live session) · Upcoming
 // The open tab is part of the address (e.g. /dashboard?tab=week), so links
 // and notifications can open a specific tab.
 import { useCallback, useEffect, useState } from "react";
@@ -7,7 +7,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import {
   getCohorts, getMemberships, getCheckins, getPublicProfile, savePublicProfile,
-  getContentSettings, getDay, isPractised, updateUserProfile,
+  getContentSettings, getDay, updateUserProfile,
 } from "../lib/data.js";
 import { apiPost } from "../lib/api.js";
 import { todayKey, checkinDayKey, addDays, timeZoneName } from "../lib/dates.js";
@@ -187,14 +187,6 @@ export default function Dashboard() {
       done: Boolean(data.day.morning),
       content: <MorningPrompt {...prompt} existing={data.day.morning} />,
     },
-    {
-      id: "meditation",
-      icon: "🧘",
-      title: "Meditation",
-      summary: done(data.day.meditation) || (isPractised(data.day) ? "✓ Done" : "15 minutes"),
-      done: Boolean(data.day.meditation) || isPractised(data.day),
-      content: <MeditationPrompt {...prompt} content={content} existing={data.day.meditation} />,
-    },
     active && {
       id: "reflection",
       icon: "✍️",
@@ -214,19 +206,6 @@ export default function Dashboard() {
       content: (
         <DailyCheckin uid={user.uid} current={current} content={checkinContent} progress={checkinProgress}
           existing={data.checkins[checkinDay]} streak={streak} day={checkinDay} onSaved={handleCheckinSaved} />
-      ),
-    },
-    {
-      id: "week",
-      icon: "📅",
-      tone: "gold",
-      title: "This week",
-      summary: shortDateTime(data.settings.nextSessionAt) || `Week ${week}`,
-      content: (
-        <>
-          <LiveSession settings={data.settings} />
-          <WeeklyReflection content={content} />
-        </>
       ),
     },
     active && { id: "breathe", icon: "🌊", title: "Craving?", summary: "1 minute", content: <BreathePause /> },
@@ -287,6 +266,17 @@ export default function Dashboard() {
       )}
 
       {/* Upcoming: events and cohorts to join */}
+      {/* Practices: this week's meditation, weekly assignment and live session */}
+      {tab === "practices" && (
+        <>
+          <section className="card practice-card">
+            <MeditationPrompt {...prompt} content={content} existing={data.day.meditation} />
+          </section>
+          <WeeklyReflection content={content} />
+          <LiveSession settings={data.settings} />
+        </>
+      )}
+
       {tab === "upcoming" && (
         <>
           <UpcomingEvents settings={data.settings} cohorts={data.cohorts} memberships={data.memberships} onOpenTab={setTab} />
@@ -303,9 +293,3 @@ export default function Dashboard() {
   );
 }
 
-// e.g. "Mon 19:00" for the Live session row
-function shortDateTime(iso) {
-  const date = new Date(iso);
-  if (!iso || isNaN(date)) return "";
-  return date.toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" });
-}

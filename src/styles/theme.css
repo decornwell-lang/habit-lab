@@ -873,3 +873,6 @@ td.actions { white-space: nowrap; }
 .aphorism-list .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
 .aphorism-text { margin: 0 0 4px; font-family: var(--font-heading); font-size: 1.05rem; }
 .stat-line { margin: 4px 0 10px; }
+
+/* Practices tab: the meditation card holds the video and the "How was it?" answer */
+.practice-card > .card { border: none; box-shadow: none; background: none; padding: 0; margin: 0 0 8px; }

@@ -2,7 +2,7 @@
 export default function WeeklyReflection({ content }) {
   return (
     <section className="card">
-      <p className="card-label">Reflection</p>
+      <p className="card-label">Weekly assignment</p>
       <h2>{content.title}</h2>
       <a className="btn btn-primary" href={content.reflectionUrl} target="_blank" rel="noreferrer">
         Download (PDF)
