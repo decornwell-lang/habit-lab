@@ -1,6 +1,6 @@
 // My account: badges (with sharing), avatar, leaderboard opt-in, and log out.
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { updateUserProfile, savePublicProfile, getPublicProfile } from "../lib/data.js";
 import { badgeInfo, sortBadges } from "../lib/streaks.js";
@@ -9,11 +9,14 @@ import Avatar from "../components/Avatar.jsx";
 import ShareBadge from "../components/ShareBadge.jsx";
 import Badge from "../components/Badge.jsx";
 import NotificationSettings from "../components/NotificationSettings.jsx";
+import ChangePassword from "../components/ChangePassword.jsx";
 import { isValidPhone, normalizePhone } from "../lib/phone.js";
 
 export default function Account() {
   const { user, profile, logOut } = useAuth();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const afterLink = params.get("newPassword") === "1"; // just logged in with an emailed link
   const [avatar, setAvatar] = useState(profile?.avatar || null);
   const [optIn, setOptIn] = useState(Boolean(profile?.leaderboardOptIn));
   const [showHabit, setShowHabit] = useState(profile?.showHabit !== false);
@@ -56,6 +59,8 @@ export default function Account() {
       <p className="eyebrow">My account</p>
       <h1>{firstName}</h1>
       <p className="muted">{profile?.email || user.email}</p>
+
+      {afterLink && <ChangePassword highlight />}
 
       <section className="card">
         <h2>My badges</h2>
@@ -123,6 +128,8 @@ export default function Account() {
       </form>
 
       <NotificationSettings uid={user.uid} />
+
+      {!afterLink && <ChangePassword />}
 
       <button
         className="btn btn-ghost"

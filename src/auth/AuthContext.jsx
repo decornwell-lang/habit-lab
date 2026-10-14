@@ -1,12 +1,16 @@
 // AuthContext: keeps track of who is logged in (and their profile), and
-// provides sign-up, log-in, log-out and password reset to every page.
+// provides sign-up, log-in (password or emailed link), log-out and password
+// changes to every page.
 // Use it in a page with:  const { user, profile, isAdmin, signUp } = useAuth();
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  sendPasswordResetEmail,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
+  updatePassword,
   updateProfile,
   onAuthStateChanged,
 } from "firebase/auth";
@@ -14,6 +18,7 @@ import { doc, setDoc, onSnapshot, serverTimestamp } from "firebase/firestore";
 import { auth, db, isFirebaseConfigured } from "../firebase.js";
 
 const AuthContext = createContext(null);
+const LINK_EMAIL_KEY = "habitlab:loginLinkEmail";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -86,15 +91,48 @@ export function AuthProvider({ children }) {
     if (auth) await signOut(auth);
   }
 
-  async function resetPassword(email) {
+  // "Forgot password?": emails a one-tap log-in link (a "magic link").
+  // The email is remembered on this device, so the link logs straight in when opened here.
+  async function sendLoginLink(email) {
     requireFirebase();
-    return sendPasswordResetEmail(auth, email);
+    await sendSignInLinkToEmail(auth, email, { url: `${window.location.origin}/login`, handleCodeInApp: true });
+    try {
+      localStorage.setItem(LINK_EMAIL_KEY, email);
+    } catch {
+      // Not saved: they'll be asked for their email when they open the link.
+    }
+  }
+
+  // The email the link was sent to, if it was sent from this device.
+  function linkEmail() {
+    try {
+      return localStorage.getItem(LINK_EMAIL_KEY) || "";
+    } catch {
+      return "";
+    }
+  }
+
+  async function finishLinkLogin(email) {
+    requireFirebase();
+    await signInWithEmailLink(auth, email, window.location.href);
+    try {
+      localStorage.removeItem(LINK_EMAIL_KEY);
+    } catch {
+      // Nothing to tidy up.
+    }
+  }
+
+  const isLoginLink = () => Boolean(auth) && isSignInWithEmailLink(auth, window.location.href);
+
+  async function changePassword(password) {
+    requireFirebase();
+    return updatePassword(auth.currentUser, password);
   }
 
   const isAdmin = profile?.role === "admin";
 
   return (
-    <AuthContext.Provider value={{ user, profile, isAdmin, loading, signUp, logIn, logOut, resetPassword }}>
+    <AuthContext.Provider value={{ user, profile, isAdmin, loading, signUp, logIn, logOut, sendLoginLink, linkEmail, finishLinkLogin, isLoginLink, changePassword }}>
       {children}
     </AuthContext.Provider>
   );
@@ -124,6 +162,9 @@ export function friendlyAuthError(err) {
     "auth/wrong-password": "That email and password don't match. Please try again.",
     "auth/too-many-requests": "Too many attempts. Please wait a few minutes and try again.",
     "auth/network-request-failed": "We couldn't connect. Please check your internet and try again.",
+    "auth/invalid-action-code": "This log-in link has expired or was already used. Please ask for a new one.",
+    "auth/expired-action-code": "This log-in link has expired. Please ask for a new one.",
+    "auth/requires-recent-login": "Please log in again, then set your new password.",
   };
   return messages[err?.code] || "Something went wrong. Please try again.";
 }
