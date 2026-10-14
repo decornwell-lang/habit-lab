@@ -865,3 +865,11 @@ td.actions { white-space: nowrap; }
   width: auto; min-height: var(--tap); padding: 0 10px; border: 1px solid var(--border); border-radius: 12px;
   background: var(--bg); color: var(--text); font: inherit;
 }
+
+/* Aphorisms: daily line on Home, and the admin review list */
+.aphorism { margin: 6px 0 4px; font-family: var(--font-heading); font-style: italic; font-size: 1.02rem; color: var(--text-muted); line-height: 1.45; }
+.aphorism-list { list-style: none; padding: 0; margin: 12px 0 0; }
+.aphorism-list li { padding: 14px 0; border-bottom: 1px solid var(--border); }
+.aphorism-list .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.aphorism-text { margin: 0 0 4px; font-family: var(--font-heading); font-size: 1.05rem; }
+.stat-line { margin: 4px 0 10px; }
