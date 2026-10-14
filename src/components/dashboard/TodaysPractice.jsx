@@ -1,13 +1,10 @@
-// This week's meditation video. The "How was it?" answer below it is in DailyPrompts.jsx.
+// This week's meditation video (Practices tab), shown on its own, without a box or title.
 import { videoSource } from "../../lib/video.js";
 
 export default function TodaysPractice({ content }) {
   const video = videoSource(content.meditationUrl);
   return (
-    <section className="card">
-      <p className="card-label">Meditation</p>
-      <h2>{content.title}</h2>
-
+    <section className="meditation" aria-label="This week's meditation">
       {video?.type === "iframe" && (
         <div className="video">
           <iframe src={video.src} title="This week's meditation" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
@@ -15,11 +12,11 @@ export default function TodaysPractice({ content }) {
       )}
       {video?.type === "video" && (
         <div className="video">
-          <video src={video.src} controls preload="metadata" />
+          <video src={video.src} controls playsInline preload="metadata" />
         </div>
       )}
       {video?.type === "link" && (
-        <a className="btn btn-ghost" href={video.src} target="_blank" rel="noreferrer">Open this week's meditation</a>
+        <a className="btn btn-primary" href={video.src} target="_blank" rel="noreferrer">Open this week's meditation</a>
       )}
       {!video && <div className="video video-empty">Coming soon</div>}
     </section>

@@ -1,10 +1,9 @@
-// The three daytime prompts: morning and reflection (Home), meditation (Practices tab).
+// The daytime prompts on Home: morning and reflection.
 // Each saves to users/{uid}/practice/{today} and can be shared in the WhatsApp group.
 // Wording and choices: src/content/dailyPrompts.js.
 import { saveDayAnswer } from "../../lib/data.js";
-import { MORNING_QUESTIONS, MORNING_CHOICES, MEDITATION_CHOICES } from "../../content/dailyPrompts.js";
+import { MORNING_QUESTIONS, MORNING_CHOICES } from "../../content/dailyPrompts.js";
 import QuickAnswer from "./QuickAnswer.jsx";
-import TodaysPractice from "./TodaysPractice.jsx";
 
 const withNote = (lines, note) => (note?.trim() ? [...lines, "", note.trim()] : lines).join("\n");
 
@@ -20,25 +19,6 @@ export function MorningPrompt({ uid, today, dayLabel, existing, onSaved }) {
         onSaved("morning", a);
       }}
     />
-  );
-}
-
-export function MeditationPrompt({ uid, today, dayLabel, content, existing, onSaved }) {
-  const skipped = MEDITATION_CHOICES.at(-1);
-  return (
-    <>
-      <TodaysPractice content={content} />
-      <QuickAnswer
-        questions={[{ key: "how", label: "How was it?", choices: MEDITATION_CHOICES }]}
-        existing={existing}
-        shareText={(a) => withNote([`🧘 ${dayLabel}meditation: ${a.how}`], a.note)}
-        onSave={(a) => {
-          const practised = a.how !== skipped;
-          saveDayAnswer(uid, today, "meditation", a, { practised, week: content.week }).catch(console.error);
-          onSaved("meditation", a, practised);
-        }}
-      />
-    </>
   );
 }
 

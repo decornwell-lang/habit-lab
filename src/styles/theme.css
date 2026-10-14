@@ -810,8 +810,6 @@ td.actions { white-space: nowrap; }
 .aphorism-text { margin: 0 0 4px; font-family: var(--font-heading); font-size: 1.05rem; }
 .stat-line { margin: 4px 0 10px; }
 
-/* Practices tab: the meditation card holds the video and the "How was it?" answer */
-.practice-card > .card { border: none; box-shadow: none; background: none; padding: 0; margin: 0 0 8px; }
 
 /* Breathe tab (BreatheTab.jsx): the whole tab is a dark blue screen between the
    header and the tab bar, with a ball that grows on the in-breath and shrinks on the out-breath */
@@ -902,3 +900,20 @@ td.actions { white-space: nowrap; }
 .breathe-controls { width: 100%; min-height: 212px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
 .breathe-controls .breathe-clock { margin-top: 8px; }
 .breathe-word.resting { font-size: 2.3rem; } /* the resting ball is drawn small, so its text is larger */
+
+/* Dark blue tabs (Practices, Breathe, Upcoming): same background as the Breathe screen */
+.dashboard.dark::before {
+  content: ""; position: fixed; inset: 0; z-index: -1;
+  background: radial-gradient(120% 90% at 50% 40%, var(--navy-blue) 0%, var(--dark-blue) 70%);
+}
+.dashboard.dark { color: #fff; }
+.dashboard.dark .card { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.1); box-shadow: none; color: #fff; }
+.dashboard.dark h2, .dashboard.dark h3 { color: #fff; }
+.dashboard.dark .card-label { color: var(--aqua); }
+.dashboard.dark .muted { color: #c4c9dc; }
+.dashboard.dark .btn-primary { background: var(--aqua); color: var(--dark-blue); }
+.dashboard.dark .btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.35); }
+.dashboard.dark .joined { color: var(--aqua); }
+.dashboard.dark .cohort-list li { border-color: rgba(255, 255, 255, 0.1); }
+.meditation { margin: 16px 0 8px; }
+.meditation .video { margin: 0; border-radius: var(--radius); }

@@ -31,8 +31,12 @@ import StreakCard from "../components/dashboard/StreakCard.jsx";
 import Folds from "../components/dashboard/Folds.jsx";
 import BreatheTab from "../components/dashboard/BreatheTab.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
-import { MorningPrompt, MeditationPrompt, ReflectionPrompt } from "../components/dashboard/DailyPrompts.jsx";
+import { MorningPrompt, ReflectionPrompt } from "../components/dashboard/DailyPrompts.jsx";
+import TodaysPractice from "../components/dashboard/TodaysPractice.jsx";
 import WhatsAppIcon from "../components/WhatsAppIcon.jsx";
+
+// Tabs shown on the dark blue background, like the Breathe screen.
+const DARK_TABS = ["practices", "breathe", "upcoming"];
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -213,7 +217,7 @@ export default function Dashboard() {
   const aphorism = aphorismFor(today); // approved or owner-written lines only (src/lib/aphorisms.js)
 
   return (
-    <main className="page dashboard">
+    <main className={`page dashboard ${DARK_TABS.includes(tab) ? "dark" : ""}`}>
       {tab === DEFAULT_TAB && aphorism && <p className="aphorism">“{aphorism.text}”</p>}
 
       {notice && <p className="notice notice-good" role="status">{notice}</p>}
@@ -263,9 +267,7 @@ export default function Dashboard() {
       {/* Practices: this week's meditation, weekly assignment and live session */}
       {tab === "practices" && (
         <>
-          <section className="card practice-card">
-            <MeditationPrompt {...prompt} content={content} existing={data.day.meditation} />
-          </section>
+          <TodaysPractice content={content} />
           <WeeklyReflection content={content} />
           <LiveSession settings={data.settings} />
         </>
