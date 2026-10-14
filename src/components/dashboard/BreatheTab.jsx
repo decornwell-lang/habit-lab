@@ -1,6 +1,6 @@
 // Breathe tab: for a craving. Gentle, quiet, diaphragmatic belly breathing
 // through the nose. The in-breath counts up (1 to 7), the out-breath counts down
-// (7 to 1). The whole tab is the dark blue breathing screen. Members can change the
+// (6 to 0). The whole tab is the dark blue breathing screen. Members can change the
 // breath (3 to 10 seconds), the length (1 to 10 minutes) and the gong; all are
 // remembered on the device.
 import { useEffect, useRef, useState } from "react";
@@ -58,7 +58,7 @@ export default function BreatheTab() {
   const finished = !running && elapsed >= totalSeconds;
   const inPhase = elapsed % (breath * 2) < breath;
   const second = Math.floor(elapsed % breath); // 0 up to breath - 1
-  const count = inPhase ? second + 1 : breath - second; // in counts up, out counts down
+  const count = inPhase ? second + 1 : breath - 1 - second; // in counts up 1 → 7, out counts down 6 → 0
   const left = Math.ceil(totalSeconds - elapsed);
   const clock = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
 
