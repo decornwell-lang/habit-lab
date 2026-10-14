@@ -44,7 +44,7 @@ export default function ContentTab({ settings, reload }) {
         <h2>3-Step Breathing Space</h2>
         <div className="field">
           <label>Recording link (Breathe tab)</label>
-          <input value={form.breathingSpaceUrl} onChange={(e) => setForm({ ...form, breathingSpaceUrl: e.target.value })} placeholder="Audio or video file, YouTube, Vimeo or Google Drive" />
+          <input value={form.breathingSpaceUrl} onChange={(e) => setForm({ ...form, breathingSpaceUrl: e.target.value })} placeholder="Leave empty to use David's recording in the app" />
         </div>
       </section>
 

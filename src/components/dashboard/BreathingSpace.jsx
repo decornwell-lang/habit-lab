@@ -1,6 +1,6 @@
-// Breathe tab → 3-Step Breathing Space (from MBCT): David's recorded 3-minute practice.
-// Paste the recording's link in Admin → Content (an audio or video file, YouTube,
-// Vimeo or Google Drive). The three steps are shown beside the hourglass that is
+// Breathe tab → 3-Step Breathing Space (from MBCT): David's recorded practice.
+// The recording is public/audio/three-step-breathing-space.m4a. To use a different one,
+// paste its link in Admin → Content (an audio or video file, YouTube, Vimeo or Google Drive). The three steps are shown beside the hourglass that is
 // often used to picture this practice: wide awareness, narrowing to the breath,
 // then widening again to the whole body.
 import { videoSource } from "../../lib/video.js";
@@ -11,8 +11,10 @@ const STEPS = [
   { title: "Expanding", text: "Widen your awareness to the whole body, breathing, just as it is." },
 ];
 
+const RECORDING = "/audio/three-step-breathing-space.m4a";
+
 export default function BreathingSpace({ url }) {
-  const media = videoSource(url);
+  const media = videoSource(url || RECORDING);
   return (
     <>
       <h2>3-Step Breathing Space</h2>
