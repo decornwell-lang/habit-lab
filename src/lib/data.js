@@ -13,7 +13,7 @@
 //   notices/{id}                      messages from the owner (also sent as push notifications)
 import {
   doc, getDoc, getDocs, setDoc, updateDoc, addDoc, collection, collectionGroup,
-  query, where, orderBy, limit, writeBatch, arrayUnion, arrayRemove, serverTimestamp,
+  query, where, orderBy, limit, writeBatch, arrayUnion, serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase.js";
 
@@ -31,20 +31,6 @@ export async function getPublicProfile(uid) {
 
 export async function savePublicProfile(uid, data) {
   await setDoc(doc(db, "publicProfiles", uid), { ...data, updatedAt: serverTimestamp() }, { merge: true });
-}
-
-// Profiles of other members. Members who haven't opted in can't be read,
-// so they come back as null.
-export async function getVisibleProfiles(uids) {
-  return Promise.all(
-    uids.map(async (uid) => {
-      try {
-        return await getPublicProfile(uid);
-      } catch {
-        return null;
-      }
-    })
-  );
 }
 
 export async function getLeaderboard() {
@@ -95,9 +81,6 @@ export async function saveCheckin(uid, date, data) {
 export async function getDay(uid, date) {
   return (await getDoc(doc(db, "users", uid, "practice", date))).data() || {};
 }
-
-// Older days only had { week } when practised.
-export const isPractised = (day) => day.practised === true || (day.practised === undefined && Boolean(day.week));
 
 // Saves one answer (key is "morning", "meditation" or "reflection"); `extra` adds fields such as practised.
 export async function saveDayAnswer(uid, date, key, value, extra = {}) {

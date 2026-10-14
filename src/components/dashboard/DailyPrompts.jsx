@@ -1,4 +1,4 @@
-// The three daytime prompts on Home: morning, meditation and reflection.
+// The three daytime prompts: morning and reflection (Home), meditation (Practices tab).
 // Each saves to users/{uid}/practice/{today} and can be shared in the WhatsApp group.
 // Wording and choices: src/content/dailyPrompts.js.
 import { saveDayAnswer } from "../../lib/data.js";

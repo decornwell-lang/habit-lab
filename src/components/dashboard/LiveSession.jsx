@@ -1,4 +1,4 @@
-// 4. Monday Live Session: date, time and a button that opens the Zoom link.
+// Live session (Practices tab): date, time and a button that opens the Zoom link.
 // Both are set by the owner in Admin → Content.
 import { formatDateTime } from "../../lib/dates.js";
 

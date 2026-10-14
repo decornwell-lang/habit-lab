@@ -16,19 +16,17 @@ Copy `.env.example` to `.env.local` and fill in the Firebase (and later Stripe) 
 
 ## Where things live
 - `src/App.jsx`: list of pages (routes)
-- `src/pages/`: one file per page
-- `src/firebase.js`: Firebase connection
+- `src/pages/`: one file per page (Dashboard, Account, Admin, Login, Landing…)
+- `src/components/dashboard/`: the member dashboard. Tabs: **Home** (badge box and the day's prompts), **Practices** (meditation, weekly assignment, live session), **Breathe** (3-minute breathing), **Upcoming** (cohorts to join)
+- `src/components/admin/`: the Admin tabs
+- `src/lib/`: helpers (Firestore data, dates, streaks and badges, push notifications…)
+- `src/content/`: wording you can edit: site text, info pages, weekly prompts, daily notifications (`dailyPrompts.js`), country codes
+- `api/`: server functions on Vercel (Stripe, sending messages, the hourly daily prompts)
+- `firestore.rules`: database security rules (paste into Firebase console → Firestore → Rules)
 - `src/styles/theme.css`: colours, fonts, spacing (change the look here)
 
-## Build progress
-1. ✅ Project setup (Vite, React, Firebase placeholders, Vercel-ready)
-2. ✅ Landing page, sign-up, log in, hamburger menu
-3. ⬜ Dashboard shell
-4. ⬜ Daily check-in, streaks, leaderboard
-5. ⬜ Cohorts and Stripe checkout, pre-cohort assignment
-6. ⬜ Badges and the start-again path
-7. ⬜ Admin dashboard
-8. ⬜ Bio and other menu pages
+## Daily notifications
+`.github/workflows/daily-prompts.yml` runs every hour and calls `api/daily-prompts.js`, which sends the morning, meditation, reflection and check-in prompts at each member's local time. Times and wording are in `src/content/dailyPrompts.js`. Needs `CRON_SECRET` in both Vercel and GitHub (Settings → Secrets and variables → Actions).
 
 ## Aphorisms (AI drafts, owner approval)
 Members see one short line under "Hello" on Home each day. Lines drafted by AI are **never** shown until you approve them.

@@ -20,6 +20,3 @@ export function cleanGroupLink(input = "") {
   const match = input.trim().match(/^(?:https?:\/\/)?chat\.whatsapp\.com\/([A-Za-z0-9]{10,40})/);
   return match ? `https://chat.whatsapp.com/${match[1]}` : null;
 }
-
-// Opens a WhatsApp chat with this number.
-export const whatsAppLink = (phone) => `https://wa.me/${normalizePhone(phone).replace("+", "")}`;

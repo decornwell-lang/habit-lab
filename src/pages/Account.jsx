@@ -1,4 +1,5 @@
-// My account: badges (with sharing), avatar, leaderboard opt-in, and log out.
+// My account (from the menu): badges (with sharing), avatar, mobile number, privacy,
+// notifications, password and log out.
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";

@@ -1,4 +1,4 @@
-// Admin dashboard (owner only): members, cohorts, content and check-ins.
+// Admin dashboard (owner only): members, cohorts, content, check-ins, messages and aphorisms.
 import { useCallback, useEffect, useState } from "react";
 import {
   getAllUsers, getAllPublicProfiles, getAllMemberships, getCohorts, getContentSettings,

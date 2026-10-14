@@ -63,45 +63,6 @@ service cloud.firestore {
             && request.resource.data.memberIds.toSet().difference(resource.data.memberIds.toSet()) == [request.auth.uid].toSet());
     }
 
-    // Pods. Cohort members can see which pods exist (to find one with space),
-    // add only themselves to a pod with fewer than 4 members, or remove themselves.
-    match /pods/{podId} {
-      allow read: if isAdmin()
-        || (signedIn() && request.auth.uid in get(/databases/$(database)/documents/cohorts/$(resource.data.cohortId)).data.memberIds);
-      allow create: if isAdmin() || signedIn()
-        && request.resource.data.memberIds == [request.auth.uid]
-        && request.auth.uid in get(/databases/$(database)/documents/cohorts/$(request.resource.data.cohortId)).data.memberIds;
-      allow update: if isAdmin() || (signedIn()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["memberIds"])
-        && ((request.resource.data.memberIds.toSet().difference(resource.data.memberIds.toSet()) == [request.auth.uid].toSet()
-             && resource.data.memberIds.size() < 4
-             && request.auth.uid in get(/databases/$(database)/documents/cohorts/$(resource.data.cohortId)).data.memberIds)
-          || (resource.data.memberIds.toSet().difference(request.resource.data.memberIds.toSet()) == [request.auth.uid].toSet()
-             && request.resource.data.memberIds.size() == resource.data.memberIds.size() - 1)));
-      // Any pod member can set or remove the pod's WhatsApp group invite link.
-      allow update: if signedIn() && request.auth.uid in resource.data.memberIds
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["whatsappGroupLink", "groupLinkSetBy"])
-        && (request.resource.data.whatsappGroupLink == null
-            || request.resource.data.whatsappGroupLink.matches("^https://chat[.]whatsapp[.]com/[A-Za-z0-9]+$"));
-      allow delete: if isAdmin();
-
-      // Member cards (first name, avatar, and phone only if they chose to share it).
-      // Only people in this pod can read them.
-      match /members/{uid} {
-        allow read: if isAdmin() || (signedIn() && request.auth.uid in get(/databases/$(database)/documents/pods/$(podId)).data.memberIds);
-        allow create, update: if isAdmin()
-          || (isSelf(uid) && request.auth.uid in getAfter(/databases/$(database)/documents/pods/$(podId)).data.memberIds);
-        allow delete: if isSelf(uid) || isAdmin();
-      }
-    }
-
-    // Requests to change pod. Members create their own; the owner reads and resolves them.
-    match /podRequests/{id} {
-      allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
-      allow create: if signedIn() && request.resource.data.uid == request.auth.uid && request.resource.data.status == "open";
-      allow update, delete: if isAdmin();
-    }
-
     // Messages from the owner (Admin → Messages).
     match /notices/{id} {
       allow read: if signedIn();

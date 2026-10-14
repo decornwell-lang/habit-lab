@@ -1,4 +1,4 @@
-// 7. Leaderboard: members who opted in, with avatar, first name, which habit
+// Leaderboard (Home): members who opted in, with avatar, first name, which habit
 // their streak is for (unless they hid it), streak and badges.
 import { useEffect, useState } from "react";
 import { getLeaderboard } from "../../lib/data.js";

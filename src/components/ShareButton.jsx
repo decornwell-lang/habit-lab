@@ -3,7 +3,7 @@
 // with the message ready.
 import WhatsAppIcon from "./WhatsAppIcon.jsx";
 
-export const whatsAppShareLink = (text) => `https://wa.me/?text=${encodeURIComponent(text)}`;
+const whatsAppShareLink = (text) => `https://wa.me/?text=${encodeURIComponent(text)}`;
 
 export default function ShareButton({ text, onShare, children = "Share in the group" }) {
   function handleClick(e) {

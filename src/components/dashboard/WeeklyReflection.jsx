@@ -1,4 +1,4 @@
-// 3. This Week's Reflection: a download link to the week's PDF. No submission.
+// Weekly assignment (Practices tab): a download link to the week's PDF. No submission.
 export default function WeeklyReflection({ content }) {
   return (
     <section className="card">

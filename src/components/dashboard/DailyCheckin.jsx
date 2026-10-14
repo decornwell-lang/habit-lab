@@ -1,4 +1,5 @@
-// 2. Daily Check-in: commitment Yes/No, craving rating, one open question.
+// Daily check-in (Home): commitment Yes/No, craving rating, one open question,
+// then a button to share the answers in the cohort's WhatsApp group.
 // Only shown to members who have joined a cohort.
 // The craving scale (1-5) is set in src/content/prompts.json.
 import { useState } from "react";

@@ -1,6 +1,6 @@
-// Dashboard: the members' home page, with three tabs (see DashboardTabs.jsx):
-//   Home · Practices (meditation, weekly assignment, live session) · Upcoming
-// The open tab is part of the address (e.g. /dashboard?tab=week), so links
+// Dashboard: the members' home page, with four tabs (see DashboardTabs.jsx):
+//   Home · Practices (meditation, weekly assignment, live session) · Breathe · Upcoming
+// The open tab is part of the address (e.g. /dashboard?tab=practices), so links
 // and notifications can open a specific tab.
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -90,7 +90,7 @@ export default function Dashboard() {
     };
   }, [load]);
 
-  // Remember the member's time zone (used for the 18:00 reminder).
+  // Remember the member's time zone (the daily notifications go out at local times).
   useEffect(() => {
     const zone = timeZoneName();
     if (zone && profile && profile.timeZone !== zone) updateUserProfile(user.uid, { timeZone: zone }).catch(() => {});
@@ -156,7 +156,6 @@ export default function Dashboard() {
   const streak = computeStreak(data.checkins, checkinDay);
   const checkedIn = Boolean(data.checkins[checkinDay]);
 
-  // Home rows, top to bottom. Each opens to show its card.
   const dayLabel = active ? `Day ${current.progress.day} ` : "";
   // Saves a daytime answer into Home's state, so the row shows it straight away.
   const onSaved = (key, answer, practised) =>
@@ -221,7 +220,6 @@ export default function Dashboard() {
       {notice && <p className="notice notice-good" role="status">{notice}</p>}
       {error && <p className="form-error" role="alert">{error}</p>}
 
-
       {/* Shown on any tab, straight after a check-in */}
       {celebrate && (
         <Celebration
@@ -242,7 +240,7 @@ export default function Dashboard() {
         }} />
       )}
 
-      {/* Home: streak, then everything else as rows that open when tapped */}
+      {/* Home: the badge box, then everything else as tiles that open when tapped */}
       {tab === "home" && (
         <>
           {current ? (
@@ -263,7 +261,6 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* Upcoming: cohorts that haven't started yet */}
       {/* Practices: this week's meditation, weekly assignment and live session */}
       {tab === "practices" && (
         <>
@@ -278,14 +275,12 @@ export default function Dashboard() {
       {/* Breathe: 3 minutes of slow nose breathing for a craving */}
       {tab === "breathe" && <BreatheTab />}
 
+      {/* Upcoming: cohorts that haven't started yet */}
       {tab === "upcoming" && (
-        <>
-          <JoinCohort uid={user.uid} cohorts={data.cohorts} memberships={data.memberships} onJoined={load} />
-        </>
+        <JoinCohort uid={user.uid} cohorts={data.cohorts} memberships={data.memberships} onJoined={load} />
       )}
 
       <DashboardTabs active={tab} onChange={setTab} />
     </main>
   );
 }
-
