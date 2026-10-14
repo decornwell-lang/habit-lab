@@ -63,8 +63,7 @@ export default function BreatheTab() {
   const clock = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
 
   function start() {
-    unlockAudio();
-    if (settings.gong) playGong(); // the beginning
+    if (settings.gong) unlockAudio().then(() => playGong()); // the beginning
     lastPhase.current = 0;
     setElapsed(0);
     setStartedAt(Date.now());
@@ -90,8 +89,8 @@ export default function BreatheTab() {
               <span className="breathe-count">{count}</span>
             </span>
           </div>
-          <p className="breathe-clock">{clock}</p>
           <p className="breathe-hint">Gentle, quiet belly breaths through your nose.</p>
+          <p className="breathe-clock">{clock} left</p>
           <button className="btn btn-text breathe-text-btn" onClick={stop}>Stop</button>
         </>
       ) : (
