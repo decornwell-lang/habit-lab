@@ -15,7 +15,7 @@ messaging.onBackgroundMessage((payload) => {
     body,
     icon: "/icons/icon-192.png",
     badge: "/icons/icon-192.png",
-    tag: kind === "reminder" ? "checkin-reminder" : "david-message", // a new one replaces the previous one
+    tag: kind === "message" ? "david-message" : "daily-prompt", // a new one replaces the previous one of its kind
     renotify: true,
     data: { link },
   });

@@ -1,8 +1,9 @@
-# Every hour, asks the app to send 18:00 check-in reminders to members whose
-# local time is now 18:xx. The app does the time-zone maths (api/checkin-reminder.js).
+# Every hour, asks the app to send the daily prompts (morning, meditation,
+# reflection, check-in) to members whose local time matches. The app does the
+# time-zone maths (api/daily-prompts.js; times in src/content/dailyPrompts.js).
 # Needs a repository secret named CRON_SECRET (Settings → Secrets and variables → Actions),
 # matching CRON_SECRET in Vercel.
-name: Check-in reminders
+name: Daily prompts
 
 on:
   schedule:
@@ -10,12 +11,12 @@ on:
   workflow_dispatch: # lets you run it by hand from the Actions tab
 
 jobs:
-  remind:
+  send:
     runs-on: ubuntu-latest
     steps:
-      - name: Send reminders
+      - name: Send daily prompts
         run: |
           curl -fsS -X POST \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json" \
-            https://habit-lab-two.vercel.app/api/checkin-reminder
+            https://habit-lab-two.vercel.app/api/daily-prompts

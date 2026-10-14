@@ -55,7 +55,7 @@ export async function saveToken(uid) {
   // While the app is open, show the message as the in-app banner (NoticeBanner.jsx)
   // instead of a system notification.
   onMessage(getMessaging(app), ({ data = {} }) => {
-    if (data.kind === "reminder") return; // the check-in card is already on screen
+    if (data.kind && data.kind !== "message") return; // daily prompts: the app already shows them on Home
     window.dispatchEvent(new CustomEvent("habitlab:notice", { detail: { id: data.noticeId, title: data.title || "Message", body: data.body || "" } }));
   });
   return token;

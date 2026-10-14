@@ -1,23 +1,8 @@
-// 1. Today's Practice: this week's meditation video and "Mark as practised today".
-import { useState } from "react";
-import { markPractised } from "../../lib/data.js";
+// This week's meditation video. The "How was it?" answer below it is in DailyPrompts.jsx.
 import { videoSource } from "../../lib/video.js";
 
-export default function TodaysPractice({ uid, content, practised, today }) {
-  const [done, setDone] = useState(practised);
-  const [busy, setBusy] = useState(false);
+export default function TodaysPractice({ content }) {
   const video = videoSource(content.meditationUrl);
-
-  async function handleMark() {
-    setBusy(true);
-    try {
-      await markPractised(uid, today, content.week);
-      setDone(true);
-    } finally {
-      setBusy(false);
-    }
-  }
-
   return (
     <section className="card">
       <p className="card-label">Meditation</p>
@@ -37,14 +22,6 @@ export default function TodaysPractice({ uid, content, practised, today }) {
         <a className="btn btn-ghost" href={video.src} target="_blank" rel="noreferrer">Open this week's meditation</a>
       )}
       {!video && <div className="video video-empty">Coming soon</div>}
-
-      {done ? (
-        <p className="done-badge">✓ Practised today</p>
-      ) : (
-        <button className="btn btn-primary" onClick={handleMark} disabled={busy}>
-          {busy ? "Saving…" : "Mark as practised"}
-        </button>
-      )}
     </section>
   );
 }

@@ -1,9 +1,10 @@
 // A compact list of rows that open when tapped (one at a time), so the
-// Home tab fits on one screen. Each item: { id, title, summary, content }.
+// Home tab fits on one screen. Each item: { id, title, summary, highlight, content }.
+// `initialOpen` opens one row to start with (used when a notification is tapped).
 import { useState } from "react";
 
-export default function Folds({ items }) {
-  const [open, setOpen] = useState(null);
+export default function Folds({ items, initialOpen = null }) {
+  const [open, setOpen] = useState(initialOpen);
   return (
     <section className="card folds">
       {items.map((item) => (

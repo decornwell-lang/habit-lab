@@ -5,13 +5,12 @@
 //   users/{uid}                       private profile (surname, email, role)
 //   users/{uid}/memberships/{cohortId} which cohorts they joined, payment
 //   users/{uid}/checkins/{date}       daily check-ins
-//   users/{uid}/practice/{date}       "Mark as practised today"
+//   users/{uid}/practice/{date}       that day's meditation, morning and reflection answers
 //   users/{uid}/practiceChecks/{id}   badge check-ins ("Still in your practice?")
 //   publicProfiles/{uid}              first name, avatar, streak, badges (shown to others only if opted in)
 //   cohorts/{cohortId}                cohort details and member list
 //   settings/content                  Zoom link, session date, weekly media links
 //   notices/{id}                      messages from the owner (also sent as push notifications)
-//   pods/{podId} (+ /members/{uid})   pods members choose to join, and their shared contact cards
 import {
   doc, getDoc, getDocs, setDoc, updateDoc, addDoc, collection, collectionGroup,
   query, where, orderBy, limit, writeBatch, arrayUnion, arrayRemove, serverTimestamp,
@@ -92,12 +91,17 @@ export async function saveCheckin(uid, date, data) {
   await setDoc(doc(db, "users", uid, "checkins", date), { ...data, date, updatedAt: serverTimestamp() }, { merge: true });
 }
 
-export async function hasPractised(uid, date) {
-  return (await getDoc(doc(db, "users", uid, "practice", date))).exists();
+// A member's answers for one calendar day: { morning, meditation, reflection, practised }.
+export async function getDay(uid, date) {
+  return (await getDoc(doc(db, "users", uid, "practice", date))).data() || {};
 }
 
-export async function markPractised(uid, date, week) {
-  await setDoc(doc(db, "users", uid, "practice", date), { date, week, at: serverTimestamp() });
+// Older days only had { week } when practised.
+export const isPractised = (day) => day.practised === true || (day.practised === undefined && Boolean(day.week));
+
+// Saves one answer (key is "morning", "meditation" or "reflection"); `extra` adds fields such as practised.
+export async function saveDayAnswer(uid, date, key, value, extra = {}) {
+  await setDoc(doc(db, "users", uid, "practice", date), { date, [key]: value, ...extra, at: serverTimestamp() }, { merge: true });
 }
 
 export async function savePracticeCheck(uid, data) {
@@ -124,171 +128,6 @@ export async function getNotices(max = 20) {
 export async function addNotice(data) {
   const ref = await addDoc(collection(db, "notices"), { ...data, createdAt: serverTimestamp() });
   return ref.id;
-}
-
-// ---------- Pods ----------
-// Members choose to join a pod. Each pod holds up to POD_SIZE members.
-//   pods/{podId}                  { cohortId, number, type ("mixed" | "women" | "men"), memberIds, createdAt,
-//                                   whatsappGroupLink, groupLinkSetBy }
-//   pods/{podId}/members/{uid}    { firstName, avatar, phone (only if shared, else null) }
-// Only members of a pod can read its member cards, so a shared phone number
-// is seen by that pod and nobody else (except the owner).
-export const POD_SIZE = 4;
-
-// Pods are kept in order of their number (Pod 1, Pod 2...), then by when they were made.
-export const sortPods = (pods) =>
-  [...pods].sort(
-    (a, b) => (a.number ?? Infinity) - (b.number ?? Infinity) || (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0)
-  );
-
-export async function getPods(cohortId) {
-  return sortPods(list(await getDocs(query(collection(db, "pods"), where("cohortId", "==", cohortId)))));
-}
-
-export async function getMyPod(cohortId, uid) {
-  return (await getPods(cohortId)).find((p) => p.memberIds?.includes(uid)) || null;
-}
-
-// Pod types a member can choose when joining. Edit the wording here.
-export const POD_TYPES = [
-  { id: "mixed", label: "Mixed pod", hint: "Anyone" },
-  { id: "women", label: "Women's pod", hint: "Women" },
-  { id: "men", label: "Men's pod", hint: "Men" },
-];
-export const podTypeLabel = (id) => (POD_TYPES.find((t) => t.id === (id || "mixed")) || POD_TYPES[0]).label;
-
-// Puts the member in the oldest pod of the chosen type with space, or starts a new one.
-export async function joinPod(cohortId, uid, card, type = "mixed") {
-  const open = (await getPods(cohortId)).find(
-    (p) => (p.type || "mixed") === type && (p.memberIds?.length || 0) < POD_SIZE
-  );
-  const batch = writeBatch(db);
-  const podRef = open ? doc(db, "pods", open.id) : doc(collection(db, "pods"));
-  if (open) batch.update(podRef, { memberIds: arrayUnion(uid) });
-  else batch.set(podRef, { cohortId, type, memberIds: [uid], createdAt: serverTimestamp() });
-  batch.set(doc(db, "pods", podRef.id, "members", uid), { firstName: card.firstName, avatar: card.avatar || null, phone: null });
-  await batch.commit();
-  return podRef.id;
-}
-
-export async function leavePod(podId, uid) {
-  const batch = writeBatch(db);
-  batch.delete(doc(db, "pods", podId, "members", uid));
-  batch.update(doc(db, "pods", podId), { memberIds: arrayRemove(uid) });
-  await batch.commit();
-}
-
-export async function getPodMembers(podId) {
-  return list(await getDocs(collection(db, "pods", podId, "members")));
-}
-
-// Saves (or removes, with null) the pod's WhatsApp group invite link.
-// Any member of the pod can set it; see src/lib/phone.js for the link check.
-export async function setPodGroupLink(podId, link, uid) {
-  await updateDoc(doc(db, "pods", podId), { whatsappGroupLink: link || null, groupLinkSetBy: link ? uid : null });
-}
-
-// Shares (phone) or hides (null) the member's number with their pod.
-export async function setPodPhone(podId, uid, phone) {
-  await updateDoc(doc(db, "pods", podId, "members", uid), { phone: phone || null });
-}
-
-export async function getAllPods() {
-  return list(await getDocs(collection(db, "pods")));
-}
-
-// Owner only: move a member from one pod to another (or out of a pod when toPodId is null).
-export async function adminMovePodMember({ uid, fromPodId, toPodId }) {
-  const batch = writeBatch(db);
-  let card = { firstName: "", avatar: null, phone: null };
-  if (fromPodId) {
-    const old = await getDoc(doc(db, "pods", fromPodId, "members", uid));
-    if (old.exists()) card = old.data();
-    batch.delete(doc(db, "pods", fromPodId, "members", uid));
-    batch.update(doc(db, "pods", fromPodId), { memberIds: arrayRemove(uid) });
-  }
-  if (toPodId) {
-    batch.update(doc(db, "pods", toPodId), { memberIds: arrayUnion(uid) });
-    batch.set(doc(db, "pods", toPodId, "members", uid), card);
-  }
-  await batch.commit();
-}
-
-// Owner only: change a pod's type or WhatsApp group link.
-export async function adminUpdatePod(podId, data) {
-  await updateDoc(doc(db, "pods", podId), data);
-}
-
-// Owner only: create several empty pods at once (e.g. 8 for a new cohort).
-export async function adminCreatePods(cohortId, count, type = "mixed") {
-  const existing = await getPods(cohortId);
-  const start = existing.reduce((max, p, i) => Math.max(max, p.number ?? i + 1), 0);
-  const batch = writeBatch(db);
-  for (let i = 0; i < count; i++) {
-    batch.set(doc(collection(db, "pods")), {
-      cohortId, type, number: start + i + 1, memberIds: [], whatsappGroupLink: null, createdAt: serverTimestamp(),
-    });
-  }
-  await batch.commit();
-}
-
-// Owner only: paste WhatsApp group links in order (Pod 1, Pod 2...).
-// - A link already used by a pod keeps its pod, and gets renumbered to match its position.
-// - A new link goes to a pod that doesn't have one yet, or a new pod is created.
-// Pods not in the pasted list keep their numbers, and pasted pods are numbered after them.
-// Returns { assigned, created, renumbered }.
-export async function adminAssignGroupLinks(cohortId, links, type = "mixed") {
-  const pods = await getPods(cohortId);
-  const pasted = new Set(links);
-  const keep = pods.filter((p) => p.whatsappGroupLink && !pasted.has(p.whatsappGroupLink)).length;
-  const waiting = pods.filter((p) => !p.whatsappGroupLink);
-  const batch = writeBatch(db);
-  let assigned = 0;
-  let created = 0;
-  let renumbered = 0;
-  links.forEach((link, i) => {
-    const number = keep + i + 1;
-    const existing = pods.find((p) => p.whatsappGroupLink === link);
-    if (existing) {
-      batch.update(doc(db, "pods", existing.id), { number });
-      renumbered++;
-    } else if (waiting.length) {
-      batch.update(doc(db, "pods", waiting.shift().id), { whatsappGroupLink: link, groupLinkSetBy: "admin", number });
-      assigned++;
-    } else {
-      batch.set(doc(collection(db, "pods")), {
-        cohortId, type, number, memberIds: [], whatsappGroupLink: link, groupLinkSetBy: "admin", createdAt: serverTimestamp(),
-      });
-      created++;
-    }
-  });
-  await batch.commit();
-  return { assigned, created, renumbered };
-}
-
-// Owner only: start a new, empty pod in a cohort.
-export async function adminCreatePod(cohortId, type = "mixed") {
-  const ref = await addDoc(collection(db, "pods"), { cohortId, type, memberIds: [], createdAt: serverTimestamp() });
-  return ref.id;
-}
-
-// ---------- Pod change requests ----------
-//   podRequests/{id}  { uid, firstName, cohortId, podId, reason, status: "open" | "done", createdAt }
-export async function addPodRequest(data) {
-  await addDoc(collection(db, "podRequests"), { ...data, status: "open", createdAt: serverTimestamp() });
-}
-
-export async function getMyOpenPodRequest(uid) {
-  const mine = list(await getDocs(query(collection(db, "podRequests"), where("uid", "==", uid))));
-  return mine.find((r) => r.status === "open") || null;
-}
-
-export async function getPodRequests() {
-  return list(await getDocs(collection(db, "podRequests"))).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-}
-
-export async function resolvePodRequest(id) {
-  await updateDoc(doc(db, "podRequests", id), { status: "done", resolvedAt: serverTimestamp() });
 }
 
 // ---------- Admin only ----------

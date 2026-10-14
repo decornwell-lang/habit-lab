@@ -59,7 +59,7 @@ export function AuthProvider({ children }) {
       firstName,
       surname,
       email,
-      phone: phone || null, // private: only shared with a pod if the member chooses
+      phone: phone || null, // private: only the owner sees it
       leaderboardOptIn: Boolean(leaderboardOptIn),
       avatar: null,
       role: "member",

@@ -7,7 +7,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import {
   getCohorts, getMemberships, getCheckins, getPublicProfile, savePublicProfile,
-  getContentSettings, hasPractised, updateUserProfile,
+  getContentSettings, getDay, isPractised, updateUserProfile,
 } from "../lib/data.js";
 import { apiPost } from "../lib/api.js";
 import { todayKey, checkinDayKey, addDays, timeZoneName } from "../lib/dates.js";
@@ -16,11 +16,9 @@ import { weekContent } from "../lib/content.js";
 import { computeStreak, badgesForStreak } from "../lib/streaks.js";
 
 import PreCohort from "../components/dashboard/PreCohort.jsx";
-import TodaysPractice from "../components/dashboard/TodaysPractice.jsx";
 import DailyCheckin from "../components/dashboard/DailyCheckin.jsx";
 import WeeklyReflection from "../components/dashboard/WeeklyReflection.jsx";
 import LiveSession from "../components/dashboard/LiveSession.jsx";
-import MyPod from "../components/dashboard/MyPod.jsx";
 import JoinCohort from "../components/dashboard/JoinCohort.jsx";
 import Leaderboard from "../components/dashboard/Leaderboard.jsx";
 import Celebration from "../components/dashboard/Celebration.jsx";
@@ -32,8 +30,9 @@ import StreakCard from "../components/dashboard/StreakCard.jsx";
 import UpcomingEvents from "../components/dashboard/UpcomingEvents.jsx";
 import BreathePause from "../components/dashboard/BreathePause.jsx";
 import JourneyMap from "../components/dashboard/JourneyMap.jsx";
-import AddPhoneCard from "../components/dashboard/AddPhoneCard.jsx";
 import Folds from "../components/dashboard/Folds.jsx";
+import { MorningPrompt, MeditationPrompt, ReflectionPrompt } from "../components/dashboard/DailyPrompts.jsx";
+import WhatsAppIcon from "../components/WhatsAppIcon.jsx";
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -54,15 +53,15 @@ export default function Dashboard() {
 
   const load = useCallback(async () => {
     try {
-      const [cohorts, memberships, checkins, publicProfile, settings, practised] = await Promise.all([
+      const [cohorts, memberships, checkins, publicProfile, settings, day] = await Promise.all([
         getCohorts(),
         getMemberships(user.uid),
         getCheckins(user.uid),
         getPublicProfile(user.uid),
         getContentSettings(),
-        hasPractised(user.uid, todayKey()),
+        getDay(user.uid, todayKey()),
       ]);
-      setData({ cohorts, memberships, checkins, publicProfile, settings, practised });
+      setData({ cohorts, memberships, checkins, publicProfile, settings, day });
     } catch (err) {
       console.error(err);
       setError("We couldn't load your dashboard. Please refresh the page.");
@@ -158,7 +157,42 @@ export default function Dashboard() {
   const checkedIn = Boolean(data.checkins[checkinDay]);
 
   // Home rows, top to bottom. Each opens to show its card.
+  const dayLabel = active ? `Day ${current.progress.day} ` : "";
+  // Saves a daytime answer into Home's state, so the row shows it straight away.
+  const onSaved = (key, answer, practised) =>
+    setData((d) => ({ ...d, day: { ...d.day, [key]: answer, ...(practised !== undefined && { practised }) } }));
+  const prompt = { uid: user.uid, today, dayLabel, onSaved };
+  const done = (answer) => (answer ? "✓ Shared" : "");
+  const groupLink = current?.cohort.whatsappGroupLink;
+
+  // Home rows, top to bottom: the day's prompts in order, then everything else.
+  // Notifications open a row directly, e.g. /dashboard?open=morning.
   const homeItems = [
+    current && groupLink && {
+      id: "group",
+      title: "Cohort WhatsApp group",
+      content: (
+        <a className="btn btn-whatsapp" href={groupLink} target="_blank" rel="noreferrer"><WhatsAppIcon /> Open the group</a>
+      ),
+    },
+    active && {
+      id: "morning",
+      title: "Morning",
+      summary: done(data.day.morning) || "How are you?",
+      content: <MorningPrompt {...prompt} existing={data.day.morning} />,
+    },
+    {
+      id: "meditation",
+      title: "Meditation",
+      summary: done(data.day.meditation) || (isPractised(data.day) ? "✓ Done" : content.title),
+      content: <MeditationPrompt {...prompt} content={content} existing={data.day.meditation} />,
+    },
+    active && {
+      id: "reflection",
+      title: "Reflection",
+      summary: done(data.day.reflection),
+      content: <ReflectionPrompt {...prompt} content={content} existing={data.day.reflection} />,
+    },
     current && checkinProgress?.state === "active" && {
       id: "checkin",
       title: "Check-in",
@@ -170,15 +204,17 @@ export default function Dashboard() {
       ),
     },
     {
-      id: "meditation",
-      title: "Meditation",
-      summary: data.practised ? "✓ Done" : content.title,
-      content: <TodaysPractice uid={user.uid} content={content} practised={data.practised} today={today} />,
+      id: "week",
+      title: "This week",
+      summary: shortDateTime(data.settings.nextSessionAt) || `Week ${week}`,
+      content: (
+        <>
+          <LiveSession settings={data.settings} />
+          <WeeklyReflection content={content} />
+        </>
+      ),
     },
-    { id: "reflection", title: "Reflection", summary: `Week ${week}`, content: <WeeklyReflection content={content} /> },
-    { id: "live", title: "Live session", summary: shortDateTime(data.settings.nextSessionAt), content: <LiveSession settings={data.settings} /> },
     active && { id: "breathe", title: "Craving?", summary: "1 min", content: <BreathePause /> },
-    current && { id: "pod", title: "My pod", content: <MyPod uid={user.uid} profile={profile} current={current} today={checkinDay} /> },
     { id: "leaderboard", title: "Leaderboard", content: <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} /> },
     current && { id: "journey", title: "Journey", summary: active ? `Day ${current.progress.day}` : "", content: <JourneyMap current={current} checkins={data.checkins} /> },
   ].filter(Boolean);
@@ -192,7 +228,6 @@ export default function Dashboard() {
       {notice && <p className="notice notice-good" role="status">{notice}</p>}
       {error && <p className="form-error" role="alert">{error}</p>}
 
-      <AddPhoneCard uid={user.uid} profile={profile} />
 
       {/* Shown on any tab, straight after a check-in */}
       {celebrate && (
@@ -228,7 +263,7 @@ export default function Dashboard() {
               <button className="btn btn-primary" onClick={() => setTab("upcoming")}>See cohorts</button>
             </section>
           )}
-          <Folds items={homeItems} />
+          <Folds items={homeItems} initialOpen={params.get("open")} />
           <NotificationSettings uid={user.uid} compact />
           <InstallApp />
         </>

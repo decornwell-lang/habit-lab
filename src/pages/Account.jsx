@@ -37,7 +37,7 @@ export default function Account() {
     }
     setBusy(true);
     try {
-      // The phone number is private: it's only shown to a pod if shared from the pod card.
+      // The phone number is private: only the owner sees it.
       await updateUserProfile(user.uid, { avatar, leaderboardOptIn: optIn, showHabit, phone: phone.trim() ? normalizePhone(phone) : null });
       // The public profile never holds surname, email or phone.
       await savePublicProfile(user.uid, { firstName, avatar, leaderboardOptIn: optIn, showHabit });

@@ -1,16 +1,13 @@
-// POST /api/checkin-reminder   (called every hour by a scheduled GitHub Action)
-// Sends a push notification to members whose local time is now 18:xx, who are
-// in an active cohort, have notifications on, and haven't checked in yet today.
+// POST /api/daily-prompts   (called every hour by a scheduled GitHub Action)
+// Sends the daily prompts (morning, meditation, reflection, check-in) to members
+// in an active cohort with notifications on, at each prompt's hour in the member's
+// own time zone. Times and wording: src/content/dailyPrompts.js.
 // Protected by the CRON_SECRET environment variable.
 import { getMessaging } from "firebase-admin/messaging";
 import { handle, db, HttpError } from "./_lib/server.js";
+import { DAILY_PROMPTS } from "../src/content/dailyPrompts.js";
 
-const REMINDER_HOUR = 18; // keep in step with CHECKIN_OPENS_AT_HOUR in src/lib/dates.js
 const DEFAULT_TIME_ZONE = "Europe/London"; // for members whose time zone isn't known yet
-
-// Wording of the reminder. {day} becomes the member's cohort day.
-const TITLE = "Time for your check-in 🌿";
-const BODY = "How was today? Your Day {day} check-in is open.";
 
 // Local hour and date ("YYYY-MM-DD") for a time zone.
 function localNow(timeZone) {
@@ -32,7 +29,7 @@ export default handle(async (req, res) => {
   const cohorts = Object.fromEntries((await store.collection("cohorts").get()).docs.map((d) => [d.id, d.data()]));
   const users = (await store.collection("users").get()).docs.filter((d) => d.data().fcmTokens?.length);
 
-  let reminded = 0;
+  let sent = 0;
   let devices = 0;
   for (const userDoc of users) {
     const user = userDoc.data();
@@ -42,7 +39,9 @@ export default handle(async (req, res) => {
     } catch {
       local = localNow(DEFAULT_TIME_ZONE);
     }
-    if (local.hour !== REMINDER_HOUR || user.lastReminderDate === local.date) continue;
+    const prompt = DAILY_PROMPTS.find((p) => p.hour === local.hour);
+    // promptsSent remembers the last date each prompt went out, so it's sent once a day.
+    if (!prompt || user.promptsSent?.[prompt.id] === local.date) continue;
 
     // Find an active cohort for today.
     const memberships = (await userDoc.ref.collection("memberships").get()).docs;
@@ -56,18 +55,23 @@ export default handle(async (req, res) => {
     }
     if (!cohortDay) continue;
 
-    // Already checked in today? Then no reminder.
-    if ((await userDoc.ref.collection("checkins").doc(local.date).get()).exists) continue;
+    // Already checked in today? Then no check-in reminder.
+    if (prompt.id === "checkin" && (await userDoc.ref.collection("checkins").doc(local.date).get()).exists) continue;
 
     const response = await getMessaging().sendEachForMulticast({
       tokens: user.fcmTokens,
-      data: { kind: "reminder", title: TITLE, body: BODY.replace("{day}", cohortDay), link: "/dashboard" },
+      data: {
+        kind: "prompt",
+        title: prompt.title,
+        body: prompt.body.replace("{day}", cohortDay),
+        link: `/dashboard?open=${prompt.id}`,
+      },
       webpush: { headers: { Urgency: "high" } },
     });
     devices += response.successCount;
-    reminded++;
-    await userDoc.ref.update({ lastReminderDate: local.date });
+    sent++;
+    await userDoc.ref.update({ [`promptsSent.${prompt.id}`]: local.date });
   }
 
-  res.json({ reminded, devices });
+  res.json({ sent, devices });
 });

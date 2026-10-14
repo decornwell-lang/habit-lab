@@ -1,4 +1,4 @@
-// Cohort helpers: where a member is in their cohort, their pod, prices.
+// Cohort helpers: where a member is in their cohort, prices.
 import { daysBetween, addDays } from "./dates.js";
 
 // `streak` is how a streak is described on the leaderboard and when sharing,

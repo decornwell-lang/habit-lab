@@ -2,9 +2,10 @@
 import { useState } from "react";
 import { saveCohort } from "../../lib/data.js";
 import { HABIT_TYPES, habitLabel, formatPrice } from "../../lib/cohorts.js";
+import { cleanGroupLink } from "../../lib/phone.js";
 import { todayKey, formatDate } from "../../lib/dates.js";
 
-const EMPTY = { name: "", habitType: "smoking", startDate: "", durationDays: 33, price: 0, currency: "gbp", status: "upcoming" };
+const EMPTY = { name: "", habitType: "smoking", startDate: "", durationDays: 33, price: 0, currency: "gbp", status: "upcoming", whatsappGroupLink: "" };
 
 // Two ready-made cohorts: the real first cohort, and a free one starting
 // today so you can try every feature straight away.
@@ -36,6 +37,7 @@ export default function CohortsTab({ cohorts, reload }) {
       price: Number(form.price),
       currency: form.currency.trim().toLowerCase() || "gbp",
       status: form.status,
+      whatsappGroupLink: cleanGroupLink(form.whatsappGroupLink || "") || null,
     };
     if (!data.name || !data.startDate || !data.durationDays) return setMessage("Please fill in the name, start date and duration.");
     await saveCohort(editingId === "new" ? null : editingId, data);
@@ -85,6 +87,10 @@ export default function CohortsTab({ cohorts, reload }) {
           <div className="field-row">
             <div className="field"><label>Price (0 = free)</label><input type="number" min="0" step="0.01" name="price" value={form.price} onChange={update} /></div>
             <div className="field"><label>Currency</label><input name="currency" value={form.currency} onChange={update} /></div>
+          </div>
+          <div className="field">
+            <label>WhatsApp group invite link</label>
+            <input name="whatsappGroupLink" value={form.whatsappGroupLink || ""} onChange={update} placeholder="https://chat.whatsapp.com/…" />
           </div>
           <button className="btn btn-primary">Save cohort</button>
           <button type="button" className="btn btn-text" onClick={() => setEditingId(null)}>Cancel</button>

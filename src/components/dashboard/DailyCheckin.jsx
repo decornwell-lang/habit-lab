@@ -5,12 +5,14 @@ import { useState } from "react";
 import { saveCheckin } from "../../lib/data.js";
 import { formatDate, isBeforeCheckinOpens, checkinOpensLabel, todayKey } from "../../lib/dates.js";
 import { COMMITMENT_QUESTION, CRAVING_QUESTION, CRAVING_SCALE } from "../../lib/content.js";
+import WhatsAppIcon from "../WhatsAppIcon.jsx";
+import { whatsAppShareLink } from "./QuickAnswer.jsx";
 
 const scaleValues = Array.from({ length: CRAVING_SCALE.max - CRAVING_SCALE.min + 1 }, (_, i) => CRAVING_SCALE.min + i);
 
-// The short report members can send to their pod's WhatsApp group.
+// The short report members can share in their cohort's WhatsApp group.
 // They can edit it in WhatsApp before sending. Change the wording here.
-function podReport({ checkin, progress, content, streak }) {
+function groupReport({ checkin, progress, content, streak }) {
   const lines = [
     `🌿 Day ${progress.day} check-in · ${content.title}`,
     checkin.maintained
@@ -22,19 +24,7 @@ function podReport({ checkin, progress, content, streak }) {
   return lines.join("\n");
 }
 
-// Opens WhatsApp with the message ready; the member picks their pod's group.
-const whatsAppShareLink = (text) => `https://wa.me/?text=${encodeURIComponent(text)}`;
 
-function WhatsAppIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.6-.3z"
-      />
-    </svg>
-  );
-}
 
 // `day` is the check-in day that's open now and `progress` is where that day sits
 // in the cohort (see checkinDayKey in src/lib/dates.js: check-ins open at 18:00).
@@ -117,8 +107,8 @@ export default function DailyCheckin({ uid, current, progress, content, existing
           {existing?.answer && <li>“{existing.answer}”</li>}
         </ul>
         {existing && (
-          <a className="btn btn-whatsapp" href={whatsAppShareLink(podReport({ checkin: existing, progress, content, streak }))} target="_blank" rel="noreferrer">
-            <WhatsAppIcon /> Share with my pod
+          <a className="btn btn-whatsapp" href={whatsAppShareLink(groupReport({ checkin: existing, progress, content, streak }))} target="_blank" rel="noreferrer">
+            <WhatsAppIcon /> Share in the group
           </a>
         )}
         <button className="btn btn-ghost" onClick={() => setEditing(true)}>Edit</button>
@@ -132,7 +122,7 @@ export default function DailyCheckin({ uid, current, progress, content, existing
   return (
     <section className="card">
       <p className="card-label">{cardLabel}</p>
-      <h2>{content.dailyPrompt}</h2>
+      <h2>How was today?</h2>
       <p className="streak">{streakLine}</p>
 
       <form onSubmit={handleSubmit}>

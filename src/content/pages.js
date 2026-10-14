@@ -55,7 +55,7 @@ export const pages = {
           "Practise every day, with a short daily check-in in the app.",
           "Each week, practise the same 15-minute mindfulness of breathing meditation as everyone else.",
           "Meet the group with David on Zoom every Monday.",
-          "Share the journey with a small pod of 3 or 4 members.",
+          "Share the journey with your cohort in a WhatsApp group.",
         ],
       },
       {
