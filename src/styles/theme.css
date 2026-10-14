@@ -818,35 +818,45 @@ td.actions { white-space: nowrap; }
 .breathe-screen {
   position: fixed; top: 64px; left: 0; right: 0; bottom: 0; z-index: 9;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 24px 24px calc(90px + env(safe-area-inset-bottom)); text-align: center; color: #fff;
+  padding: 16px 20px calc(80px + env(safe-area-inset-bottom)); text-align: center; color: #fff; overflow-y: auto;
   background: radial-gradient(120% 90% at 50% 40%, var(--navy-blue) 0%, var(--dark-blue) 70%);
 }
 .breathe-screen h2 { color: #fff; margin: 0 0 8px; }
 .breathe-circle {
-  display: grid; place-items: center; width: 220px; height: 220px; margin: 28px auto 40px;
+  display: grid; place-items: center; width: min(220px, 30vh); height: min(220px, 30vh); margin: 4vh auto 5vh;
   border-radius: 50%; background: radial-gradient(circle, var(--aqua) 0%, var(--teal) 100%); color: #fff;
   transform: scale(0.8); transition: transform var(--breath, 7s) ease-in-out;
   box-shadow: 0 10px 40px rgba(87, 189, 162, 0.3);
 }
 .breathe-circle.out { transform: scale(0.55); }
 .breathe-circle.in { transform: scale(1.12); }
+.breathe-circle.small { width: min(150px, 18vh); height: min(150px, 18vh); margin: 2vh auto 3vh; transform: none; }
 .breathe-circle > span { display: flex; flex-direction: column; align-items: center; }
 .breathe-word { font-family: var(--font-heading); font-size: 1.35rem; font-weight: 600; margin: 0; }
 .breathe-count { font-family: var(--font-heading); font-size: 2rem; margin-top: 2px; }
 .breathe-clock { font-family: var(--font-heading); font-size: 2.4rem; margin: 0; font-variant-numeric: tabular-nums; }
-.breathe-hint { color: #c4c9dc; margin: 8px auto 20px; max-width: 340px; }
+.breathe-hint { color: #c4c9dc; margin: 4px auto 12px; max-width: 340px; }
 .breathe-done { font-family: var(--font-heading); font-size: 1.8rem; margin: 0; }
 .breathe-screen .btn { max-width: 320px; }
 .breathe-screen .btn-primary { background: var(--aqua); color: var(--dark-blue); }
 .breathe-screen .breathe-text-btn { color: #fff; }
 @media (prefers-reduced-motion: reduce) { .breathe-circle { transition: none; } }
-.breathe-options { display: flex; gap: 10px; justify-content: center; margin: 0 0 20px; flex-wrap: wrap; }
-.breathe-stepper, .breathe-toggle {
-  display: inline-flex; align-items: center; min-height: 44px; border-radius: 99px;
-  background: rgba(255, 255, 255, 0.08); color: #fff; font: inherit; font-weight: 600; border: none;
+.breathe-settings {
+  width: 100%; max-width: 340px; margin: 0 auto 16px; padding: 4px 14px;
+  border-radius: 16px; background: rgba(255, 255, 255, 0.06);
 }
-.breathe-stepper span { min-width: 64px; text-align: center; }
-.breathe-stepper button { width: 44px; height: 44px; border: none; background: none; color: #fff; font-size: 1.4rem; cursor: pointer; }
+.breathe-setting { display: flex; align-items: center; justify-content: space-between; min-height: 48px; gap: 12px; }
+.breathe-setting + .breathe-setting { border-top: 1px solid rgba(255, 255, 255, 0.08); }
+.breathe-setting > span { color: #c4c9dc; font-size: 0.92rem; text-align: left; }
+.breathe-stepper { display: inline-flex; align-items: center; color: #fff; font-weight: 600; }
+.breathe-stepper span { min-width: 60px; text-align: center; font-variant-numeric: tabular-nums; }
+.breathe-stepper button {
+  width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(255, 255, 255, 0.1);
+  color: #fff; font: inherit; font-size: 1.2rem; line-height: 1; cursor: pointer;
+}
 .breathe-stepper button:disabled { opacity: 0.3; }
-.breathe-toggle { padding: 0 18px; cursor: pointer; }
+.breathe-toggle {
+  min-height: 36px; padding: 0 16px; border-radius: 99px; border: none; cursor: pointer;
+  background: rgba(255, 255, 255, 0.1); color: #fff; font: inherit; font-weight: 600;
+}
 .breathe-toggle.on { background: rgba(87, 189, 162, 0.22); color: var(--aqua); }

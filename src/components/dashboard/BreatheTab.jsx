@@ -1,20 +1,21 @@
 // Breathe tab: for a craving. Gentle, quiet, diaphragmatic belly breathing
-// through the nose. The in-breath counts up 1 to 7, the out-breath counts down
-// 7 to 1. The whole tab is the dark blue breathing screen. Members can change the
-// length (1 to 10 minutes) and switch the gong on or off; both are remembered on the device.
+// through the nose. The in-breath counts up (1 to 7), the out-breath counts down
+// (7 to 1). The whole tab is the dark blue breathing screen. Members can change the
+// breath (3 to 10 seconds), the length (1 to 10 minutes) and the gong; all are
+// remembered on the device.
 import { useEffect, useRef, useState } from "react";
 import { playGong, unlockAudio } from "../../lib/gong.js";
 
-const BREATH_SECONDS = 7; // each in-breath and each out-breath
-const MIN_MINUTES = 1;
-const MAX_MINUTES = 10;
+const DEFAULTS = { breath: 7, minutes: 3, gong: true }; // breath = seconds for each in- and out-breath
+const BREATH_RANGE = [3, 10];
+const MINUTES_RANGE = [1, 10];
 const SETTINGS_KEY = "habitlab:breathe";
 
 function loadSettings() {
   try {
-    return { minutes: 3, gong: true, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") };
+    return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") };
   } catch {
-    return { minutes: 3, gong: true };
+    return DEFAULTS;
   }
 }
 
@@ -23,6 +24,7 @@ export default function BreatheTab() {
   const [startedAt, setStartedAt] = useState(null); // null = not running
   const [elapsed, setElapsed] = useState(0);
   const lastPhase = useRef(null); // to sound the gong when the breath changes
+  const breath = settings.breath;
   const totalSeconds = settings.minutes * 60;
 
   function change(next) {
@@ -45,18 +47,18 @@ export default function BreatheTab() {
         if (settings.gong) playGong(); // the end
         return;
       }
-      const phase = Math.floor(secs / BREATH_SECONDS);
+      const phase = Math.floor(secs / breath);
       if (settings.gong && lastPhase.current !== null && phase !== lastPhase.current) playGong({ soft: true });
       lastPhase.current = phase;
     }, 200);
     return () => clearInterval(timer);
-  }, [startedAt, totalSeconds, settings.gong]);
+  }, [startedAt, breath, totalSeconds, settings.gong]);
 
   const running = startedAt !== null;
   const finished = !running && elapsed >= totalSeconds;
-  const inPhase = elapsed % (BREATH_SECONDS * 2) < BREATH_SECONDS;
-  const second = Math.floor(elapsed % BREATH_SECONDS); // 0 to 6 within this breath
-  const count = inPhase ? second + 1 : BREATH_SECONDS - second; // in: 1 → 7, out: 7 → 1
+  const inPhase = elapsed % (breath * 2) < breath;
+  const second = Math.floor(elapsed % breath); // 0 up to breath - 1
+  const count = inPhase ? second + 1 : breath - second; // in counts up, out counts down
   const left = Math.ceil(totalSeconds - elapsed);
   const clock = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
 
@@ -82,7 +84,7 @@ export default function BreatheTab() {
         </>
       ) : running ? (
         <>
-          <div className={`breathe-circle ${inPhase ? "in" : "out"}`} style={{ "--breath": `${BREATH_SECONDS}s` }}>
+          <div className={`breathe-circle ${inPhase ? "in" : "out"}`} style={{ "--breath": `${breath}s` }}>
             <span>
               <span className="breathe-word">{inPhase ? "Breathe in" : "Breathe out"}</span>
               <span className="breathe-count">{count}</span>
@@ -95,28 +97,40 @@ export default function BreatheTab() {
       ) : (
         <>
           <h2>Craving?</h2>
-          <p className="breathe-hint">
-            Gentle, quiet, diaphragmatic belly breathing through your nose: 7 seconds in, 7 seconds out.
-          </p>
-          <div className="breathe-circle"><span className="breathe-word">{settings.minutes}:00</span></div>
+          <p className="breathe-hint">Gentle, quiet, diaphragmatic belly breathing through your nose.</p>
+          <div className="breathe-circle small"><span className="breathe-word">{settings.minutes}:00</span></div>
 
-          <div className="breathe-options">
-            <div className="breathe-stepper" role="group" aria-label="Length">
-              <button onClick={() => change({ minutes: Math.max(MIN_MINUTES, settings.minutes - 1) })}
-                disabled={settings.minutes <= MIN_MINUTES} aria-label="Shorter">−</button>
-              <span>{settings.minutes} min</span>
-              <button onClick={() => change({ minutes: Math.min(MAX_MINUTES, settings.minutes + 1) })}
-                disabled={settings.minutes >= MAX_MINUTES} aria-label="Longer">+</button>
+          <div className="breathe-settings">
+            <Stepper label="Breathe in and out" value={`${breath} sec`} range={BREATH_RANGE} current={breath}
+              onChange={(v) => change({ breath: v })} />
+            <Stepper label="Length" value={`${settings.minutes} min`} range={MINUTES_RANGE} current={settings.minutes}
+              onChange={(v) => change({ minutes: v })} />
+            <div className="breathe-setting">
+              <span>Gong</span>
+              <button className={`breathe-toggle ${settings.gong ? "on" : ""}`} onClick={() => change({ gong: !settings.gong })}
+                aria-pressed={settings.gong}>
+                {settings.gong ? "🔔 On" : "🔕 Off"}
+              </button>
             </div>
-            <button className={`breathe-toggle ${settings.gong ? "on" : ""}`} onClick={() => change({ gong: !settings.gong })}
-              aria-pressed={settings.gong}>
-              {settings.gong ? "🔔 Gong on" : "🔕 Gong off"}
-            </button>
           </div>
 
           <button className="btn btn-primary" onClick={start}>Start</button>
         </>
       )}
     </section>
+  );
+}
+
+// One settings row: label, then − value +.
+function Stepper({ label, value, range: [min, max], current, onChange }) {
+  return (
+    <div className="breathe-setting">
+      <span>{label}</span>
+      <div className="breathe-stepper" role="group" aria-label={label}>
+        <button onClick={() => onChange(Math.max(min, current - 1))} disabled={current <= min} aria-label={`Less: ${label}`}>−</button>
+        <span>{value}</span>
+        <button onClick={() => onChange(Math.min(max, current + 1))} disabled={current >= max} aria-label={`More: ${label}`}>+</button>
+      </div>
+    </div>
   );
 }
