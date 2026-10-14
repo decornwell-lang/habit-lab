@@ -170,34 +170,46 @@ export default function Dashboard() {
   const homeItems = [
     current && groupLink && {
       id: "group",
-      title: "Cohort WhatsApp group",
+      icon: "💬",
+      title: "Cohort group",
+      summary: "WhatsApp",
       content: (
         <a className="btn btn-whatsapp" href={groupLink} target="_blank" rel="noreferrer"><WhatsAppIcon /> Open the group</a>
       ),
     },
     active && {
       id: "morning",
+      icon: "☀️",
+      tone: "gold",
       title: "Morning",
       summary: done(data.day.morning) || "How are you?",
+      done: Boolean(data.day.morning),
       content: <MorningPrompt {...prompt} existing={data.day.morning} />,
     },
     {
       id: "meditation",
+      icon: "🧘",
       title: "Meditation",
-      summary: done(data.day.meditation) || (isPractised(data.day) ? "✓ Done" : content.title),
+      summary: done(data.day.meditation) || (isPractised(data.day) ? "✓ Done" : "15 minutes"),
+      done: Boolean(data.day.meditation) || isPractised(data.day),
       content: <MeditationPrompt {...prompt} content={content} existing={data.day.meditation} />,
     },
     active && {
       id: "reflection",
+      icon: "✍️",
+      tone: "gold",
       title: "Reflection",
-      summary: done(data.day.reflection),
+      summary: done(data.day.reflection) || "Daily question",
+      done: Boolean(data.day.reflection),
       content: <ReflectionPrompt {...prompt} content={content} existing={data.day.reflection} />,
     },
     current && checkinProgress?.state === "active" && {
       id: "checkin",
+      icon: "🌿",
       title: "Check-in",
-      summary: checkedIn ? "✓ Done" : "Open",
+      summary: checkedIn ? "✓ Done" : "Open now",
       highlight: !checkedIn,
+      done: checkedIn,
       content: (
         <DailyCheckin uid={user.uid} current={current} content={checkinContent} progress={checkinProgress}
           existing={data.checkins[checkinDay]} streak={streak} day={checkinDay} onSaved={handleCheckinSaved} />
@@ -205,6 +217,8 @@ export default function Dashboard() {
     },
     {
       id: "week",
+      icon: "📅",
+      tone: "gold",
       title: "This week",
       summary: shortDateTime(data.settings.nextSessionAt) || `Week ${week}`,
       content: (
@@ -214,9 +228,9 @@ export default function Dashboard() {
         </>
       ),
     },
-    active && { id: "breathe", title: "Craving?", summary: "1 min", content: <BreathePause /> },
-    { id: "leaderboard", title: "Leaderboard", content: <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} /> },
-    current && { id: "journey", title: "Journey", summary: active ? `Day ${current.progress.day}` : "", content: <JourneyMap current={current} checkins={data.checkins} /> },
+    active && { id: "breathe", icon: "🌊", title: "Craving?", summary: "1 minute", content: <BreathePause /> },
+    { id: "leaderboard", icon: "🏆", tone: "gold", title: "Leaderboard", summary: "Streaks", content: <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} /> },
+    current && { id: "journey", icon: "🗺️", title: "Journey", summary: active ? `Day ${current.progress.day} of ${current.cohort.durationDays}` : "", content: <JourneyMap current={current} checkins={data.checkins} /> },
   ].filter(Boolean);
   const tabTitle = TABS.find((t) => t.id === tab)?.label;
 
