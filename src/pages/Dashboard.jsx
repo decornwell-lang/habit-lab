@@ -29,6 +29,7 @@ import InstallApp from "../components/InstallApp.jsx";
 import DashboardTabs, { TABS, DEFAULT_TAB } from "../components/dashboard/DashboardTabs.jsx";
 import StreakCard from "../components/dashboard/StreakCard.jsx";
 import Folds from "../components/dashboard/Folds.jsx";
+import BreatheTab from "../components/dashboard/BreatheTab.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
 import { MorningPrompt, MeditationPrompt, ReflectionPrompt } from "../components/dashboard/DailyPrompts.jsx";
 import WhatsAppIcon from "../components/WhatsAppIcon.jsx";
@@ -273,6 +274,9 @@ export default function Dashboard() {
           <LiveSession settings={data.settings} />
         </>
       )}
+
+      {/* Breathe: 3 minutes of slow nose breathing for a craving */}
+      {tab === "breathe" && <BreatheTab />}
 
       {tab === "upcoming" && (
         <>

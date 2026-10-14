@@ -3,6 +3,7 @@
 export const TABS = [
   { id: "home", label: "Home", icon: "M3 11l9-7 9 7M5 9.5V20h5v-6h4v6h5V9.5" },
   { id: "practices", label: "Practices", icon: "M12 21c4-2.5 7-5.6 7-9.5A7 7 0 0 0 12 4.5a7 7 0 0 0-7 7c0 3.9 3 7 7 9.5zM12 8v5l3 2" },
+  { id: "breathe", label: "Breathe", icon: "M3 8h11a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h8" },
   { id: "upcoming", label: "Upcoming", icon: "M4 6h16v14H4zM4 10h16M8 3v4M16 3v4" },
 ];
 
