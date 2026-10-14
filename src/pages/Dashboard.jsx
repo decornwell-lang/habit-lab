@@ -28,7 +28,6 @@ import NotificationSettings from "../components/NotificationSettings.jsx";
 import InstallApp from "../components/InstallApp.jsx";
 import DashboardTabs, { TABS, DEFAULT_TAB } from "../components/dashboard/DashboardTabs.jsx";
 import StreakCard from "../components/dashboard/StreakCard.jsx";
-import BreathePause from "../components/dashboard/BreathePause.jsx";
 import Folds from "../components/dashboard/Folds.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
 import { MorningPrompt, MeditationPrompt, ReflectionPrompt } from "../components/dashboard/DailyPrompts.jsx";
@@ -207,7 +206,6 @@ export default function Dashboard() {
           existing={data.checkins[checkinDay]} streak={streak} day={checkinDay} onSaved={handleCheckinSaved} />
       ),
     },
-    active && { id: "breathe", icon: "🌊", title: "Craving?", summary: "1 minute", content: <BreathePause /> },
     { id: "leaderboard", icon: "🏆", tone: "gold", title: "Leaderboard", summary: "Streaks", content: <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} /> },
   ].filter(Boolean);
   const tabTitle = TABS.find((t) => t.id === tab)?.label;
