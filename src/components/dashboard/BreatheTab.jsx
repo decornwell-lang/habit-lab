@@ -10,13 +10,12 @@ const PRACTICES = [
 ];
 
 export default function BreatheTab({ settings }) {
-  const [practice, setPractice] = useState(null);
-  const back = () => setPractice(null);
+  const [practice, setPractice] = useState(null); // tapping the Breathe tab again returns here (see Dashboard.jsx)
 
   return (
     <section className="breathe-screen" aria-label="Breathing">
-      {practice === "coherent" && <CoherentBreathing onBack={back} />}
-      {practice === "space" && <BreathingSpace url={settings.breathingSpaceUrl} onBack={back} />}
+      {practice === "coherent" && <CoherentBreathing />}
+      {practice === "space" && <BreathingSpace url={settings.breathingSpaceUrl} />}
       {!practice && (
         <>
           <h2>Craving?</h2>

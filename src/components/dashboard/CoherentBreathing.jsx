@@ -18,7 +18,7 @@ function loadSettings() {
   }
 }
 
-export default function CoherentBreathing({ onBack }) {
+export default function CoherentBreathing() {
   const [settings, setSettings] = useState(loadSettings);
   const [startedAt, setStartedAt] = useState(null); // null = not running
   const [elapsed, setElapsed] = useState(0);
@@ -97,7 +97,6 @@ export default function CoherentBreathing({ onBack }) {
         </>
       ) : (
         <>
-          <button className="breathe-back" onClick={onBack}>← Practices</button>
           <h2>Coherent breathing</h2>
           <p className="breathe-hint">Gentle, quiet, diaphragmatic belly breathing through your nose.</p>
           <div className="breathe-circle small"><span className="breathe-word">{settings.minutes}:00</span></div>

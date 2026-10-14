@@ -862,7 +862,6 @@ td.actions { white-space: nowrap; }
 .breathe-toggle.on { background: rgba(87, 189, 162, 0.22); color: var(--aqua); }
 
 /* Breathe tab: choosing a practice, and the 3-Step Breathing Space */
-.breathe-back { align-self: flex-start; margin: 0 0 8px; padding: 6px 0; border: none; background: none; color: var(--aqua); font: inherit; font-weight: 600; cursor: pointer; }
 .breathe-choices { display: grid; gap: 12px; width: 100%; max-width: 360px; margin-top: 8px; }
 .breathe-choice {
   display: flex; flex-direction: column; gap: 4px; padding: 18px; text-align: left; cursor: pointer;
@@ -876,14 +875,15 @@ td.actions { white-space: nowrap; }
 .breathing-space-video { width: 100%; max-width: 360px; margin: 4px 0 16px; border-radius: 12px; }
 
 /* The 3-Step Breathing Space hourglass (BreathingSpace.jsx) */
-.hourglass { display: grid; grid-template-columns: auto 1fr; gap: 16px; width: 100%; max-width: 360px; height: min(280px, 40vh); text-align: left; }
+.hourglass { display: grid; grid-template-columns: auto 1fr; gap: 18px; width: 100%; max-width: 360px; height: min(320px, 42vh); text-align: left; }
 .hourglass-shape { height: 100%; width: auto; aspect-ratio: 100 / 240; overflow: visible; }
 .hourglass-part.one { fill: rgba(87, 189, 162, 0.55); }
 .hourglass-part.two { fill: rgba(87, 189, 162, 0.85); }
 .hourglass-part.three { fill: rgba(87, 189, 162, 0.55); }
 .hourglass-divider { stroke: var(--dark-blue); stroke-width: 1.5; stroke-dasharray: 3 3; }
 .hourglass-outline { fill: none; stroke: var(--gold); stroke-width: 2; }
-.hourglass-shape text { fill: var(--dark-blue); font-family: var(--font-heading); font-weight: 600; font-size: 16px; text-anchor: middle; dominant-baseline: middle; }
+.hourglass-shape text { fill: var(--dark-blue); font-family: var(--font-heading); font-weight: 700; font-size: 15px; text-anchor: middle; dominant-baseline: central; }
+.hourglass-cap { fill: var(--gold); }
 .hourglass-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-rows: repeat(3, 1fr); }
 .hourglass-steps li { display: flex; flex-direction: column; justify-content: center; gap: 2px; color: #c4c9dc; font-size: 0.85rem; line-height: 1.35; }
 .hourglass-steps strong { color: #fff; font-size: 1rem; }

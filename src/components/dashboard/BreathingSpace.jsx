@@ -11,11 +11,10 @@ const STEPS = [
   { title: "Expanding", text: "Widen your awareness to the whole body, breathing, just as it is." },
 ];
 
-export default function BreathingSpace({ url, onBack }) {
+export default function BreathingSpace({ url }) {
   const media = videoSource(url);
   return (
     <>
-      <button className="breathe-back" onClick={onBack}>← Practices</button>
       <h2>3-Step Breathing Space</h2>
       <p className="breathe-hint">Three minutes, three steps.</p>
 
@@ -46,7 +45,7 @@ export default function BreathingSpace({ url, onBack }) {
 
 // The hourglass: three equal parts, numbered 1 to 3, lined up with the steps.
 function Hourglass() {
-  const outline = "M8,4 H92 C92,70 56,98 56,120 C56,142 92,170 92,236 H8 C8,170 44,142 44,120 C44,98 8,70 8,4 Z";
+  const outline = "M12,8 H88 C88,72 61,98 61,120 C61,142 88,168 88,232 H12 C12,168 39,142 39,120 C39,98 12,72 12,8 Z";
   return (
     <svg className="hourglass-shape" viewBox="0 0 100 240" aria-hidden="true">
       <defs>
@@ -60,6 +59,8 @@ function Hourglass() {
         <line x1="0" y1="160" x2="100" y2="160" className="hourglass-divider" />
       </g>
       <path d={outline} className="hourglass-outline" />
+      <rect x="2" y="0" width="96" height="8" rx="3" className="hourglass-cap" />
+      <rect x="2" y="232" width="96" height="8" rx="3" className="hourglass-cap" />
       <text x="50" y="44">1</text>
       <text x="50" y="124">2</text>
       <text x="50" y="204">3</text>
