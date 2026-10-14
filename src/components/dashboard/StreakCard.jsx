@@ -1,10 +1,11 @@
 // "My practice" summary: current streak, where the member is in their
-// cohort, and a button to share the streak on social media.
-import { useState } from "react";
+// cohort, and a Share button (opens the phone's share sheet with a streak image).
+import { useEffect, useState } from "react";
 import { badgeInfo, badgesForStreak } from "../../lib/streaks.js";
 import { formatDate } from "../../lib/dates.js";
 import { habitStreakLabel } from "../../lib/cohorts.js";
 import ShareCard from "../ShareCard.jsx";
+import { makeShareImage } from "../../lib/shareImage.js";
 
 export default function StreakCard({ streak, badges = [], current, weekTitle }) {
   const { cohort, progress } = current;
@@ -13,6 +14,24 @@ export default function StreakCard({ streak, badges = [], current, weekTitle }) 
   const days = `${streak} ${streak === 1 ? "day" : "days"}`;
   // The share image shows the badge this streak has reached (e.g. the 1 day badge).
   const badgeIcon = streak > 0 ? badgeInfo(badgesForStreak(streak).at(-1)).icon : "";
+  const text = `I'm ${days} ${label} with The Habit Lab by David Ernest Cornwell ${badgeIcon}\nJoin me: ${window.location.origin}`;
+
+  // Make the share image in the background, so Share can open the phone's share sheet straight away.
+  const [file, setFile] = useState(null);
+  useEffect(() => {
+    if (streak < 1) return;
+    makeShareImage({ icon: badgeIcon, title: days, subtitle: label }).then(
+      (blob) => blob && setFile(new File([blob], `my-streak-${streak}-days.png`, { type: "image/png" }))
+    );
+  }, [streak, badgeIcon, days, label]);
+
+  function share() {
+    if (file && navigator.canShare?.({ files: [file] })) {
+      navigator.share({ files: [file], text }).catch(() => {}); // closed without sharing: nothing to do
+    } else {
+      setSharing((s) => !s); // computers: show the image with share links instead
+    }
+  }
 
   return (
     <section className="card streak-card">
@@ -33,7 +52,7 @@ export default function StreakCard({ streak, badges = [], current, weekTitle }) 
       </div>
 
       {streak > 0 && (
-        <button className="btn btn-share btn-small" onClick={() => setSharing((s) => !s)}>
+        <button className="btn btn-share btn-small" onClick={share}>
           {sharing ? "Close" : "Share"}
         </button>
       )}
