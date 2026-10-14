@@ -26,7 +26,6 @@ export default function BreathingSpace({ url }) {
         </div>
       )}
       {media?.type === "link" && <a className="btn btn-primary" href={media.src} target="_blank" rel="noreferrer">Play the practice</a>}
-      {!media && <p className="breathe-soon">David's recording is coming soon.</p>}
 
       <div className="hourglass">
         <Hourglass />
