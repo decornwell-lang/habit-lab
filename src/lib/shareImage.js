@@ -74,6 +74,10 @@ export async function makeShareImage({ badge, title, subtitle }) {
   ctx.fillText(badge.unit.toUpperCase().split("").join(String.fromCharCode(8202)), 50, 71);
   ctx.restore();
 
+  // Text below the badge is centred (restore() reset the alignment).
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
   ctx.fillStyle = COLOURS.title;
   ctx.font = '600 110px "Lora", Georgia, serif';
   ctx.fillText(title, size / 2, 790);
