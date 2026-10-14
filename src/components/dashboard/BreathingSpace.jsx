@@ -3,6 +3,7 @@
 // paste its link in Admin → Content (an audio or video file, YouTube, Vimeo or Google Drive). The three steps are shown beside the hourglass that is
 // often used to picture this practice: wide awareness, narrowing to the breath,
 // then widening again to the whole body.
+import { useRef, useState } from "react";
 import { videoSource } from "../../lib/video.js";
 
 const STEPS = [
@@ -20,7 +21,7 @@ export default function BreathingSpace({ url }) {
       <h2>3-Step Breathing Space</h2>
       <p className="breathe-hint">Three minutes, three steps.</p>
 
-      {media?.type === "audio" && <audio className="breathing-space-audio" src={media.src} controls preload="metadata" />}
+      {media?.type === "audio" && <AudioPlayer src={media.src} />}
       {media?.type === "video" && <video className="breathing-space-video" src={media.src} controls playsInline preload="metadata" />}
       {media?.type === "iframe" && (
         <div className="video breathing-space-video">
@@ -66,5 +67,46 @@ function Hourglass() {
       <text x="50" y="124">2</text>
       <text x="50" y="204">3</text>
     </svg>
+  );
+}
+
+// The recording: a Start button that becomes a countdown of the time left.
+function AudioPlayer({ src }) {
+  const audio = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [left, setLeft] = useState(null); // seconds left, once the length is known
+
+  const clock = (secs) => `${Math.floor(secs / 60)}:${String(Math.floor(secs % 60)).padStart(2, "0")}`;
+  const update = () => {
+    const a = audio.current;
+    if (a?.duration) setLeft(Math.max(0, Math.round(a.duration - a.currentTime)));
+  };
+
+  function start() {
+    audio.current.currentTime = 0;
+    audio.current.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
+  }
+  function stop() {
+    audio.current.pause();
+    audio.current.currentTime = 0;
+    setPlaying(false);
+    update();
+  }
+
+  return (
+    <div className="breathing-space-player">
+      <audio ref={audio} src={src} preload="metadata" onLoadedMetadata={update} onTimeUpdate={update}
+        onEnded={() => { setPlaying(false); audio.current.currentTime = 0; update(); }} />
+      {playing ? (
+        <>
+          <p className="breathing-space-clock" aria-live="off">{left !== null ? clock(left) : "…"}</p>
+          <button className="btn btn-text breathe-text-btn" onClick={stop}>Stop</button>
+        </>
+      ) : (
+        <button className="btn btn-primary" onClick={start}>
+          Start{left !== null ? ` · ${clock(left)}` : ""}
+        </button>
+      )}
+    </div>
   );
 }
