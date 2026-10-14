@@ -769,7 +769,6 @@ td.actions { white-space: nowrap; }
 .fold-body h2 { font-size: 1.2rem; }
 .fold-body > .card + .card { margin-top: 24px; }
 .dashboard .streak-card { margin: 12px 0; padding: 16px var(--space) 18px; }
-.dashboard > .eyebrow { margin-bottom: 0; }
 
 /* Quick answers to the daily prompts (QuickAnswer.jsx) */
 .quick-answer .question { margin: 0 0 14px; }

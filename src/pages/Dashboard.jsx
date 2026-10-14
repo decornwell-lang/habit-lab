@@ -208,14 +208,11 @@ export default function Dashboard() {
     },
     { id: "leaderboard", icon: "🏆", tone: "gold", title: "Leaderboard", summary: "Streaks", content: <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} /> },
   ].filter(Boolean);
-  const tabTitle = TABS.find((t) => t.id === tab)?.label;
   const aphorism = aphorismFor(today); // approved or owner-written lines only (src/lib/aphorisms.js)
 
   return (
     <main className="page dashboard">
-      <p className="eyebrow">Hello, {firstName}</p>
       {tab === DEFAULT_TAB && aphorism && <p className="aphorism">“{aphorism.text}”</p>}
-      {tab !== DEFAULT_TAB && <h1>{tabTitle}</h1>}
 
       {notice && <p className="notice notice-good" role="status">{notice}</p>}
       {error && <p className="form-error" role="alert">{error}</p>}
