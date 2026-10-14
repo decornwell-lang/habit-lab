@@ -1,5 +1,6 @@
-// Breathe tab: for a craving. Slow breaths through the nose, 7 seconds in and
-// 7 seconds out, with a 3-minute countdown. Change the timings below.
+// Breathe tab: for a craving. Gentle, quiet, diaphragmatic belly breathing
+// through the nose: 7 seconds in, 7 seconds out, for 3 minutes.
+// While it runs it fills the whole screen. Change the timings below.
 import { useEffect, useState } from "react";
 
 const IN_SECONDS = 7;
@@ -9,6 +10,7 @@ const TOTAL_SECONDS = 3 * 60;
 export default function BreatheTab() {
   const [startedAt, setStartedAt] = useState(null); // null = not running
   const [elapsed, setElapsed] = useState(0);
+  const [open, setOpen] = useState(false); // full-screen view showing
 
   useEffect(() => {
     if (startedAt === null) return;
@@ -31,51 +33,54 @@ export default function BreatheTab() {
   function start() {
     setElapsed(0);
     setStartedAt(Date.now());
+    setOpen(true);
   }
-  function stop() {
+  function close() {
     setStartedAt(null);
     setElapsed(0);
-  }
-
-  if (finished) {
-    return (
-      <section className="card breathe-screen">
-        <p className="breathe-word">The wave passed.</p>
-        <p className="muted">You're still here.</p>
-        <button className="btn btn-primary" onClick={start}>Breathe again</button>
-      </section>
-    );
+    setOpen(false);
   }
 
   return (
-    <section className="card breathe-screen">
-      {!running && (
-        <>
-          <h2>Craving?</h2>
-          <p className="muted">Breathe slowly through your nose: 7 seconds in, 7 seconds out, for three minutes.</p>
-        </>
-      )}
-
-      <div className={`breathe-circle ${running ? (inPhase ? "in" : "out") : ""}`} style={{ "--in": `${IN_SECONDS}s`, "--out": `${OUT_SECONDS}s` }}>
-        {running ? (
-          <span>
-            <span className="breathe-word">{inPhase ? "Breathe in" : "Breathe out"}</span>
-            <span className="breathe-count">{phaseLeft}</span>
-          </span>
-        ) : (
-          <span className="breathe-word">3:00</span>
-        )}
-      </div>
-
-      {running ? (
-        <>
-          <p className="breathe-clock" aria-live="off">{clock}</p>
-          <p className="muted small">Through your nose, slowly.</p>
-          <button className="btn btn-ghost" onClick={stop}>Stop</button>
-        </>
-      ) : (
+    <>
+      <section className="breathe-intro">
+        <h2>Craving?</h2>
+        <p className="muted">
+          Gentle, quiet, diaphragmatic belly breathing through your nose: 7 seconds in, 7 seconds out, for three minutes.
+        </p>
+        <div className="breathe-circle"><span className="breathe-word">3:00</span></div>
         <button className="btn btn-primary" onClick={start}>Start</button>
+      </section>
+
+      {open && (
+        <div className="breathe-full" role="dialog" aria-label="Breathing">
+          <button className="icon-btn breathe-close" onClick={close} aria-label="Close">
+            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+
+          {finished ? (
+            <>
+              <p className="breathe-done">The wave passed.</p>
+              <p className="breathe-hint">You're still here.</p>
+              <button className="btn btn-primary" onClick={start}>Breathe again</button>
+              <button className="btn btn-text breathe-text-btn" onClick={close}>Done</button>
+            </>
+          ) : (
+            <>
+              <div className={`breathe-circle ${inPhase ? "in" : "out"}`} style={{ "--in": `${IN_SECONDS}s`, "--out": `${OUT_SECONDS}s` }}>
+                <span>
+                  <span className="breathe-word">{inPhase ? "Breathe in" : "Breathe out"}</span>
+                  <span className="breathe-count">{phaseLeft}</span>
+                </span>
+              </div>
+              <p className="breathe-clock">{clock}</p>
+              <p className="breathe-hint">Gentle, quiet belly breaths through your nose.</p>
+            </>
+          )}
+        </div>
       )}
-    </section>
+    </>
   );
 }
