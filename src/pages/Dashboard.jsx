@@ -3,7 +3,7 @@
 // The open tab is part of the address (e.g. /dashboard?tab=week), so links
 // and notifications can open a specific tab.
 import { useCallback, useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import {
   getCohorts, getMemberships, getCheckins, getPublicProfile, savePublicProfile,
@@ -283,10 +283,6 @@ export default function Dashboard() {
           <JoinCohort uid={user.uid} cohorts={data.cohorts} memberships={data.memberships} onJoined={load} />
         </>
       )}
-
-      <p className="form-foot">
-        <Link to="/account">My account</Link>
-      </p>
 
       <DashboardTabs active={tab} onChange={setTab} />
     </main>

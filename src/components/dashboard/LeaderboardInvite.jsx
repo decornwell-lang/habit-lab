@@ -23,7 +23,7 @@ export default function LeaderboardInvite({ uid, profile }) {
   return (
     <section className="card card-accent">
       <h2>Join the leaderboard?</h2>
-      <p className="muted small">Your cohort sees your first name, avatar and streak. You can change this in My account.</p>
+      <p className="muted small">Your cohort sees your first name, avatar and streak. You can change this in My account (menu).</p>
       <div className="segmented">
         <button onClick={() => choose(true)} disabled={busy}>Yes, show me</button>
         <button onClick={() => choose(false)} disabled={busy}>No thanks</button>

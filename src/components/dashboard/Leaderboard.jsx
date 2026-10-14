@@ -1,7 +1,6 @@
 // 7. Leaderboard: members who opted in, with avatar, first name, which habit
 // their streak is for (unless they hid it), streak and badges.
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { getLeaderboard } from "../../lib/data.js";
 import { effectiveStreak, badgeInfo, sortBadges } from "../../lib/streaks.js";
 import { habitStreakLabel, habitIcon } from "../../lib/cohorts.js";
@@ -53,7 +52,7 @@ export default function Leaderboard({ uid, optedIn, today }) {
       )}
       {!optedIn && (
         <p className="muted small">
-          You're not on the leaderboard. You can change this in <Link to="/account">My account</Link>.
+          You're not on the leaderboard. You can change this in My account (menu).
         </p>
       )}
     </section>
