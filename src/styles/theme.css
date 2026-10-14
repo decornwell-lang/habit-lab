@@ -520,7 +520,7 @@ a { color: var(--primary); }
   color: #fff;
 }
 .streak-number .big { font-family: var(--font-heading); font-size: 2.2rem; font-weight: 600; line-height: 1; }
-.streak-number .unit { font-size: 0.75rem; color: var(--gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.streak-number .unit { font-size: 0.6rem; color: var(--gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
 .streak-badges { margin: 6px 0 0; font-size: 1.2rem; }
 
 .event-list { list-style: none; padding: 0; margin: 6px 0 12px; }

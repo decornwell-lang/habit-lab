@@ -3,13 +3,13 @@
 //   gold ring    = a hard day, and you came back (a "No" check-in)
 //   pale         = no check-in
 //   outlined     = today, and days still to come are faint
-import { addDays, checkinDayKey, daysBetween } from "../../lib/dates.js";
+import { addDays, todayKey, daysBetween } from "../../lib/dates.js";
 
 export default function JourneyMap({ current, checkins }) {
   const { cohort, progress } = current;
   if (progress.state === "upcoming") return null;
 
-  const today = checkinDayKey(); // the check-in that's open now
+  const today = todayKey(); // the calendar day, so today's dot is always outlined
   const days = Array.from({ length: cohort.durationDays }, (_, i) => {
     const date = addDays(progress.start, i);
     const c = checkins[date];

@@ -19,7 +19,7 @@ export default function StreakCard({ streak, badges = [], current, weekTitle }) 
       <div className="streak-top">
         <div className="streak-number">
           <span className="big">{streak}</span>
-          <span className="unit">{streak === 1 ? "day" : "days"}</span>
+          <span className="unit">day streak</span>
         </div>
         <div className="streak-details">
           <p className="card-label">My streak · {label}</p>
