@@ -1,4 +1,5 @@
-// Admin → Content: Zoom link, next session, and each week's meditation and PDF.
+// Admin → Content: Zoom link, next session, each week's meditation and PDF,
+// and the 3-Step Breathing Space recording (Breathe tab).
 import { useState } from "react";
 import { saveContentSettings } from "../../lib/data.js";
 import { weekPrompts, WEEKS_IN_PROGRAMME } from "../../lib/content.js";
@@ -10,6 +11,7 @@ export default function ContentTab({ settings, reload }) {
     zoomLink: settings.zoomLink || "",
     nextSessionAt: settings.nextSessionAt || "",
     currentWeek: settings.currentWeek || 1,
+    breathingSpaceUrl: settings.breathingSpaceUrl || "",
     weeks: Object.fromEntries(weekNumbers.map((w) => [w, { title: "", meditationUrl: "", reflectionUrl: "", ...settings.weeks?.[w] }])),
   });
   const [message, setMessage] = useState("");
@@ -35,6 +37,14 @@ export default function ContentTab({ settings, reload }) {
         <div className="field">
           <label>Next session date and time</label>
           <input type="datetime-local" value={form.nextSessionAt} onChange={(e) => setForm({ ...form, nextSessionAt: e.target.value })} />
+        </div>
+      </section>
+
+      <section className="card">
+        <h2>3-Step Breathing Space</h2>
+        <div className="field">
+          <label>Recording link (Breathe tab)</label>
+          <input value={form.breathingSpaceUrl} onChange={(e) => setForm({ ...form, breathingSpaceUrl: e.target.value })} placeholder="Audio or video file, YouTube, Vimeo or Google Drive" />
         </div>
       </section>
 

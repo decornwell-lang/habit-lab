@@ -1,5 +1,5 @@
 // Turns a pasted video link into something the page can play.
-// Supports YouTube, Vimeo, Google Drive, and direct video files (.mp4 etc.).
+// Supports YouTube, Vimeo, Google Drive, direct video files (.mp4 etc.) and audio files (.mp3 etc.).
 export function videoSource(url) {
   if (!url) return null;
   try {
@@ -18,6 +18,7 @@ export function videoSource(url) {
       if (match) return { type: "iframe", src: `https://drive.google.com/file/d/${match[1]}/preview` };
     }
     if (/\.(mp4|webm|mov|m4v)$/i.test(u.pathname)) return { type: "video", src: url };
+    if (/\.(mp3|m4a|aac|wav|ogg)$/i.test(u.pathname)) return { type: "audio", src: url };
     return { type: "link", src: url };
   } catch {
     return null;

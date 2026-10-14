@@ -269,8 +269,8 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* Breathe: 3 minutes of slow nose breathing for a craving */}
-      {tab === "breathe" && <BreatheTab />}
+      {/* Breathe: coherent breathing or the 3-Step Breathing Space, for a craving */}
+      {tab === "breathe" && <BreatheTab settings={data.settings} />}
 
       {/* Upcoming: cohorts that haven't started yet */}
       {tab === "upcoming" && (
