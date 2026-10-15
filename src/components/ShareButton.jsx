@@ -5,7 +5,7 @@ import WhatsAppIcon from "./WhatsAppIcon.jsx";
 
 const whatsAppShareLink = (text) => `https://wa.me/?text=${encodeURIComponent(text)}`;
 
-export default function ShareButton({ text, onShare, children = "Share in the group" }) {
+export default function ShareButton({ text, onShare, children = "Share to WhatsApp" }) {
   function handleClick(e) {
     onShare?.();
     if (navigator.share) {

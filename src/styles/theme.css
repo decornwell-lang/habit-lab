@@ -960,12 +960,6 @@ td.actions { white-space: nowrap; }
   background: var(--bg); font-family: var(--font-heading); font-style: italic; font-size: 1.1rem; line-height: 1.45;
 }
 .segmented button.selected.no { background: var(--gold); border-color: var(--gold); color: var(--dark-blue); }
-.answer-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 14px; }
-.answer-summary > div { padding: 12px 14px; border-radius: 14px; background: var(--bg); border: 1px solid var(--border); }
-.answer-summary > div.wide { grid-column: 1 / -1; }
-.answer-summary dt { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px; }
-.answer-summary dd { margin: 0; font-weight: 600; font-size: 1.05rem; }
-.answer-summary .wide dd { font-weight: 400; font-style: italic; font-size: 0.98rem; }
 
 /* ---------- Home tiles: status chip on the right ---------- */
 .fold-row { grid-template-columns: auto 1fr auto auto; padding: 14px 16px; gap: 12px; }
@@ -1011,9 +1005,6 @@ td.actions { white-space: nowrap; }
 .dashboard.dark .segmented button.selected,
 .dashboard.dark .scale button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
 .dashboard.dark .segmented button.selected.no { background: var(--gold); border-color: var(--gold); }
-.dashboard.dark .answer-summary > div { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.09); }
-.dashboard.dark .answer-summary dt { color: #9aa2bf; }
-.dashboard.dark .answer-summary dd { color: #fff; }
 .dashboard.dark .card-accent { background: rgba(220, 177, 60, 0.08); border-color: rgba(220, 177, 60, 0.45); }
 .dashboard.dark .card-celebrate { background: rgba(220, 177, 60, 0.1); border-color: rgba(220, 177, 60, 0.3); }
 .dashboard.dark .card-gentle { background: rgba(87, 189, 162, 0.1); border-color: rgba(87, 189, 162, 0.3); }

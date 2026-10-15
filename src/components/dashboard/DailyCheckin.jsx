@@ -1,12 +1,12 @@
 // Daily check-in (Home): commitment Yes/No, craving rating, one open question,
-// then a button to share the answers in the cohort's WhatsApp group.
+// then one button: "Save", which then becomes "Share to WhatsApp".
 // Only shown to members who have joined a cohort.
 // The craving scale (1-5) is set in src/content/prompts.json.
 import { useState } from "react";
 import { saveCheckin } from "../../lib/data.js";
 import { formatDate, isBeforeCheckinOpens, checkinOpensLabel, todayKey } from "../../lib/dates.js";
 import { COMMITMENT_QUESTION, CRAVING_QUESTION, CRAVING_SCALE } from "../../lib/content.js";
-import ShareButton from "../ShareButton.jsx";
+import SaveShareButton from "../SaveShareButton.jsx";
 import QuestionStep from "./QuestionStep.jsx";
 
 const scaleValues = Array.from({ length: CRAVING_SCALE.max - CRAVING_SCALE.min + 1 }, (_, i) => CRAVING_SCALE.min + i);
@@ -31,10 +31,15 @@ function groupReport({ checkin, progress, content, streak }) {
 // in the cohort (see checkinDayKey in src/lib/dates.js: check-ins open at 18:00).
 export default function DailyCheckin({ uid, current, progress, content, existing, streak, day, onSaved }) {
   const { cohort } = current;
-  const [editing, setEditing] = useState(!existing);
-  const [maintained, setMaintained] = useState(existing?.maintained ?? null);
-  const [craving, setCraving] = useState(existing?.craving ?? null);
-  const [answer, setAnswer] = useState(existing?.answer ?? "");
+  const [saved, setSaved] = useState(existing || null); // the saved check-in; changing an answer clears it
+  const [maintained, setMaintainedRaw] = useState(existing?.maintained ?? null);
+  const [craving, setCravingRaw] = useState(existing?.craving ?? null);
+  const [answer, setAnswerRaw] = useState(existing?.answer ?? "");
+  // Any change means it needs saving again (the button goes back to "Save").
+  const changed = (setter) => (value) => { setter(value); setSaved(null); };
+  const setMaintained = changed(setMaintainedRaw);
+  const setCraving = changed(setCravingRaw);
+  const setAnswer = changed(setAnswerRaw);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -59,8 +64,7 @@ export default function DailyCheckin({ uid, current, progress, content, existing
     );
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function handleSave() {
     setError("");
     if (maintained === null) return setError("Please answer Yes or No.");
     if (craving === null) return setError(`Please choose a number from ${CRAVING_SCALE.min} to ${CRAVING_SCALE.max}.`);
@@ -77,7 +81,7 @@ export default function DailyCheckin({ uid, current, progress, content, existing
       };
       await saveCheckin(uid, day, checkin);
       await onSaved(day, checkin);
-      setEditing(false);
+      setSaved(checkin);
     } catch (err) {
       console.error(err);
       setError("We couldn't save your check-in. Please try again.");
@@ -89,39 +93,15 @@ export default function DailyCheckin({ uid, current, progress, content, existing
   // Before 18:00 the open check-in is yesterday's; from 18:00 it's today's.
   const forYesterday = isBeforeCheckinOpens();
   const opens = checkinOpensLabel();
-  const cardLabel = forYesterday
-    ? `Yesterday's check-in · Day ${progress.day} · open until ${opens}`
-    : `Today's check-in · Day ${progress.day}`;
 
   const streakLine =
     streak > 0 ? `Streak · ${streak} ${streak === 1 ? "day" : "days"}` : "Your streak starts with your next Yes.";
 
-  if (!editing) {
-    return (
-      <section className="card">
-        <p className="card-label">{cardLabel}</p>
-        <p className="streak">✓ Saved · {streakLine}</p>
-        <dl className="answer-summary">
-          <div><dt>Commitment kept</dt><dd>{existing?.maintained ? "Yes" : "No"}</dd></div>
-          <div><dt>Cravings</dt><dd>{existing?.craving} / {CRAVING_SCALE.max}</dd></div>
-          {existing?.answer && <div className="wide"><dt>{content.openQuestion}</dt><dd>“{existing.answer}”</dd></div>}
-        </dl>
-        {existing && (
-          <ShareButton text={groupReport({ checkin: existing, progress, content, streak })} />
-        )}
-        <button className="btn btn-ghost" onClick={() => setEditing(true)}>Edit</button>
-        <p className="muted small center">
-          Next: {forYesterday ? "today" : "tomorrow"}, {opens}
-        </p>
-      </section>
-    );
-  }
-
   return (
     <section className="card">
-      <p className="streak">{streakLine}</p>
+      <p className="streak">{saved ? "✓ Saved · " : ""}{streakLine}</p>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={(e) => e.preventDefault()}>
         <QuestionStep n={1} title={COMMITMENT_QUESTION}>
           <div className="segmented">
             <button type="button" className={maintained === true ? "selected yes" : ""} aria-pressed={maintained === true} onClick={() => setMaintained(true)}>Yes</button>
@@ -145,7 +125,9 @@ export default function DailyCheckin({ uid, current, progress, content, existing
         </QuestionStep>
 
         {error && <p className="form-error" role="alert">{error}</p>}
-        <button className="btn btn-primary" disabled={busy}>{busy ? "Saving…" : "Submit check-in"}</button>
+        <SaveShareButton saved={Boolean(saved)} canSave={maintained !== null && craving !== null} busy={busy} onSave={handleSave}
+          shareText={saved ? groupReport({ checkin: saved, progress, content, streak }) : ""} />
+        {saved && <p className="muted small center">Next check-in: {forYesterday ? "today" : "tomorrow"}, {opens}</p>}
       </form>
     </section>
   );

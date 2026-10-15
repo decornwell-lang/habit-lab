@@ -1,9 +1,8 @@
 // A quick answer to a daily prompt: a few tap-to-choose questions and/or a
-// short text, then one button that saves it and opens the share sheet with the
-// answer ready to send to the cohort's WhatsApp group.
+// short text, then one button: "Save", which then becomes "Share to WhatsApp"
+// (the share sheet opens with the answer ready for the cohort's group).
 import { useState } from "react";
-import WhatsAppIcon from "../WhatsAppIcon.jsx";
-import ShareButton from "../ShareButton.jsx";
+import SaveShareButton from "../SaveShareButton.jsx";
 import QuestionStep from "./QuestionStep.jsx";
 
 // questions: [{ key, label, choices }]   text: label for the free text (optional)
@@ -41,12 +40,7 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
         <textarea className="q-textarea" rows={3} aria-label={text || "Anything to add?"} value={answer.note || ""}
           onChange={(e) => set("note", e.target.value)} placeholder={numbered ? "A few words…" : "A few words is enough"} />
       </QuestionStep>
-      {complete ? (
-        <ShareButton text={shareText(answer)} onShare={save} />
-      ) : (
-        <button className="btn btn-whatsapp" disabled><WhatsAppIcon /> Share in the group</button>
-      )}
-      {complete && !saved && <button type="button" className="btn btn-text" onClick={save}>Just save</button>}
+      <SaveShareButton saved={saved} canSave={complete} onSave={save} shareText={complete ? shareText(answer) : ""} />
       {saved && <p className="muted small center">✓ Saved</p>}
     </div>
   );
