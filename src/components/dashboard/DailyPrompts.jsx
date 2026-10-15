@@ -14,8 +14,8 @@ export function MorningPrompt({ uid, today, dayLabel, existing, onSaved }) {
       questions={MORNING_QUESTIONS.map((q) => ({ ...q, choices: MORNING_CHOICES }))}
       existing={existing}
       shareText={(a) => withNote([`☀️ ${dayLabel}morning`, ...MORNING_QUESTIONS.map((q) => `${q.label}: ${a[q.key]}`)], a.note)}
-      onSave={(a) => {
-        saveDayAnswer(uid, today, "morning", a).catch(console.error);
+      onSave={async (a) => {
+        await saveDayAnswer(uid, today, "morning", a);
         onSaved("morning", a);
       }}
     />
@@ -30,8 +30,8 @@ export function ReflectionPrompt({ uid, today, dayLabel, content, existing, onSa
         text="Your response"
         existing={existing}
         shareText={(a) => [`✍️ ${dayLabel}reflection`, content.dailyPrompt, "", a.note.trim()].join("\n")}
-        onSave={(a) => {
-          saveDayAnswer(uid, today, "reflection", a).catch(console.error);
+        onSave={async (a) => {
+          await saveDayAnswer(uid, today, "reflection", a);
           onSaved("reflection", a);
         }}
       />

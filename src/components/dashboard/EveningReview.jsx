@@ -39,7 +39,7 @@ export default function EveningReview({ uid, date, existing, firstName, onSaved 
         : { type: "evening", date, skipped: false, ...form, strongestAt: form.strongestAt.trim(), noticed: form.noticed.trim(),
             helped: form.helped.trim(), tomorrow: form.smoked ? form.tomorrow.trim() : "" };
       await saveReflection(uid, `${date}_evening`, entry, { evening: skipped ? "skipped" : "done" });
-      onSaved(entry, skipped);
+      await onSaved(entry, skipped); // also saves the day's check-in (streak)
       if (!skipped) setSaved(true);
     } catch (err) {
       console.error(err);

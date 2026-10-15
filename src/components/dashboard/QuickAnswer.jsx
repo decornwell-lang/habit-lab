@@ -6,19 +6,30 @@ import SaveShareButton from "../SaveShareButton.jsx";
 import QuestionStep from "./QuestionStep.jsx";
 
 // questions: [{ key, label, choices }]   text: label for the free text (optional)
-// shareText(answer) builds the WhatsApp message. onSave(answer) stores it.
+// shareText(answer) builds the WhatsApp message. onSave(answer) stores it (returns a promise).
 export default function QuickAnswer({ questions = [], text, existing, shareText, onSave }) {
   const [answer, setAnswer] = useState(existing || {});
   const [saved, setSaved] = useState(Boolean(existing));
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
   const set = (key, value) => {
     setAnswer((a) => ({ ...a, [key]: value }));
     setSaved(false);
   };
   const complete = questions.every((q) => answer[q.key]) && (questions.length > 0 || answer.note?.trim());
 
-  function save() {
-    onSave(answer);
-    setSaved(true);
+  async function save() {
+    setBusy(true);
+    setError("");
+    try {
+      await onSave(answer);
+      setSaved(true);
+    } catch (err) {
+      console.error(err);
+      setError("Couldn't save. Please try again.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   // Numbered questions, then the note; a single text question (the reflection) isn't numbered.
@@ -40,7 +51,8 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
         <textarea className="q-textarea" rows={3} aria-label={text || "Anything to add?"} value={answer.note || ""}
           onChange={(e) => set("note", e.target.value)} placeholder={numbered ? "A few words…" : "A few words is enough"} />
       </QuestionStep>
-      <SaveShareButton saved={saved} canSave={complete} onSave={save} shareText={complete ? shareText(answer) : ""} />
+      {error && <p className="form-error" role="alert">{error}</p>}
+      <SaveShareButton saved={saved} canSave={complete} busy={busy} onSave={save} shareText={complete ? shareText(answer) : ""} />
       {saved && <p className="muted small center">✓ Saved</p>}
     </div>
   );

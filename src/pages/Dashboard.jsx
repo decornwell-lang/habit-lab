@@ -330,10 +330,10 @@ export default function Dashboard() {
       {sheet === "evening" && (
         <Sheet label="Evening review" onClose={() => setSheet(null)}>
           <EveningReview uid={user.uid} date={today} existing={data.evening} firstName={firstName}
-            onSaved={(evening, skipped) => {
+            onSaved={async (evening, skipped) => {
               setData((d) => ({ ...d, evening }));
               if (skipped) return setSheet(null);
-              saveEveningCheckin(evening).catch(console.error);
+              await saveEveningCheckin(evening);
             }} />
         </Sheet>
       )}
