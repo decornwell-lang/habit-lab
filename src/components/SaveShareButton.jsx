@@ -3,6 +3,10 @@
 import ShareButton from "./ShareButton.jsx";
 
 export default function SaveShareButton({ saved, canSave = true, busy = false, onSave, shareText }) {
+  if (saved && !shareText) {
+    // Saved, but nothing chosen to share (e.g. "Include my text" unticked, or nothing written).
+    return <button type="button" className="btn btn-whatsapp" disabled>Share to WhatsApp</button>;
+  }
   if (saved) return <ShareButton text={shareText}>Share to WhatsApp</ShareButton>;
   return (
     <button type="button" className="btn btn-primary save-share" onClick={onSave} disabled={!canSave || busy}>

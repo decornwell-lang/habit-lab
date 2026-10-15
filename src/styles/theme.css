@@ -1078,3 +1078,7 @@ td.actions { white-space: nowrap; }
 .sheet .scale-labels { color: #9aa2bf; }
 .sheet .btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.35); }
 .fold-icon.calm { background: rgba(87, 189, 162, 0.22); }
+.share-options { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 8px 0 0; }
+.share-options .checkbox { margin: 0; font-size: 0.9rem; }
+.sheet .share-options .checkbox { color: #e9eaf2; }
+.sheet .save-share, .sheet .btn-whatsapp { margin-top: 10px; }

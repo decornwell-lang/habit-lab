@@ -1,13 +1,17 @@
 // "I'm craving right now" (on demand, never a notification): where it is in the body,
 // how strong (0 to 10), what's happening, then a way into the breathing practices.
 // Each note is saved with its time to users/{uid}/reflections (type "craving").
-// Wording: src/content/intention.js.
+// Wording: src/content/intention.js. One button: Save, then Share to WhatsApp. The shared
+// text is "what is happening"; the score is the 0-10 strength, only if ticked.
 import { useState } from "react";
 import { saveCraving } from "../../lib/data.js";
 import { CRAVING, MAX_TEXT } from "../../content/intention.js";
 import QuestionStep from "./QuestionStep.jsx";
+import SaveShareButton from "../SaveShareButton.jsx";
+import ShareOptions from "../ShareOptions.jsx";
+import { shareMessage } from "../../lib/shareMessage.js";
 
-export default function CravingFlow({ uid, date, onBreathe, onSaved }) {
+export default function CravingFlow({ uid, date, firstName, onBreathe, onSaved }) {
   const [areas, setAreas] = useState([]);
   const [other, setOther] = useState("");
   const [strength, setStrength] = useState(5);
@@ -16,6 +20,7 @@ export default function CravingFlow({ uid, date, onBreathe, onSaved }) {
   const [savedId, setSavedId] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [share, setShare] = useState({ includeText: true, includeScore: false });
 
   const toggle = (area) => {
     setAreas((a) => (a.includes(area) ? a.filter((x) => x !== area) : [...a, area]));
@@ -93,9 +98,9 @@ export default function CravingFlow({ uid, date, onBreathe, onSaved }) {
       {error && <p className="form-error">{error}</p>}
       <button className="btn btn-primary" onClick={() => breathe("space")} disabled={busy}>Breathe with me</button>
       <button className="btn btn-text craving-coherent" onClick={() => breathe("coherent")} disabled={busy}>or try coherent breathing</button>
-      <button className="btn btn-ghost" onClick={save} disabled={busy || !hasAnything || Boolean(savedId)}>
-        {savedId ? "✓ Saved" : busy ? "Saving…" : "Save"}
-      </button>
+      {savedId && <ShareOptions {...share} onChange={(c) => setShare((s) => ({ ...s, ...c }))} />}
+      <SaveShareButton saved={Boolean(savedId)} canSave={Boolean(hasAnything)} busy={busy} onSave={save}
+        shareText={shareMessage({ firstName, label: "craving note", text: happening, score: touched ? `strength ${strength}/10` : "", ...share })} />
 
       <p className="craving-emergency">{CRAVING.emergency}</p>
     </div>

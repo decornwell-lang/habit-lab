@@ -1,14 +1,19 @@
 // Evening review (opens at 21:00). Every question is optional; "Skip today" is always there.
 // If the member says they smoked, one neutral line appears, nothing else.
 // Saved to users/{uid}/reflections/{date}_evening. Wording: src/content/intention.js.
+// One button: Save reflection, then Share to WhatsApp. The shared text is what they wrote
+// (noticed, helped, tomorrow); the score is the number of cravings, only if ticked.
 import { useState } from "react";
 import { saveReflection } from "../../lib/data.js";
 import { EVENING, MAX_TEXT } from "../../content/intention.js";
 import QuestionStep from "./QuestionStep.jsx";
+import SaveShareButton from "../SaveShareButton.jsx";
+import ShareOptions from "../ShareOptions.jsx";
+import { shareMessage } from "../../lib/shareMessage.js";
 
 const MAX_CRAVINGS = 20; // shown as "20+"
 
-export default function EveningReview({ uid, date, existing, onSaved }) {
+export default function EveningReview({ uid, date, existing, firstName, onSaved }) {
   const [form, setForm] = useState({
     smoked: existing?.smoked ?? null,
     cravings: existing?.cravings ?? null,
@@ -19,7 +24,11 @@ export default function EveningReview({ uid, date, existing, onSaved }) {
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const set = (key, value) => setForm((f) => ({ ...f, [key]: value }));
+  const [saved, setSaved] = useState(Boolean(existing) && !existing?.skipped);
+  const [share, setShare] = useState({ includeText: true, includeScore: false });
+  const set = (key, value) => { setForm((f) => ({ ...f, [key]: value })); setSaved(false); };
+  const written = [form.noticed, form.helped, form.smoked ? form.tomorrow : ""].map((t) => t.trim()).filter(Boolean).join(" ");
+  const score = form.cravings === null ? "" : `${form.cravings >= MAX_CRAVINGS ? `${MAX_CRAVINGS}+` : form.cravings} cravings today`;
 
   async function save(skipped) {
     setBusy(true);
@@ -30,10 +39,12 @@ export default function EveningReview({ uid, date, existing, onSaved }) {
         : { type: "evening", date, skipped: false, ...form, strongestAt: form.strongestAt.trim(), noticed: form.noticed.trim(),
             helped: form.helped.trim(), tomorrow: form.smoked ? form.tomorrow.trim() : "" };
       await saveReflection(uid, `${date}_evening`, entry, { evening: skipped ? "skipped" : "done" });
-      onSaved(entry);
+      onSaved(entry, skipped);
+      if (!skipped) setSaved(true);
     } catch (err) {
       console.error(err);
       setError("Couldn't save. Please try again.");
+    } finally {
       setBusy(false);
     }
   }
@@ -81,8 +92,13 @@ export default function EveningReview({ uid, date, existing, onSaved }) {
       {text("helped", EVENING.helped, 5)}
 
       {error && <p className="form-error">{error}</p>}
-      <button className="btn btn-primary" onClick={() => save(false)} disabled={busy}>{busy ? "Saving…" : "Save reflection"}</button>
-      <button className="btn btn-text skip-link" onClick={() => save(true)} disabled={busy}>Skip today</button>
+      {saved && <ShareOptions {...share} onChange={(c) => setShare((s) => ({ ...s, ...c }))} />}
+      {saved ? (
+        <SaveShareButton saved busy={busy} shareText={shareMessage({ firstName, label: "evening review", text: written, score, ...share })} />
+      ) : (
+        <button className="btn btn-primary" onClick={() => save(false)} disabled={busy}>{busy ? "Saving…" : "Save reflection"}</button>
+      )}
+      {!saved && <button className="btn btn-text skip-link" onClick={() => save(true)} disabled={busy}>Skip today</button>}
     </div>
   );
 }

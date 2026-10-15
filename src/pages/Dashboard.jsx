@@ -316,20 +316,20 @@ export default function Dashboard() {
 
       {sheet === "intention" && (
         <Sheet label="Your intention for today" onClose={() => setSheet(null)}>
-          <IntentionScreen uid={user.uid} date={today} existing={data.intention}
-            onSaved={(intention) => { setData((d) => ({ ...d, intention })); setSheet(null); }} />
+          <IntentionScreen uid={user.uid} date={today} existing={data.intention} firstName={firstName}
+            onSaved={(intention) => setData((d) => ({ ...d, intention }))} />
         </Sheet>
       )}
       {sheet === "craving" && (
         <Sheet label="I'm craving right now" onClose={() => setSheet(null)}>
-          <CravingFlow uid={user.uid} date={today}
+          <CravingFlow uid={user.uid} date={today} firstName={firstName}
             onBreathe={(practice) => { setSheet(null); setTab("breathe", { practice }); }} />
         </Sheet>
       )}
       {sheet === "evening" && (
         <Sheet label="Evening review" onClose={() => setSheet(null)}>
-          <EveningReview uid={user.uid} date={today} existing={data.evening}
-            onSaved={(evening) => { setData((d) => ({ ...d, evening })); setSheet(null); }} />
+          <EveningReview uid={user.uid} date={today} existing={data.evening} firstName={firstName}
+            onSaved={(evening, skipped) => { setData((d) => ({ ...d, evening })); if (skipped) setSheet(null); }} />
         </Sheet>
       )}
 
