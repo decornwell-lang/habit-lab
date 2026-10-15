@@ -1098,3 +1098,10 @@ td.actions { white-space: nowrap; }
 .refl-entries li { padding: 10px 12px; margin-bottom: 8px; border-radius: 12px; background: var(--bg); }
 .refl-entries p { margin: 0; font-size: 0.92rem; }
 .refl-entries .refl-entry-head { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 4px; }
+
+/* Journey and leaderboard inside the badge box: no extra panel behind them */
+.dashboard.dark .journey-wrap > .card,
+.dashboard.dark .leaderboard-wrap > .card { background: none; border: none; box-shadow: none; padding: 0; margin: 14px 0 0; }
+.leaderboard-wrap .people { margin: 0; }
+.leaderboard-wrap .people li { padding: 10px 0; }
+.leaderboard-wrap .people li.me { margin: 0; padding: 10px 12px; border-radius: 14px; }
