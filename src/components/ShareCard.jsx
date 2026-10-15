@@ -3,7 +3,7 @@
 // On phones, "Share" opens the phone's own share sheet (Instagram, WhatsApp,
 // Facebook, Messages...) with the image attached. On computers it offers the
 // image to download plus share links.
-//   <ShareCard image={{ badge, title, subtitle }} text="..." fileName="..." />
+//   <ShareCard image={{ badge, label } or { days, label }} text="..." fileName="..." />
 import { useEffect, useState } from "react";
 import { makeShareImage } from "../lib/shareImage.js";
 
@@ -15,7 +15,7 @@ export default function ShareCard({ image, text, fileName, simple = false }) {
 
   const siteUrl = window.location.origin;
   const fullText = `${text}\nJoin me: ${siteUrl}`;
-  const imageKey = `${image.badge?.id}|${image.title}|${image.subtitle}`;
+  const imageKey = `${image.badge?.id || ""}|${image.days ?? ""}|${image.label}`;
 
   useEffect(() => {
     let url = "";
@@ -58,7 +58,7 @@ export default function ShareCard({ image, text, fileName, simple = false }) {
 
   return (
     <div className="share-panel">
-      {previewUrl ? <img className="share-preview" src={previewUrl} alt={`${image.title} ${image.subtitle}`} /> : <p className="muted small">Preparing your image…</p>}
+      {previewUrl ? <img className="share-preview" src={previewUrl} alt={image.badge ? `${image.badge.name}, ${image.label}` : `${image.days} days ${image.label}`} /> : <p className="muted small">Preparing your image…</p>}
 
       {canShareImage && (
         <button type="button" className="btn btn-primary" onClick={shareNative}>Share</button>

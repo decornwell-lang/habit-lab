@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { updateUserProfile, savePublicProfile, getPublicProfile } from "../lib/data.js";
 import { badgeInfo, sortBadges } from "../lib/streaks.js";
+import { habitStreakLabel } from "../lib/cohorts.js";
 import { AVATARS } from "../content/avatars.js";
 import Avatar from "../components/Avatar.jsx";
 import ShareBadge from "../components/ShareBadge.jsx";
@@ -28,12 +29,16 @@ export default function Account() {
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [badges, setBadges] = useState([]);
+  const [habitType, setHabitType] = useState(null);
   const [sharingId, setSharingId] = useState(null);
   const firstName = profile?.firstName || user.displayName || "";
 
   useEffect(() => {
     getPublicProfile(user.uid)
-      .then((p) => setBadges(sortBadges(p?.badges || [])))
+      .then((p) => {
+        setBadges(sortBadges(p?.badges || []));
+        setHabitType(p?.habitType || null);
+      })
       .catch(() => setBadges([]));
   }, [user.uid]);
 
@@ -81,7 +86,7 @@ export default function Account() {
                       {sharingId === id ? "Close" : "Share"}
                     </button>
                   </div>
-                  {sharingId === id && <ShareBadge badgeId={id} />}
+                  {sharingId === id && <ShareBadge badgeId={id} label={habitType ? habitStreakLabel(habitType) : undefined} />}
                 </li>
               );
             })}

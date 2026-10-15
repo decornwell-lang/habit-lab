@@ -2,11 +2,12 @@
 import { badgeInfo } from "../lib/streaks.js";
 import ShareCard from "./ShareCard.jsx";
 
-export default function ShareBadge({ badgeId }) {
+// label is the challenge shown under the medal, e.g. "smoke-free".
+export default function ShareBadge({ badgeId, label = "The Habit Lab" }) {
   const badge = badgeInfo(badgeId);
   return (
     <ShareCard
-      image={{ badge, title: `${badge.name}`, subtitle: "of practice" }}
+      image={{ badge, label }}
       text={`I just earned my ${badge.name} at The Habit Lab with David Ernest Cornwell 🏅`}
       fileName={`habit-lab-${badge.id}.png`}
     />

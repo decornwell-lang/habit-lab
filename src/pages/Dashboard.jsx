@@ -11,7 +11,7 @@ import {
 } from "../lib/data.js";
 import { apiPost } from "../lib/api.js";
 import { todayKey, checkinDayKey, addDays, timeZoneName } from "../lib/dates.js";
-import { pickCurrentCohort } from "../lib/cohorts.js";
+import { pickCurrentCohort, habitStreakLabel } from "../lib/cohorts.js";
 import { weekContent } from "../lib/content.js";
 import { aphorismFor } from "../lib/aphorisms.js";
 import { computeStreak, badgesForStreak } from "../lib/streaks.js";
@@ -262,6 +262,7 @@ export default function Dashboard() {
         <Celebration
           uid={user.uid}
           badgeId={celebrate}
+          label={habitStreakLabel(habitType)}
           onDone={() => setCelebrate(null)}
           onNotRightNow={() => {
             setCelebrate(null);

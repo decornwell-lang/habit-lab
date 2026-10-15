@@ -6,7 +6,7 @@ import { badgeInfo } from "../../lib/streaks.js";
 import ShareBadge from "../ShareBadge.jsx";
 import Badge from "../Badge.jsx";
 
-export default function Celebration({ uid, badgeId, onDone, onNotRightNow }) {
+export default function Celebration({ uid, badgeId, label, onDone, onNotRightNow }) {
   const badge = badgeInfo(badgeId);
   const [busy, setBusy] = useState(false);
   const [sharing, setSharing] = useState(false);
@@ -24,7 +24,7 @@ export default function Celebration({ uid, badgeId, onDone, onNotRightNow }) {
       <p className="card-label">New badge</p>
       <h2>{badge.name}</h2>
       {sharing ? (
-        <ShareBadge badgeId={badgeId} />
+        <ShareBadge badgeId={badgeId} label={label} />
       ) : (
         <button className="btn btn-ghost btn-small" onClick={() => setSharing(true)}>Share</button>
       )}
