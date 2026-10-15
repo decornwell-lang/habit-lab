@@ -1,5 +1,6 @@
-// The box at the top of Home: the member's badge (gold seal), their streak,
-// progress towards the next badge, and their journey (day dots) on tap.
+// The badge box on Home: the member's badge (gold seal), their streak, progress
+// towards the next badge, and two lines that open on tap: My journey (day dots)
+// and the Leaderboard.
 // The share icon opens the phone's share sheet with a badge image.
 import { useEffect, useState } from "react";
 import { currentBadge, nextBadge } from "../../lib/streaks.js";
@@ -10,10 +11,11 @@ import Badge from "../Badge.jsx";
 import JourneyMap from "./JourneyMap.jsx";
 import { makeShareImage } from "../../lib/shareImage.js";
 
-export default function StreakCard({ streak, current, checkins }) {
+export default function StreakCard({ streak, current, checkins, leaderboard }) {
   const { cohort, progress } = current;
   const [sharing, setSharing] = useState(false);
-  const [showJourney, setShowJourney] = useState(false);
+  const [panel, setPanel] = useState(null); // "journey", "leaderboard" or null
+  const toggle = (name) => setPanel((p) => (p === name ? null : name));
   const label = habitStreakLabel(cohort.habitType); // e.g. "alcohol-free"
   const badge = currentBadge(streak); // null until the first "Yes"
   const next = nextBadge(streak);
@@ -76,23 +78,37 @@ export default function StreakCard({ streak, current, checkins }) {
         </div>
       )}
 
-      <button className="journey-toggle" onClick={() => setShowJourney((s) => !s)} aria-expanded={showJourney}>
-        <span>
-          {progress.state === "active" && <>Day {progress.day} of {cohort.durationDays}</>}
-          {progress.state === "upcoming" && <>Begins {formatDate(progress.start)}</>}
-          {progress.state === "finished" && <>Cohort finished</>}
-        </span>
-        <span className="journey-toggle-link">
-          {showJourney ? "Hide journey" : "My journey"}
-          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </span>
-      </button>
+      <PanelToggle label={
+          progress.state === "active" ? `Day ${progress.day} of ${cohort.durationDays}`
+            : progress.state === "upcoming" ? `Begins ${formatDate(progress.start)}` : "Cohort finished"
+        } link="My journey" open={panel === "journey"} onClick={() => toggle("journey")} />
       {progress.state === "active" && <div className="cohort-bar"><span style={{ width: `${(progress.day / cohort.durationDays) * 100}%` }} /></div>}
-      {showJourney && <div className="journey-wrap"><JourneyMap current={current} checkins={checkins} /></div>}
+      {panel === "journey" && <div className="journey-wrap"><JourneyMap current={current} checkins={checkins} /></div>}
+
+      {leaderboard && (
+        <>
+          <PanelToggle label="🏆 Leaderboard" link={panel === "leaderboard" ? "Hide" : "Show"} open={panel === "leaderboard"}
+            onClick={() => toggle("leaderboard")} />
+          {panel === "leaderboard" && <div className="leaderboard-wrap">{leaderboard}</div>}
+        </>
+      )}
 
       {sharing && image && <ShareCard image={image} text={text} simple fileName={`my-streak-${streak}-days.png`} />}
     </section>
+  );
+}
+
+// A line in the badge box that opens a panel underneath.
+function PanelToggle({ label, link, open, onClick }) {
+  return (
+    <button className="journey-toggle" onClick={onClick} aria-expanded={open}>
+      <span>{label}</span>
+      <span className="journey-toggle-link">
+        {open && link === "My journey" ? "Hide journey" : link}
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
+    </button>
   );
 }

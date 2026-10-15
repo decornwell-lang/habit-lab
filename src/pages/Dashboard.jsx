@@ -32,6 +32,7 @@ import Folds from "../components/dashboard/Folds.jsx";
 import BreatheTab from "../components/dashboard/BreatheTab.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
 import { MorningPrompt, ReflectionPrompt } from "../components/dashboard/DailyPrompts.jsx";
+import { promptHour } from "../content/dailyPrompts.js";
 import TodaysPractice from "../components/dashboard/TodaysPractice.jsx";
 import WhatsAppIcon from "../components/WhatsAppIcon.jsx";
 
@@ -95,6 +96,13 @@ export default function Dashboard() {
       clearInterval(timer);
     };
   }, [load]);
+
+  // Re-check the time every minute, so the Home tiles unlock on time while the app is open.
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60 * 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Remember the member's time zone (the daily notifications go out at local times).
   useEffect(() => {
@@ -167,12 +175,35 @@ export default function Dashboard() {
   const onSaved = (key, answer, practised) =>
     setData((d) => ({ ...d, day: { ...d.day, [key]: answer, ...(practised !== undefined && { practised }) } }));
   const prompt = { uid: user.uid, today, dayLabel, onSaved };
-  const done = (answer) => (answer ? "✓ Shared" : "");
   const groupLink = current?.cohort.whatsappGroupLink;
 
-  // Home rows, top to bottom: the day's prompts in order, then everything else.
-  // Notifications open a row directly, e.g. /dashboard?open=morning.
+  // The day's three tiles. Each is locked (🔒) until its hour, when its notification
+  // goes out, then ready to fill in (✏️) until done (✓). They lock again at midnight.
+  const tile = ({ id, icon, tone, title, isDone, doneText }) => {
+    const hour = promptHour(id);
+    const locked = now.getHours() < hour;
+    if (locked) return { id, icon: "🔒", title, summary: `Opens ${String(hour).padStart(2, "0")}:00`, locked: true };
+    if (isDone) return { id, icon, tone, title, summary: doneText, done: true };
+    return { id, icon: "✏️", tone, title, summary: "Ready", highlight: true };
+  };
+
+  // Home tiles, top to bottom. Notifications open a tile directly, e.g. /dashboard?open=morning.
   const homeItems = [
+    active && {
+      ...tile({ id: "morning", icon: "☀️", tone: "gold", title: "Morning", isDone: Boolean(data.day.morning), doneText: "✓ Shared" }),
+      content: <MorningPrompt {...prompt} existing={data.day.morning} />,
+    },
+    active && {
+      ...tile({ id: "reflection", icon: "✍️", tone: "gold", title: "Reflection", isDone: Boolean(data.day.reflection), doneText: "✓ Shared" }),
+      content: <ReflectionPrompt {...prompt} content={content} existing={data.day.reflection} />,
+    },
+    current && checkinProgress?.state === "active" && {
+      ...tile({ id: "checkin", icon: "🌿", title: "Check-in", isDone: checkedIn, doneText: "✓ Done" }),
+      content: (
+        <DailyCheckin uid={user.uid} current={current} content={checkinContent} progress={checkinProgress}
+          existing={data.checkins[checkinDay]} streak={streak} day={checkinDay} onSaved={handleCheckinSaved} />
+      ),
+    },
     current && groupLink && {
       id: "group",
       icon: "💬",
@@ -182,37 +213,6 @@ export default function Dashboard() {
         <a className="btn btn-whatsapp" href={groupLink} target="_blank" rel="noreferrer"><WhatsAppIcon /> Open the group</a>
       ),
     },
-    active && {
-      id: "morning",
-      icon: "☀️",
-      tone: "gold",
-      title: "Morning",
-      summary: done(data.day.morning) || "How are you?",
-      done: Boolean(data.day.morning),
-      content: <MorningPrompt {...prompt} existing={data.day.morning} />,
-    },
-    active && {
-      id: "reflection",
-      icon: "✍️",
-      tone: "gold",
-      title: "Reflection",
-      summary: done(data.day.reflection) || "Daily question",
-      done: Boolean(data.day.reflection),
-      content: <ReflectionPrompt {...prompt} content={content} existing={data.day.reflection} />,
-    },
-    current && checkinProgress?.state === "active" && {
-      id: "checkin",
-      icon: "🌿",
-      title: "Check-in",
-      summary: checkedIn ? "✓ Done" : "Open now",
-      highlight: !checkedIn,
-      done: checkedIn,
-      content: (
-        <DailyCheckin uid={user.uid} current={current} content={checkinContent} progress={checkinProgress}
-          existing={data.checkins[checkinDay]} streak={streak} day={checkinDay} onSaved={handleCheckinSaved} />
-      ),
-    },
-    { id: "leaderboard", icon: "🏆", tone: "gold", title: "Leaderboard", summary: "Streaks", content: <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} /> },
   ].filter(Boolean);
   const aphorism = aphorismFor(today); // approved or owner-written lines only (src/lib/aphorisms.js)
 
@@ -243,12 +243,14 @@ export default function Dashboard() {
         }} />
       )}
 
-      {/* Home: the badge box, then everything else as tiles that open when tapped */}
+      {/* Home: the day's tiles (locked until their time), then the badge box with journey and leaderboard */}
       {tab === "home" && (
         <>
+          <Folds items={homeItems} initialOpen={params.get("open")} />
           {current ? (
             <>
-              <StreakCard streak={streak} current={current} checkins={data.checkins} />
+              <StreakCard streak={streak} current={current} checkins={data.checkins}
+                leaderboard={<Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} />} />
               <LeaderboardInvite uid={user.uid} profile={profile} />
               {current.progress.state === "upcoming" && <PreCohort current={current} />}
             </>
@@ -258,7 +260,6 @@ export default function Dashboard() {
               <button className="btn btn-primary" onClick={() => setTab("upcoming")}>See cohorts</button>
             </section>
           )}
-          <Folds items={homeItems} initialOpen={params.get("open")} />
           <NotificationSettings uid={user.uid} compact />
           <InstallApp />
         </>
