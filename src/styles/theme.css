@@ -737,7 +737,7 @@ td.actions { white-space: nowrap; }
 }
 
 /* Folds: tap-to-open frames on the Home tab (Folds.jsx) */
-.folds { display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: dense; gap: 10px; margin: 14px 0; }
+.folds { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 14px 0; }
 .fold.open { grid-column: 1 / -1; }
 .fold {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
@@ -745,7 +745,7 @@ td.actions { white-space: nowrap; }
 }
 .fold.open { border-color: var(--aqua); box-shadow: 0 8px 28px rgba(10, 14, 40, 0.1); }
 .fold-row {
-  display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px; width: 100%; height: 100%;
+  display: grid; align-items: center; gap: 10px; width: 100%; height: 100%;
   padding: 11px 10px; border: none; background: none; font: inherit; color: var(--text); text-align: left; cursor: pointer;
 }
 .fold-icon {
@@ -759,9 +759,10 @@ td.actions { white-space: nowrap; }
 .fold-summary { color: var(--text-muted); font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fold-summary.highlight { color: var(--teal); font-weight: 600; }
 .fold-summary.done { color: var(--teal); }
-.fold-row > svg { display: none; }
-.fold.open .fold-row { grid-template-columns: auto 1fr auto; height: auto; }
-.fold.open .fold-row > svg { display: block; }
+.fold-row { grid-template-columns: auto 1fr auto; }
+.fold-row > svg { color: var(--text-muted); transition: transform 0.2s; }
+.fold.locked .fold-row > svg { visibility: hidden; }
+.fold.open .fold-row { height: auto; }
 .fold.open .fold-row > svg { transform: rotate(90deg); color: var(--teal); }
 .fold-body { padding: 4px 16px 18px; border-top: 1px solid var(--border); padding-top: 16px; }
 .fold-body > .card, .fold-body > * > .card { border: none; box-shadow: none; background: none; padding: 0; margin: 0; }

@@ -1,4 +1,4 @@
-// Home tab: each section in its own frame that opens when tapped (one at a time).
+// Home tab: each section in its own full-width frame that opens when tapped (one at a time).
 // Each item: { id, icon, tone, title, summary, highlight, done, locked, content }.
 //   tone "gold" tints the icon; done turns it aqua with a ✓ summary style;
 //   locked shows the tile dimmed and it can't be opened.
