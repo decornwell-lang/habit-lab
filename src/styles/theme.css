@@ -1060,3 +1060,21 @@ td.actions { white-space: nowrap; }
 .sheet .segmented button { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
 .sheet .segmented button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
 .sheet .segmented button.selected.no { background: var(--gold); border-color: var(--gold); }
+
+/* Craving flow (CravingFlow.jsx) */
+.craving { padding-top: 24px; display: flex; flex-direction: column; }
+.craving h2 { margin: 0 0 2px; }
+.craving > .muted { margin: 0 0 16px; }
+.craving .btn { margin-top: 10px; }
+.sheet .craving .craving-coherent { align-self: center; color: var(--aqua); margin-top: 4px; }
+.craving-other { width: 100%; margin-top: 10px; }
+.craving-emergency { margin: 18px 0 0; text-align: center; font-size: 0.82rem; color: #9aa2bf; }
+.strength { display: flex; align-items: center; gap: 14px; }
+.strength input[type="range"] { flex: 1; accent-color: var(--aqua); height: 32px; }
+.strength-value { min-width: 36px; text-align: center; font-family: var(--font-heading); font-size: 1.6rem; color: #fff; }
+.strength-value.untouched { color: #8f96b3; }
+.sheet .choices button { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
+.sheet .choices button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
+.sheet .scale-labels { color: #9aa2bf; }
+.sheet .btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.35); }
+.fold-icon.calm { background: rgba(87, 189, 162, 0.22); }

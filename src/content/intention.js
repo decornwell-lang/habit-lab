@@ -35,3 +35,12 @@ export const EVENING = {
   // Shown only if the member answers "Yes" to smoking. Neutral, nothing else.
   honest: "Thank you for being honest. What do you want to carry into tomorrow?",
 };
+
+export const CRAVING = {
+  tile: "I'm craving right now",
+  where: "Where do you feel it in your body?",
+  areas: ["Chest", "Throat", "Stomach", "Hands", "Head", "Other"],
+  strength: "How strong is it, 0 to 10?",
+  happening: "What is happening right now?",
+  emergency: "If you are in danger right now, contact your local emergency services.",
+};

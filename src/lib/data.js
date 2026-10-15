@@ -13,7 +13,7 @@
 //   notices/{id}                      messages from the owner (also sent as push notifications)
 import {
   doc, getDoc, getDocs, setDoc, updateDoc, addDoc, collection, collectionGroup,
-  query, where, orderBy, limit, writeBatch, arrayUnion, serverTimestamp,
+  query, where, orderBy, limit, writeBatch, arrayUnion, serverTimestamp, increment,
 } from "firebase/firestore";
 import { db } from "../firebase.js";
 
@@ -97,6 +97,17 @@ export async function saveReflection(uid, id, data, activity) {
   batch.set(doc(db, "users", uid, "reflections", id), { ...data, updatedAt: serverTimestamp() }, { merge: true });
   batch.set(doc(db, "users", uid, "activity", data.date), { date: data.date, ...activity }, { merge: true });
   await batch.commit();
+}
+
+// Saves one craving note (several a day are fine) and adds 1 to that day's craving count.
+// Returns the new note's id.
+export async function saveCraving(uid, data) {
+  const ref = doc(collection(db, "users", uid, "reflections"));
+  const batch = writeBatch(db);
+  batch.set(ref, { ...data, type: "craving", at: serverTimestamp() });
+  batch.set(doc(db, "users", uid, "activity", data.date), { date: data.date, cravings: increment(1) }, { merge: true });
+  await batch.commit();
+  return ref.id;
 }
 
 // A member's answers for one calendar day: { morning, meditation, reflection, practised }.

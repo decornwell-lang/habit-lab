@@ -9,8 +9,11 @@ const PRACTICES = [
   { id: "space", title: "3-Step Breathing Space", text: "A 3-minute guided pause, from MBCT." },
 ];
 
-export default function BreatheTab({ settings }) {
-  const [practice, setPractice] = useState(null); // tapping the Breathe tab again returns here (see Dashboard.jsx)
+// initialPractice ("space" or "coherent") opens a practice straight away, e.g. from the craving flow.
+export default function BreatheTab({ settings, initialPractice = null }) {
+  const [practice, setPractice] = useState(
+    ["space", "coherent"].includes(initialPractice) ? initialPractice : null
+  ); // tapping the Breathe tab again returns here (see Dashboard.jsx)
 
   return (
     <section className="breathe-screen" aria-label="Breathing">
