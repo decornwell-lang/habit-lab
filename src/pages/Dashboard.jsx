@@ -35,6 +35,7 @@ import { MorningPrompt, ReflectionPrompt } from "../components/dashboard/DailyPr
 import { promptHour } from "../content/dailyPrompts.js";
 import TodaysPractice from "../components/dashboard/TodaysPractice.jsx";
 import WhatsAppIcon from "../components/WhatsAppIcon.jsx";
+import { LockIcon, PencilIcon } from "../components/TileIcons.jsx";
 
 // Tabs shown on the dark blue background, like the Breathe screen.
 const DARK_TABS = ["practices", "breathe", "upcoming"];
@@ -182,9 +183,9 @@ export default function Dashboard() {
   const tile = ({ id, icon, tone, title, isDone, doneText }) => {
     const hour = promptHour(id);
     const locked = now.getHours() < hour;
-    if (locked) return { id, icon: "🔒", title, summary: `Opens ${String(hour).padStart(2, "0")}:00`, locked: true };
+    if (locked) return { id, icon: <LockIcon />, tone: "locked", title, summary: `Opens ${String(hour).padStart(2, "0")}:00`, locked: true };
     if (isDone) return { id, icon, tone, title, summary: doneText, done: true };
-    return { id, icon: "✏️", tone, title, summary: "Ready", highlight: true };
+    return { id, icon: <PencilIcon />, tone: "ready", title, summary: "Ready", highlight: true };
   };
 
   // Home tiles, top to bottom. Notifications open a tile directly, e.g. /dashboard?open=morning.
