@@ -1,32 +1,30 @@
-// Morning intention (opens at 07:15): one screen, no scrolling.
-// The proverb with the spear, the core question, this week's question, a one-minute
-// invitation and an optional note. Saved to users/{uid}/reflections/{date}_intention.
-// Wording: src/content/intention.js. One button: Save, then Share to WhatsApp
-// (only the note, and only if "Include my text" is ticked).
+// Morning intention (opens at 09:00): one screen, no scrolling. A short reminder to
+// reconnect with the intention, the question, a one-minute invitation and an optional
+// sentence or two. Once saved, the writing appears on the page (no longer in a box) and
+// the button becomes "Share to WhatsApp". Saved to users/{uid}/reflections/{date}_intention.
+// Wording: src/content/intention.js.
 import { useState } from "react";
 import { saveReflection } from "../../lib/data.js";
-import { PROVERB, CORE_QUESTION, INVITATION, NOTE_PROMPT, MAX_TEXT, weeklyQuestion } from "../../content/intention.js";
-import Spear from "../illustrations/Spear.jsx";
+import { INTENTION, MAX_TEXT } from "../../content/intention.js";
 import SaveShareButton from "../SaveShareButton.jsx";
 import ShareOptions from "../ShareOptions.jsx";
 import { shareMessage } from "../../lib/shareMessage.js";
 
 export default function IntentionScreen({ uid, date, existing, firstName, onSaved }) {
-  const [text, setTextRaw] = useState(existing?.text || "");
+  const [text, setText] = useState(existing?.text || "");
   const [saved, setSaved] = useState(Boolean(existing));
   const [share, setShare] = useState({ includeText: true, includeScore: false });
-  const setText = (value) => { setTextRaw(value); setSaved(false); };
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const question = existing?.question || weeklyQuestion();
 
-  async function done() {
+  async function save() {
     setBusy(true);
     setError("");
     try {
-      const entry = { type: "intention", date, question, text: text.trim() };
+      const entry = { type: "intention", date, question: INTENTION.question, text: text.trim() };
       await saveReflection(uid, `${date}_intention`, entry, { intention: true });
       onSaved(entry);
+      setText(entry.text);
       setSaved(true);
     } catch (err) {
       console.error(err);
@@ -38,19 +36,30 @@ export default function IntentionScreen({ uid, date, existing, firstName, onSave
 
   return (
     <div className="intention">
-      <div className="intention-proverb">
-        <Spear />
-        <p>{PROVERB}</p>
-      </div>
-      <h2 className="intention-core">{CORE_QUESTION}</h2>
-      <p className="intention-weekly">{question}</p>
-      <p className="intention-invite">{INVITATION}</p>
-      <textarea className="q-textarea" rows={2} maxLength={MAX_TEXT} value={text} onChange={(e) => setText(e.target.value)}
-        placeholder={NOTE_PROMPT} aria-label={NOTE_PROMPT} />
-      <p className="char-count">{text.length} / {MAX_TEXT}</p>
+      <p className="intention-intro">{INTENTION.intro}</p>
+      <h2 className="intention-core">{INTENTION.question}</h2>
+      <p className="intention-note">{INTENTION.note}</p>
+      <p className="intention-invite">{INTENTION.invitation}</p>
+
+      {saved ? (
+        // Saved: the writing sits on the page, no longer in a box.
+        <div className="intention-saved">
+          {text ? <blockquote>{text}</blockquote> : <p className="muted">You sat with your intention today.</p>}
+          <p className="intention-saved-meta">
+            ✓ Saved · <button className="link-btn" onClick={() => setSaved(false)}>Edit</button>
+          </p>
+        </div>
+      ) : (
+        <>
+          <textarea className="q-textarea" rows={3} maxLength={MAX_TEXT} value={text} onChange={(e) => setText(e.target.value)}
+            placeholder={INTENTION.box} aria-label={INTENTION.box} />
+          <p className="char-count">{text.length} / {MAX_TEXT}</p>
+        </>
+      )}
+
       {error && <p className="form-error">{error}</p>}
-      {saved && <ShareOptions {...share} hasScore={false} onChange={(c) => setShare((s) => ({ ...s, ...c }))} />}
-      <SaveShareButton saved={saved} busy={busy} onSave={done}
+      {saved && text && <ShareOptions {...share} hasScore={false} onChange={(c) => setShare((s) => ({ ...s, ...c }))} />}
+      <SaveShareButton saved={saved} busy={busy} onSave={save}
         shareText={shareMessage({ firstName, label: "morning intention", text, ...share })} />
     </div>
   );
