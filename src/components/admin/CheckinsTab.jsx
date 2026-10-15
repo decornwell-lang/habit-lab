@@ -82,7 +82,7 @@ export default function CheckinsTab({ data, selectedUid, setSelectedUid }) {
                     <td>{cohortName(c.cohortId)}</td>
                     <td>{c.day}</td>
                     <td>{c.maintained ? "Yes" : "No"}</td>
-                    <td>{c.craving}</td>
+                    <td>{c.cravings ?? c.craving}</td>
                     <td>{c.answer}</td>
                   </tr>
                 ))}

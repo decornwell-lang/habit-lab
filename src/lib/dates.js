@@ -3,8 +3,8 @@
 
 // The daily check-in opens at this hour (in each member's own time zone) and
 // stays open until the same time the next day. Check-in for a day therefore
-// runs from 18:00 that day to 17:59 the next. Change the hour here.
-export const CHECKIN_OPENS_AT_HOUR = 18;
+// runs from 21:00 that day to 20:59 the next. Change the hour here.
+export const CHECKIN_OPENS_AT_HOUR = 21; // the evening review (final check-in) opens at 21:00
 
 export function toKey(date = new Date()) {
   const y = date.getFullYear();
@@ -16,16 +16,10 @@ export function toKey(date = new Date()) {
 // Today's date (normal midnight-to-midnight day): used for practice and cohort days.
 export const todayKey = (now = new Date()) => toKey(now);
 
-// The day whose check-in is open right now. Before 18:00 it's yesterday's;
-// from 18:00 it's today's.
+// The day whose check-in is open right now. Before 21:00 it's yesterday's;
+// from 21:00 it's today's.
 export const checkinDayKey = (now = new Date()) =>
   now.getHours() >= CHECKIN_OPENS_AT_HOUR ? toKey(now) : addDays(toKey(now), -1);
-
-// True before today's check-in opens (00:00–17:59).
-export const isBeforeCheckinOpens = (now = new Date()) => now.getHours() < CHECKIN_OPENS_AT_HOUR;
-
-// "18:00" in a friendly form.
-export const checkinOpensLabel = () => `${String(CHECKIN_OPENS_AT_HOUR).padStart(2, "0")}:00`;
 
 // The member's time zone name, e.g. "Europe/Madrid".
 export const timeZoneName = () => Intl.DateTimeFormat().resolvedOptions().timeZone || null;

@@ -7,17 +7,16 @@ import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import {
   getCohorts, getMemberships, getCheckins, getPublicProfile, savePublicProfile,
-  getContentSettings, getDay, getReflection, updateUserProfile,
+  getContentSettings, getDay, getReflection, saveCheckin, updateUserProfile,
 } from "../lib/data.js";
 import { apiPost } from "../lib/api.js";
 import { todayKey, checkinDayKey, addDays, timeZoneName } from "../lib/dates.js";
-import { pickCurrentCohort, cohortProgress } from "../lib/cohorts.js";
+import { pickCurrentCohort } from "../lib/cohorts.js";
 import { weekContent } from "../lib/content.js";
 import { aphorismFor } from "../lib/aphorisms.js";
 import { computeStreak, badgesForStreak } from "../lib/streaks.js";
 
 import PreCohort from "../components/dashboard/PreCohort.jsx";
-import DailyCheckin from "../components/dashboard/DailyCheckin.jsx";
 import WeeklyReflection from "../components/dashboard/WeeklyReflection.jsx";
 import LiveSession from "../components/dashboard/LiveSession.jsx";
 import JoinCohort from "../components/dashboard/JoinCohort.jsx";
@@ -55,7 +54,7 @@ export default function Dashboard() {
   const [params, setParams] = useSearchParams();
   const [tabTaps, setTabTaps] = useState(0); // tapping a tab again starts it afresh (e.g. Breathe → choose a practice)
   const today = todayKey(); // calendar day: practice, meditation, cohort day number
-  const checkinDay = checkinDayKey(); // the check-in that's open now (opens 18:00, see dates.js)
+  const checkinDay = checkinDayKey(); // the check-in day (turns over at 21:00, see dates.js)
 
   const tab = TABS.some((t) => t.id === params.get("tab")) ? params.get("tab") : DEFAULT_TAB;
   function setTab(id, extra = {}) {
@@ -88,7 +87,7 @@ export default function Dashboard() {
     load();
   }, [load]);
 
-  // If the app stays open past midnight or 18:00, reload so the new day / check-in appears.
+  // If the app stays open past midnight or 21:00, reload so the new day / check-in appears.
   useEffect(() => {
     const dayStamp = () => `${todayKey()}|${checkinDayKey()}`;
     let loadedFor = dayStamp();
@@ -150,11 +149,22 @@ export default function Dashboard() {
   const week = active ? current.progress.week : Number(data.settings.currentWeek) || 1;
   const habitType = current?.cohort.habitType || "smoking";
   const content = weekContent(habitType, week, data.settings);
-  // The open check-in can be yesterday's (before 18:00), so it has its own day and week.
-  const checkinProgress = current ? cohortProgress(current.cohort, current.membership, checkinDay) : null;
-  const checkinContent =
-    checkinProgress?.state === "active" ? weekContent(habitType, checkinProgress.week, data.settings) : content;
   const firstName = profile?.firstName || user.displayName || "friend";
+
+  // The evening review is the day's check-in: "Did you smoke today? No" keeps the streak.
+  // If the smoking question was left blank, there's no check-in for the day.
+  async function saveEveningCheckin(evening) {
+    if (evening.smoked !== true && evening.smoked !== false) return;
+    const checkin = {
+      cohortId: current.cohort.id,
+      day: current.progress.day,
+      week: current.progress.week,
+      maintained: evening.smoked === false,
+      cravings: evening.cravings,
+    };
+    await saveCheckin(user.uid, today, checkin);
+    await handleCheckinSaved(today, checkin);
+  }
 
   // Called after a check-in is saved: update streak, badges and the public profile.
   async function handleCheckinSaved(date, checkin) {
@@ -177,12 +187,10 @@ export default function Dashboard() {
     });
     setData((d) => ({ ...d, checkins, publicProfile: { ...d.publicProfile, streak, lastYesDate, badges } }));
 
-    if (!checkin.maintained) setStartAgain(true);
-    else if (newBadges.length) setCelebrate(newBadges.at(-1));
+    if (checkin.maintained && newBadges.length) setCelebrate(newBadges.at(-1));
   }
 
   const streak = computeStreak(data.checkins, checkinDay);
-  const checkedIn = Boolean(data.checkins[checkinDay]);
 
   const dayLabel = active ? `Day ${current.progress.day} ` : "";
   // Saves a daytime answer into Home's state, so the row shows it straight away.
@@ -215,13 +223,6 @@ export default function Dashboard() {
     active && {
       ...tile({ id: "reflection", icon: "✍️", tone: "gold", title: "Reflection", subtitle: "Today's question", isDone: Boolean(data.day.reflection), doneText: "✓ Shared" }),
       content: <ReflectionPrompt {...prompt} content={content} existing={data.day.reflection} />,
-    },
-    current && checkinProgress?.state === "active" && {
-      ...tile({ id: "checkin", icon: "🌿", title: "Check-in", subtitle: "How was today?", isDone: checkedIn, doneText: "✓ Done" }),
-      content: (
-        <DailyCheckin uid={user.uid} current={current} content={checkinContent} progress={checkinProgress}
-          existing={data.checkins[checkinDay]} streak={streak} day={checkinDay} onSaved={handleCheckinSaved} />
-      ),
     },
     active && {
       ...tile({ id: "evening", icon: "🌙", title: "Evening review", subtitle: "A minute to reflect on today",
@@ -329,7 +330,11 @@ export default function Dashboard() {
       {sheet === "evening" && (
         <Sheet label="Evening review" onClose={() => setSheet(null)}>
           <EveningReview uid={user.uid} date={today} existing={data.evening} firstName={firstName}
-            onSaved={(evening, skipped) => { setData((d) => ({ ...d, evening })); if (skipped) setSheet(null); }} />
+            onSaved={(evening, skipped) => {
+              setData((d) => ({ ...d, evening }));
+              if (skipped) return setSheet(null);
+              saveEveningCheckin(evening).catch(console.error);
+            }} />
         </Sheet>
       )}
 

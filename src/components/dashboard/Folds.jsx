@@ -1,7 +1,7 @@
 // Home tab: each section in its own full-width frame that opens when tapped (one at a time).
 // Each item: { id, icon, tone, title, subtitle, status, highlight, done, locked, content }.
 //   subtitle is a short line under the title; status is a chip on the right
-//   (e.g. "Ready", "Opens 18:00", "✓ Done"). highlight makes the chip bright,
+//   (e.g. "Ready", "Opens 21:00", "✓ Done"). highlight makes the chip bright,
 //   done makes it quiet, and locked tiles can't be opened. Tiles with onOpen (instead of
 //   content) open their own full-screen panel.
 // `initialOpen` opens one frame to start with (used when a notification is tapped).

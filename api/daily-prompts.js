@@ -1,5 +1,5 @@
 // POST /api/daily-prompts   (called every hour by a scheduled GitHub Action)
-// Sends the daily prompts (morning, meditation, reflection, check-in) to members
+// Sends the daily prompts (07:00 morning, 09:00 intention, 21:00 evening review) to members
 // in an active cohort with notifications on, at each prompt's hour in the member's
 // own time zone. Times and wording: src/content/dailyPrompts.js.
 // Protected by the CRON_SECRET environment variable.
@@ -55,8 +55,8 @@ export default handle(async (req, res) => {
     }
     if (!cohortDay) continue;
 
-    // Already checked in today? Then no check-in reminder.
-    if (prompt.id === "checkin" && (await userDoc.ref.collection("checkins").doc(local.date).get()).exists) continue;
+    // Already did today's evening review (final check-in)? Then no reminder.
+    if (prompt.id === "evening" && (await userDoc.ref.collection("checkins").doc(local.date).get()).exists) continue;
 
     const response = await getMessaging().sendEachForMulticast({
       tokens: user.fcmTokens,

@@ -72,7 +72,7 @@ export default function MembersTab({ data, reload, onViewCheckins }) {
       { label: "Day", value: (c) => c.day },
       { label: "Week", value: (c) => c.week },
       { label: "Maintained", value: (c) => (c.maintained ? "Yes" : "No") },
-      { label: "Craving", value: (c) => c.craving },
+      { label: "Cravings", value: (c) => c.cravings ?? c.craving },
       { label: "Question", value: (c) => c.question },
       { label: "Answer", value: (c) => c.answer },
     ]);

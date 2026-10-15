@@ -62,7 +62,7 @@ export default function StreakCard({ streak, current, checkins, leaderboard }) {
           </span>
         </div>
         <div className="streak-details">
-          <h2>{badge ? `${badge.name}` : "Check in “Yes” to earn it"}</h2>
+          <h2>{badge ? `${badge.name}` : "Earned with your first smoke-free day"}</h2>
           <p className="streak-line">{label}</p>
           <p className="muted small">{cohort.name}</p>
         </div>
