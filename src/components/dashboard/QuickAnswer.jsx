@@ -4,18 +4,17 @@
 import { useState } from "react";
 import SaveShareButton from "../SaveShareButton.jsx";
 import QuestionStep from "./QuestionStep.jsx";
+import SavedAnswers from "./SavedAnswers.jsx";
 
 // questions: [{ key, label, choices }]   text: label for the free text (optional)
 // shareText(answer) builds the WhatsApp message. onSave(answer) stores it (returns a promise).
-export default function QuickAnswer({ questions = [], text, existing, shareText, onSave }) {
+// summary(answer) lists the answers ([{ label, value }]) shown on the page once saved.
+export default function QuickAnswer({ questions = [], text, existing, shareText, onSave, summary }) {
   const [answer, setAnswer] = useState(existing || {});
   const [saved, setSaved] = useState(Boolean(existing));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const set = (key, value) => {
-    setAnswer((a) => ({ ...a, [key]: value }));
-    setSaved(false);
-  };
+  const set = (key, value) => setAnswer((a) => ({ ...a, [key]: value }));
   const complete = questions.every((q) => answer[q.key]) && (questions.length > 0 || answer.note?.trim());
 
   async function save() {
@@ -34,6 +33,15 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
 
   // Numbered questions, then the note; a single text question (the reflection) isn't numbered.
   const numbered = questions.length > 0;
+  if (saved && summary) {
+    return (
+      <div className="quick-answer">
+        <SavedAnswers items={summary(answer)} onEdit={() => setSaved(false)} />
+        <SaveShareButton saved shareText={shareText(answer)} />
+      </div>
+    );
+  }
+
   return (
     <div className="quick-answer">
       {questions.map((q, i) => (

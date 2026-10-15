@@ -1,9 +1,9 @@
-// Leaderboard (Home): members who opted in, with avatar, first name, which habit
-// their streak is for (unless they hid it), streak and badges.
+// Leaderboard (Home tile): members who opted in, ranked by streak. Each row: rank,
+// avatar, first name, the challenge (unless they hid it), their current badge and streak.
 import { useEffect, useState } from "react";
 import { getLeaderboard } from "../../lib/data.js";
-import { effectiveStreak, badgeInfo, sortBadges } from "../../lib/streaks.js";
-import { habitStreakLabel, habitIcon } from "../../lib/cohorts.js";
+import { effectiveStreak, sortBadges } from "../../lib/streaks.js";
+import { habitStreakLabel } from "../../lib/cohorts.js";
 import Badge from "../Badge.jsx";
 import Avatar from "../Avatar.jsx";
 
@@ -31,23 +31,22 @@ export default function Leaderboard({ uid, optedIn, today }) {
         <p className="muted">No one yet.</p>
       ) : (
         <ol className="people leaderboard">
-          {rows.map((p) => (
-            <li key={p.id} className={p.id === uid ? "me" : ""}>
-              <Avatar id={p.avatar} name={p.firstName} />
-              <span className="person-name">
-                {p.firstName}
-                {p.habitType && p.showHabit !== false && (
-                  <span className="habit-tag">{habitIcon(p.habitType)} {habitStreakLabel(p.habitType)}</span>
-                )}
-                {p.badges?.length > 0 && (
-                  <span className="badges">
-                    <Badge id={sortBadges(p.badges).at(-1)} size={22} /> {badgeInfo(sortBadges(p.badges).at(-1)).name}
-                  </span>
-                )}
-              </span>
-              <span className="streak-count">{p.current}<small> days</small></span>
-            </li>
-          ))}
+          {rows.map((p, i) => {
+            const top = p.badges?.length ? sortBadges(p.badges).at(-1) : null;
+            const habit = p.habitType && p.showHabit !== false ? habitStreakLabel(p.habitType) : "";
+            return (
+              <li key={p.id} className={p.id === uid ? "me" : ""}>
+                <span className="lb-rank">{i + 1}</span>
+                <Avatar id={p.avatar} name={p.firstName} />
+                <span className="lb-who">
+                  <strong>{p.firstName}</strong>
+                  {habit && <span className="lb-meta">{habit.charAt(0).toUpperCase() + habit.slice(1)}</span>}
+                </span>
+                {top && <Badge id={top} size={30} />}
+                <span className="lb-streak"><strong>{p.current}</strong><small>{p.current === 1 ? "day" : "days"}</small></span>
+              </li>
+            );
+          })}
         </ol>
       )}
       {!optedIn && (

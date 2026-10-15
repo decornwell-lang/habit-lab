@@ -401,20 +401,6 @@ a { color: var(--primary); }
 .people li:last-child { border-bottom: none; }
 .people li.me { background: var(--accent-soft); margin: 0 -12px; padding: 10px 12px; border-radius: 12px; }
 .person-name { flex: 1; font-weight: 600; min-width: 0; }
-.leaderboard .person-name { display: flex; flex-direction: column; line-height: 1.3; }
-.habit-tag {
-  align-self: flex-start;
-  margin-top: 2px;
-  padding: 1px 8px;
-  border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--label);
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-.leaderboard .badges { display: inline-flex; align-items: center; gap: 4px; margin-top: 3px; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); }
-.streak-count { min-width: 64px; text-align: right; font-weight: 700; color: var(--primary); font-size: 1.1rem; }
-.streak-count small { font-weight: 500; font-size: 0.75rem; color: var(--text-muted); }
 
 .avatar {
   display: inline-grid;
@@ -1076,9 +1062,6 @@ td.actions { white-space: nowrap; }
 /* Leaderboard as its own tile, on the dark Home */
 .dashboard.dark .people li { border-color: rgba(255, 255, 255, 0.1); color: #fff; }
 .dashboard.dark .people li.me { margin: 0; padding: 10px 12px; border-radius: 14px; background: rgba(87, 189, 162, 0.16); }
-.dashboard.dark .streak-count { color: var(--aqua); }
-.dashboard.dark .streak-count small, .dashboard.dark .leaderboard .badges { color: #c4c9dc; }
-.dashboard.dark .habit-tag { background: rgba(87, 189, 162, 0.18); color: var(--aqua); }
 .share-fallback { flex-basis: 100%; }
 
 /* Morning intention: wording and the saved (published) look */
@@ -1091,3 +1074,36 @@ td.actions { white-space: nowrap; }
 }
 .intention-saved-meta { margin: 10px 0 0; font-size: 0.85rem; color: var(--aqua); }
 .intention-saved-meta .link-btn { color: #c4c9dc; font-size: 0.85rem; }
+
+/* Leaderboard rows: rank · avatar · name (challenge) · badge · streak */
+.leaderboard li { gap: 12px; }
+.lb-rank { width: 18px; text-align: center; font-weight: 700; font-size: 0.9rem; color: var(--text-muted); }
+.lb-who { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+.lb-who strong { font-size: 1.02rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-meta { font-size: 0.8rem; color: var(--text-muted); }
+.lb-streak { display: flex; flex-direction: column; align-items: flex-end; line-height: 1; min-width: 44px; }
+.lb-streak strong { font-family: var(--font-heading); font-size: 1.5rem; color: var(--teal); }
+.lb-streak small { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+.dashboard.dark .lb-rank, .dashboard.dark .lb-meta, .dashboard.dark .lb-streak small { color: #9aa2bf; }
+.dashboard.dark .lb-streak strong { color: var(--aqua); }
+
+/* Saved answers (SavedAnswers.jsx): what the member wrote, shown on the page after Save */
+.saved-answers dl { margin: 0; display: grid; gap: 12px; }
+.saved-answers dl > div { padding-left: 14px; border-left: 3px solid var(--gold); }
+.saved-answers dt { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 2px; }
+.saved-answers dd { margin: 0; font-weight: 600; font-size: 1.05rem; }
+.saved-answers .quote dd { font-family: var(--font-heading); font-style: italic; font-weight: 500; font-size: 1.15rem; line-height: 1.4; }
+.saved-answers-meta { margin: 14px 0 4px; font-size: 0.85rem; color: var(--teal); }
+.sheet .saved-answers dt, .dashboard.dark .saved-answers dt { color: #9aa2bf; }
+.sheet .saved-answers dd, .dashboard.dark .saved-answers dd { color: #fff; }
+.sheet .saved-answers-meta, .dashboard.dark .saved-answers-meta { color: var(--aqua); }
+.saved-answers-meta .link-btn { font-size: 0.85rem; }
+.sheet .saved-answers-meta .link-btn, .dashboard.dark .saved-answers-meta .link-btn { color: #c4c9dc; }
+
+/* Evening review: craving intensity 0 to 5 */
+.scale-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.scale-row button {
+  min-height: 46px; border-radius: 12px; font: inherit; font-weight: 600; font-size: 1.05rem; cursor: pointer;
+  background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff;
+}
+.scale-row button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }

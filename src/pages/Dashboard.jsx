@@ -31,7 +31,7 @@ import BadgesCard from "../components/dashboard/BadgesCard.jsx";
 import Folds from "../components/dashboard/Folds.jsx";
 import BreatheTab from "../components/dashboard/BreatheTab.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
-import { MorningPrompt, ReflectionPrompt } from "../components/dashboard/DailyPrompts.jsx";
+import { MorningPrompt } from "../components/dashboard/DailyPrompts.jsx";
 import { promptTime } from "../content/dailyPrompts.js";
 import Sheet from "../components/dashboard/Sheet.jsx";
 import IntentionScreen from "../components/dashboard/IntentionScreen.jsx";
@@ -161,7 +161,7 @@ export default function Dashboard() {
       day: current.progress.day,
       week: current.progress.week,
       maintained: evening.smoked === false,
-      cravings: evening.cravings,
+      craving: evening.intensity, // 0 to 5
     };
     await saveCheckin(user.uid, today, checkin);
     await handleCheckinSaved(today, checkin);
@@ -220,10 +220,6 @@ export default function Dashboard() {
     active && {
       ...tile({ id: "intention", icon: "🎯", tone: "gold", title: "Intention", subtitle: "One minute with a question", isDone: Boolean(data.intention), doneText: "✓ Done" }),
       onOpen: () => setSheet("intention"),
-    },
-    active && {
-      ...tile({ id: "reflection", icon: "✍️", tone: "gold", title: "Reflection", subtitle: "Today's question", isDone: Boolean(data.day.reflection), doneText: "✓ Shared" }),
-      content: <ReflectionPrompt {...prompt} content={content} existing={data.day.reflection} />,
     },
     active && {
       ...tile({ id: "evening", icon: "🌙", title: "Evening review", subtitle: "A minute to reflect on today",

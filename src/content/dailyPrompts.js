@@ -3,14 +3,13 @@
 // review (the day's final check-in). Prompts with notify: false open on Home but don't notify.
 // Edit the wording, times or choices here. `hour` is the member's local time (24h).
 // The server sends them (api/daily-prompts.js). Tapping one opens its tile on Home,
-// or `link` if given. On Home, the morning, reflection and check-in tiles stay
+// or `link` if given. On Home, the morning, intention and evening tiles stay
 // locked until their hour (the same time the notification goes out) and lock
 // again at midnight.
 
 export const DAILY_PROMPTS = [
   { id: "morning", hour: 7, title: "Good morning ☀️", body: "How are you feeling today?" },
   { id: "intention", hour: 9, title: "Your intention for today", body: "Take one minute with this." },
-  { id: "reflection", hour: 15, title: "Today's reflection ✍️", body: "A question to sit with today.", notify: false },
   { id: "meditation", hour: 12, title: "Today's meditation 🧘", body: "Take 15 minutes to practise.", link: "/dashboard?tab=practices", notify: false },
   // The day's final check-in. Keep at CHECKIN_OPENS_AT_HOUR in src/lib/dates.js.
   { id: "evening", hour: 21, title: "Evening review", body: "A minute to reflect on today." },

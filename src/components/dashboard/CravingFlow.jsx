@@ -7,6 +7,7 @@ import { useState } from "react";
 import { saveCraving } from "../../lib/data.js";
 import { CRAVING, MAX_TEXT } from "../../content/intention.js";
 import QuestionStep from "./QuestionStep.jsx";
+import SavedAnswers from "./SavedAnswers.jsx";
 import SaveShareButton from "../SaveShareButton.jsx";
 import ShareOptions from "../ShareOptions.jsx";
 import { shareMessage } from "../../lib/shareMessage.js";
@@ -65,6 +66,13 @@ export default function CravingFlow({ uid, date, firstName, onBreathe, onSaved }
       <h2>{CRAVING.tile}</h2>
       <p className="muted small">Every question is optional.</p>
 
+      {savedId ? (
+        <SavedAnswers items={[
+          { label: CRAVING.where, value: areas.map((a) => (a === "Other" && other.trim() ? other.trim() : a)).join(", ") },
+          { label: CRAVING.strength, value: touched ? `${strength} / 10` : "" },
+          { label: CRAVING.happening, value: happening.trim(), quote: true },
+        ]} />
+      ) : (<>
       <QuestionStep n={1} title={CRAVING.where}>
         <div className="choices">
           {CRAVING.areas.map((area) => (
@@ -94,6 +102,7 @@ export default function CravingFlow({ uid, date, firstName, onBreathe, onSaved }
           onChange={(e) => { setHappening(e.target.value); setSavedId(null); }} />
         <p className="char-count">{happening.length} / {MAX_TEXT}</p>
       </QuestionStep>
+      </>)}
 
       {error && <p className="form-error">{error}</p>}
       <button className="btn btn-primary" onClick={() => breathe("space")} disabled={busy}>Breathe with me</button>

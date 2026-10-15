@@ -137,6 +137,7 @@ function MemberEntries({ entries }) {
           {e.type === "evening" && (e.skipped ? <p className="muted">Skipped</p> : (
             <p>
               {e.smoked === true ? "Smoked" : e.smoked === false ? "Didn't smoke" : ""}
+              {e.intensity != null && ` · cravings ${e.intensity}/5`}
               {e.cravings != null && ` · ${e.cravings} cravings`}
               {e.strongestAt && ` · strongest at ${e.strongestAt}`}
               {e.noticed && <><br />Noticed: <em>“{e.noticed}”</em></>}

@@ -14,9 +14,10 @@ export const MAX_TEXT = 280; // characters, for every free-text answer
 
 export const EVENING = {
   smoked: "Did you smoke today?",
-  cravings: "How many cravings did you notice today?",
+  intensity: "How intense were the cravings today?",
+  intensityLow: "None",
+  intensityHigh: "Very strong",
   strongest: "When did the strongest craving arrive?",
-  noticed: "What did you notice in your body or emotions?",
   helped: "What helped, even a little?",
   // Shown only if the member answers "Yes" to smoking. Neutral, nothing else.
   honest: "Thank you for being honest. What do you want to carry into tomorrow?",
