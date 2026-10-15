@@ -1023,3 +1023,49 @@ td.actions { white-space: nowrap; }
 .dashboard.dark .hint { color: #9aa2bf; }
 .dashboard.dark .steps-list { color: #c4c9dc; }
 .dashboard.dark .fold-body > .card, .dashboard.dark .fold-body > * > .card { background: none; border: none; padding: 0; margin: 0; }
+
+/* ---------- Full-screen panels: morning intention and evening review (Sheet.jsx) ---------- */
+.sheet {
+  position: fixed; inset: 0; z-index: 40; overflow-y: auto; color: #fff;
+  background: radial-gradient(120% 90% at 50% 30%, var(--navy-blue) 0%, var(--dark-blue) 70%);
+  padding: calc(16px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));
+}
+.sheet-close { position: absolute; top: calc(10px + env(safe-area-inset-top)); right: 10px; color: #fff; }
+.sheet-inner { max-width: 440px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; }
+.sheet h2 { color: #fff; }
+.sheet .muted { color: #c4c9dc; }
+.sheet .btn-primary { background: var(--aqua); color: var(--dark-blue); }
+.sheet .btn-text { color: #c4c9dc; }
+.char-count { margin: 4px 0 0; text-align: right; font-size: 0.75rem; color: #8f96b3; }
+
+/* Morning intention: one screen, no scrolling */
+.intention { display: flex; flex-direction: column; justify-content: center; flex: 1; min-height: calc(100dvh - 40px); gap: 0; }
+.intention-proverb { display: flex; align-items: center; gap: 16px; margin: 0 0 2.5vh; }
+.intention-proverb .spear { flex-shrink: 0; height: min(150px, 17vh); width: auto; }
+.intention-proverb p { margin: 0; font-family: var(--font-heading); font-style: italic; font-size: 1.25rem; line-height: 1.4; color: var(--gold); }
+.intention-core { margin: 0 0 6px; font-size: 1.45rem; line-height: 1.25; }
+.intention-weekly { margin: 0 0 2vh; color: var(--aqua); font-weight: 600; font-size: 1.05rem; }
+.intention-invite { margin: 0 0 2vh; color: #c4c9dc; font-size: 0.92rem; line-height: 1.5; }
+.intention .q-textarea { min-height: 64px; }
+.intention .btn { margin-top: 1.5vh; }
+
+/* Evening review */
+.evening { padding-top: 24px; }
+.evening h2 { margin: 0 0 2px; }
+.evening > .muted { margin: 0 0 16px; }
+.evening-honest { margin-top: 14px; }
+.evening-honest p { margin: 0 0 8px; color: #e9eaf2; font-style: italic; }
+.breathe-stepper.counter span { min-width: 72px; font-size: 1.3rem; }
+.q-input { min-height: 44px; padding: 0 12px; border-radius: 12px; font: inherit; }
+.skip-link { align-self: center; }
+
+/* The same question panels, inside the dark panels */
+.sheet .q-step { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.09); }
+.sheet .q-title { color: #fff; }
+.sheet .q-hint { color: #9aa2bf; }
+.sheet .q-textarea, .sheet .q-input { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; }
+.sheet .q-textarea::placeholder { color: #8f96b3; }
+.sheet .q-input { color-scheme: dark; }
+.sheet .segmented button { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
+.sheet .segmented button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
+.sheet .segmented button.selected.no { background: var(--gold); border-color: var(--gold); }

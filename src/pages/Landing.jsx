@@ -7,6 +7,7 @@ import { isFirebaseConfigured } from "../firebase.js";
 import { site } from "../content/site.js";
 import { isValidPhone } from "../lib/phone.js";
 import PhoneInput from "../components/PhoneInput.jsx";
+import { REFLECTION_CONSENT } from "../content/site.js";
 
 export default function Landing() {
   const { user } = useAuth();
@@ -52,6 +53,7 @@ function SignUpForm() {
     email: "",
     password: "",
     phone: "", // full international number from PhoneInput, e.g. "+447700900123"
+    reflectionConsent: false, // off by default
   });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -122,6 +124,11 @@ function SignUpForm() {
         <label htmlFor="phone">Mobile number <span className="muted">(optional)</span></label>
         <PhoneInput value={form.phone} onChange={(phone) => setForm((f) => ({ ...f, phone }))} />
       </div>
+
+      <label className="checkbox">
+        <input type="checkbox" name="reflectionConsent" checked={form.reflectionConsent} onChange={update} />
+        <span>{REFLECTION_CONSENT}</span>
+      </label>
 
       {error && <p className="form-error" role="alert">{error}</p>}
 

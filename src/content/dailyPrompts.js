@@ -11,10 +11,16 @@ export const DAILY_PROMPTS = [
   { id: "reflection", hour: 15, title: "Today's reflection ✍️", body: "A question to sit with today." },
   // Keep at 18, when the check-in opens (CHECKIN_OPENS_AT_HOUR in src/lib/dates.js).
   { id: "checkin", hour: 18, title: "Time for your check-in 🌿", body: "How was Day {day}?" },
+  // Morning intention and evening review. notify: false until their notifications are switched on.
+  { id: "intention", hour: 7, minute: 15, title: "Your intention for today", body: "Take one minute with this.", notify: false },
+  { id: "evening", hour: 21, title: "Evening review", body: "A minute to reflect on today.", notify: false },
 ];
 
-// The hour a prompt opens, e.g. promptHour("checkin") → 18.
-export const promptHour = (id) => DAILY_PROMPTS.find((p) => p.id === id)?.hour ?? 0;
+// When a prompt opens: promptTime("intention") → { hour: 7, minute: 15 }.
+export function promptTime(id) {
+  const p = DAILY_PROMPTS.find((x) => x.id === id);
+  return { hour: p?.hour ?? 0, minute: p?.minute ?? 0 };
+}
 
 // Morning: one quick choice for each.
 export const MORNING_QUESTIONS = [

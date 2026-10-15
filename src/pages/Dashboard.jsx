@@ -7,7 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import {
   getCohorts, getMemberships, getCheckins, getPublicProfile, savePublicProfile,
-  getContentSettings, getDay, updateUserProfile,
+  getContentSettings, getDay, getReflection, updateUserProfile,
 } from "../lib/data.js";
 import { apiPost } from "../lib/api.js";
 import { todayKey, checkinDayKey, addDays, timeZoneName } from "../lib/dates.js";
@@ -32,7 +32,10 @@ import Folds from "../components/dashboard/Folds.jsx";
 import BreatheTab from "../components/dashboard/BreatheTab.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
 import { MorningPrompt, ReflectionPrompt } from "../components/dashboard/DailyPrompts.jsx";
-import { promptHour } from "../content/dailyPrompts.js";
+import { promptTime } from "../content/dailyPrompts.js";
+import Sheet from "../components/dashboard/Sheet.jsx";
+import IntentionScreen from "../components/dashboard/IntentionScreen.jsx";
+import EveningReview from "../components/dashboard/EveningReview.jsx";
 import TodaysPractice from "../components/dashboard/TodaysPractice.jsx";
 import WhatsAppIcon from "../components/WhatsAppIcon.jsx";
 import { LockIcon, PencilIcon } from "../components/TileIcons.jsx";
@@ -47,6 +50,7 @@ export default function Dashboard() {
   const [notice, setNotice] = useState("");
   const [celebrate, setCelebrate] = useState(null); // badge id to celebrate
   const [startAgain, setStartAgain] = useState(false);
+  const [sheet, setSheet] = useState(null); // full-screen panel: "intention" or "evening"
   const [params, setParams] = useSearchParams();
   const [tabTaps, setTabTaps] = useState(0); // tapping a tab again starts it afresh (e.g. Breathe → choose a practice)
   const today = todayKey(); // calendar day: practice, meditation, cohort day number
@@ -61,15 +65,18 @@ export default function Dashboard() {
 
   const load = useCallback(async () => {
     try {
-      const [cohorts, memberships, checkins, publicProfile, settings, day] = await Promise.all([
+      const date = todayKey();
+      const [cohorts, memberships, checkins, publicProfile, settings, day, intention, evening] = await Promise.all([
         getCohorts(),
         getMemberships(user.uid),
         getCheckins(user.uid),
         getPublicProfile(user.uid),
         getContentSettings(),
-        getDay(user.uid, todayKey()),
+        getDay(user.uid, date),
+        getReflection(user.uid, `${date}_intention`).catch(() => null),
+        getReflection(user.uid, `${date}_evening`).catch(() => null),
       ]);
-      setData({ cohorts, memberships, checkins, publicProfile, settings, day });
+      setData({ cohorts, memberships, checkins, publicProfile, settings, day, intention, evening });
     } catch (err) {
       console.error(err);
       setError("We couldn't load your dashboard. Please refresh the page.");
@@ -104,6 +111,11 @@ export default function Dashboard() {
     const timer = setInterval(() => setNow(new Date()), 60 * 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const target = params.get("open");
+    if (target === "intention" || target === "evening") setSheet(target);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Remember the member's time zone (the daily notifications go out at local times).
   useEffect(() => {
@@ -181,9 +193,10 @@ export default function Dashboard() {
   // The day's three tiles. Each is locked (🔒) until its hour, when its notification
   // goes out, then ready to fill in (✏️) until done (✓). They lock again at midnight.
   const tile = ({ id, icon, tone, title, subtitle, isDone, doneText }) => {
-    const hour = promptHour(id);
-    const locked = now.getHours() < hour;
-    if (locked) return { id, icon: <LockIcon />, tone: "locked", title, subtitle, status: `Opens ${String(hour).padStart(2, "0")}:00`, locked: true };
+    const { hour, minute } = promptTime(id);
+    const locked = now.getHours() * 60 + now.getMinutes() < hour * 60 + minute;
+    const opens = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+    if (locked) return { id, icon: <LockIcon />, tone: "locked", title, subtitle, status: `Opens ${opens}`, locked: true };
     if (isDone) return { id, icon, tone, title, subtitle, status: doneText, done: true };
     return { id, icon: <PencilIcon />, tone: "ready", title, subtitle, status: "Ready", highlight: true };
   };
@@ -195,6 +208,10 @@ export default function Dashboard() {
       content: <MorningPrompt {...prompt} existing={data.day.morning} />,
     },
     active && {
+      ...tile({ id: "intention", icon: "🎯", tone: "gold", title: "Intention", subtitle: "One minute with a question", isDone: Boolean(data.intention), doneText: "✓ Done" }),
+      onOpen: () => setSheet("intention"),
+    },
+    active && {
       ...tile({ id: "reflection", icon: "✍️", tone: "gold", title: "Reflection", subtitle: "Today's question", isDone: Boolean(data.day.reflection), doneText: "✓ Shared" }),
       content: <ReflectionPrompt {...prompt} content={content} existing={data.day.reflection} />,
     },
@@ -204,6 +221,11 @@ export default function Dashboard() {
         <DailyCheckin uid={user.uid} current={current} content={checkinContent} progress={checkinProgress}
           existing={data.checkins[checkinDay]} streak={streak} day={checkinDay} onSaved={handleCheckinSaved} />
       ),
+    },
+    active && {
+      ...tile({ id: "evening", icon: "🌙", title: "Evening review", subtitle: "A minute to reflect on today",
+        isDone: Boolean(data.evening), doneText: data.evening?.skipped ? "Skipped" : "✓ Done" }),
+      onOpen: () => setSheet("evening"),
     },
     current && groupLink && {
       id: "group",
@@ -281,6 +303,19 @@ export default function Dashboard() {
       {/* Upcoming: cohorts that haven't started yet */}
       {tab === "upcoming" && (
         <JoinCohort uid={user.uid} cohorts={data.cohorts} memberships={data.memberships} onJoined={load} />
+      )}
+
+      {sheet === "intention" && (
+        <Sheet label="Your intention for today" onClose={() => setSheet(null)}>
+          <IntentionScreen uid={user.uid} date={today} existing={data.intention}
+            onSaved={(intention) => { setData((d) => ({ ...d, intention })); setSheet(null); }} />
+        </Sheet>
+      )}
+      {sheet === "evening" && (
+        <Sheet label="Evening review" onClose={() => setSheet(null)}>
+          <EveningReview uid={user.uid} date={today} existing={data.evening}
+            onSaved={(evening) => { setData((d) => ({ ...d, evening })); setSheet(null); }} />
+        </Sheet>
       )}
 
       <DashboardTabs active={tab} onChange={setTab} />

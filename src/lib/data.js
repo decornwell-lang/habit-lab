@@ -77,6 +77,28 @@ export async function saveCheckin(uid, date, data) {
   await setDoc(doc(db, "users", uid, "checkins", date), { ...data, date, updatedAt: serverTimestamp() }, { merge: true });
 }
 
+// ---------- Morning intention, evening review and cravings ----------
+//   users/{uid}/reflections/{id}   the member's own words. Private: the owner can read
+//                                  them only if the member agreed (reflectionConsent).
+//                                  ids: "2026-10-15_intention", "2026-10-15_evening", or random for cravings
+//   users/{uid}/activity/{date}    counts only, no words: { intention, evening, cravings }.
+//                                  The owner can always read these.
+export async function getReflection(uid, id) {
+  return (await getDoc(doc(db, "users", uid, "reflections", id))).data() || null;
+}
+
+export async function getActivity(uid, date) {
+  return (await getDoc(doc(db, "users", uid, "activity", date))).data() || {};
+}
+
+// Saves a reflection and marks it done in that day's activity (counts only).
+export async function saveReflection(uid, id, data, activity) {
+  const batch = writeBatch(db);
+  batch.set(doc(db, "users", uid, "reflections", id), { ...data, updatedAt: serverTimestamp() }, { merge: true });
+  batch.set(doc(db, "users", uid, "activity", data.date), { date: data.date, ...activity }, { merge: true });
+  await batch.commit();
+}
+
 // A member's answers for one calendar day: { morning, meditation, reflection, practised }.
 export async function getDay(uid, date) {
   return (await getDoc(doc(db, "users", uid, "practice", date))).data() || {};

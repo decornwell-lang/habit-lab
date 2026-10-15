@@ -21,3 +21,7 @@ export const site = {
   signUpTitle: "Join The Habit Lab",
   signUpSubtitle: "",
 };
+
+// Consent shown on sign-up and in My account (off by default). Without it, David sees
+// only how many reflections a member has done, never their words.
+export const REFLECTION_CONSENT = "I agree that my reflections can be seen by David for support purposes.";

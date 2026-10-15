@@ -13,6 +13,7 @@ import NotificationSettings from "../components/NotificationSettings.jsx";
 import ChangePassword from "../components/ChangePassword.jsx";
 import { isValidPhone } from "../lib/phone.js";
 import PhoneInput from "../components/PhoneInput.jsx";
+import { REFLECTION_CONSENT } from "../content/site.js";
 
 export default function Account() {
   const { user, profile, logOut } = useAuth();
@@ -22,6 +23,7 @@ export default function Account() {
   const [avatar, setAvatar] = useState(profile?.avatar || null);
   const [optIn, setOptIn] = useState(Boolean(profile?.leaderboardOptIn));
   const [showHabit, setShowHabit] = useState(profile?.showHabit !== false);
+  const [reflectionConsent, setReflectionConsent] = useState(Boolean(profile?.reflectionConsent));
   const [phone, setPhone] = useState(profile?.phone || "");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
@@ -42,7 +44,7 @@ export default function Account() {
     setBusy(true);
     try {
       // The phone number is private: only the owner sees it.
-      await updateUserProfile(user.uid, { avatar, leaderboardOptIn: optIn, showHabit, phone: phone || null });
+      await updateUserProfile(user.uid, { avatar, leaderboardOptIn: optIn, showHabit, reflectionConsent, phone: phone || null });
       // The public profile never holds surname, email or phone.
       await savePublicProfile(user.uid, { firstName, avatar, leaderboardOptIn: optIn, showHabit });
       setMessage("Saved.");
@@ -120,6 +122,10 @@ export default function Account() {
         <label className="checkbox">
           <input type="checkbox" checked={showHabit} onChange={(e) => setShowHabit(e.target.checked)} />
           <span>Show my habit</span>
+        </label>
+        <label className="checkbox">
+          <input type="checkbox" checked={reflectionConsent} onChange={(e) => setReflectionConsent(e.target.checked)} />
+          <span>{REFLECTION_CONSENT}</span>
         </label>
         <p className="muted small">Surname and email are never shown.</p>
 

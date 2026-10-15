@@ -2,7 +2,8 @@
 // Each item: { id, icon, tone, title, subtitle, status, highlight, done, locked, content }.
 //   subtitle is a short line under the title; status is a chip on the right
 //   (e.g. "Ready", "Opens 18:00", "✓ Done"). highlight makes the chip bright,
-//   done makes it quiet, and locked tiles can't be opened.
+//   done makes it quiet, and locked tiles can't be opened. Tiles with onOpen (instead of
+//   content) open their own full-screen panel.
 // `initialOpen` opens one frame to start with (used when a notification is tapped).
 import { useState } from "react";
 
@@ -19,6 +20,7 @@ export default function Folds({ items, initialOpen = null }) {
             aria-disabled={item.locked || undefined}
             onClick={(e) => {
               if (item.locked) return;
+              if (item.onOpen) return item.onOpen();
               const row = e.currentTarget;
               setOpen(open === item.id ? null : item.id);
               setTimeout(() => row.scrollIntoView({ behavior: "smooth", block: "nearest" }), 50);

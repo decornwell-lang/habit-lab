@@ -27,6 +27,18 @@ service cloud.firestore {
         allow read: if isSelf(uid) || isAdmin();
         allow write: if isSelf(uid);
       }
+      // Morning intentions, evening reviews and craving notes: the member's own words.
+      // The owner can read them only if the member agreed (reflectionConsent on their profile).
+      match /reflections/{id} {
+        allow read: if isSelf(uid)
+          || (isAdmin() && get(/databases/$(database)/documents/users/$(uid)).data.reflectionConsent == true);
+        allow write: if isSelf(uid);
+      }
+      // Counts only (no words), so the owner can always see activity.
+      match /activity/{date} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow write: if isSelf(uid);
+      }
       match /practiceChecks/{id} {
         allow read: if isSelf(uid) || isAdmin();
         allow create: if isSelf(uid);

@@ -39,7 +39,7 @@ export default handle(async (req, res) => {
     } catch {
       local = localNow(DEFAULT_TIME_ZONE);
     }
-    const prompt = DAILY_PROMPTS.find((p) => p.hour === local.hour);
+    const prompt = DAILY_PROMPTS.find((p) => p.hour === local.hour && p.notify !== false);
     // promptsSent remembers the last date each prompt went out, so it's sent once a day.
     if (!prompt || user.promptsSent?.[prompt.id] === local.date) continue;
 
