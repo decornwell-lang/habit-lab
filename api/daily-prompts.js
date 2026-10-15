@@ -7,7 +7,7 @@ import { getMessaging } from "firebase-admin/messaging";
 import { handle, db, HttpError } from "./_lib/server.js";
 import { DAILY_PROMPTS } from "../src/content/dailyPrompts.js";
 
-const DEFAULT_TIME_ZONE = "Europe/London"; // for members whose time zone isn't known yet
+const DEFAULT_TIME_ZONE = "Europe/Madrid"; // only until the member first opens the app (then their phone's time zone is saved)
 
 // Local hour and date ("YYYY-MM-DD") for a time zone.
 function localNow(timeZone) {
