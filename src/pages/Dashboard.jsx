@@ -27,6 +27,7 @@ import NotificationSettings from "../components/NotificationSettings.jsx";
 import InstallApp from "../components/InstallApp.jsx";
 import DashboardTabs, { TABS, DEFAULT_TAB } from "../components/dashboard/DashboardTabs.jsx";
 import StreakCard from "../components/dashboard/StreakCard.jsx";
+import BadgesCard from "../components/dashboard/BadgesCard.jsx";
 import Folds from "../components/dashboard/Folds.jsx";
 import BreatheTab from "../components/dashboard/BreatheTab.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
@@ -276,14 +277,18 @@ export default function Dashboard() {
         }} />
       )}
 
-      {/* Home: the day's tiles (locked until their time), then the badge box with journey and leaderboard */}
+      {/* Home: badges, the day's tiles (locked until their time), my streak (with journey), then the leaderboard tile */}
       {tab === "home" && (
         <>
+          {current && <BadgesCard streak={streak} current={current} />}
           <Folds items={homeItems} initialOpen={params.get("open")} />
           {current ? (
             <>
-              <StreakCard streak={streak} current={current} checkins={data.checkins}
-                leaderboard={<Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} />} />
+              <StreakCard streak={streak} current={current} checkins={data.checkins} />
+              <Folds items={[{
+                id: "leaderboard", icon: "🏆", tone: "gold", title: "Leaderboard", subtitle: "Your cohort's streaks",
+                content: <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} />,
+              }]} />
               <LeaderboardInvite uid={user.uid} profile={profile} />
               {current.progress.state === "upcoming" && <PreCohort current={current} />}
             </>
