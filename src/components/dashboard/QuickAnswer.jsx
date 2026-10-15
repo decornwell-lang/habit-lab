@@ -4,6 +4,7 @@
 import { useState } from "react";
 import WhatsAppIcon from "../WhatsAppIcon.jsx";
 import ShareButton from "../ShareButton.jsx";
+import QuestionStep from "./QuestionStep.jsx";
 
 // questions: [{ key, label, choices }]   text: label for the free text (optional)
 // shareText(answer) builds the WhatsApp message. onSave(answer) stores it.
@@ -21,11 +22,12 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
     setSaved(true);
   }
 
+  // Numbered questions, then the note; a single text question (the reflection) isn't numbered.
+  const numbered = questions.length > 0;
   return (
     <div className="quick-answer">
-      {questions.map((q) => (
-        <fieldset className="question" key={q.key}>
-          {q.label && <legend>{q.label}</legend>}
+      {questions.map((q, i) => (
+        <QuestionStep key={q.key} n={i + 1} title={q.label}>
           <div className="choices">
             {q.choices.map((c) => (
               <button type="button" key={c} className={answer[q.key] === c ? "selected" : ""} aria-pressed={answer[q.key] === c} onClick={() => set(q.key, c)}>
@@ -33,13 +35,12 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
               </button>
             ))}
           </div>
-        </fieldset>
+        </QuestionStep>
       ))}
-      <div className="field">
-        {text && <label htmlFor={`note-${text}`}>{text}</label>}
-        <textarea id={`note-${text}`} rows={2} value={answer.note || ""} onChange={(e) => set("note", e.target.value)}
-          placeholder={questions.length ? "Anything to add? (optional)" : "A few words is enough"} />
-      </div>
+      <QuestionStep n={numbered ? questions.length + 1 : null} title={text || "Anything to add?"} hint={numbered ? "Optional" : null}>
+        <textarea className="q-textarea" rows={3} aria-label={text || "Anything to add?"} value={answer.note || ""}
+          onChange={(e) => set("note", e.target.value)} placeholder={numbered ? "A few words…" : "A few words is enough"} />
+      </QuestionStep>
       {complete ? (
         <ShareButton text={shareText(answer)} onShare={save} />
       ) : (

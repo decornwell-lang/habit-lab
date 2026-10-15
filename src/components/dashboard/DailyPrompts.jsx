@@ -25,7 +25,7 @@ export function MorningPrompt({ uid, today, dayLabel, existing, onSaved }) {
 export function ReflectionPrompt({ uid, today, dayLabel, content, existing, onSaved }) {
   return (
     <>
-      <h2>{content.dailyPrompt}</h2>
+      <blockquote className="q-prompt">{content.dailyPrompt}</blockquote>
       <QuickAnswer
         text="Your response"
         existing={existing}

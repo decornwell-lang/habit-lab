@@ -759,7 +759,6 @@ td.actions { white-space: nowrap; }
 .fold-summary { color: var(--text-muted); font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fold-summary.highlight { color: var(--teal); font-weight: 600; }
 .fold-summary.done { color: var(--teal); }
-.fold-row { grid-template-columns: auto 1fr auto; }
 .fold-row > svg { color: var(--text-muted); transition: transform 0.2s; }
 .fold.locked .fold-row > svg { visibility: hidden; }
 .fold.open .fold-row { height: auto; }
@@ -941,3 +940,86 @@ td.actions { white-space: nowrap; }
   100% { box-shadow: 0 0 0 0 rgba(87, 189, 162, 0); }
 }
 @media (prefers-reduced-motion: reduce) { .fold-icon.ready { animation: none; } }
+
+/* ---------- Question panels (QuestionStep.jsx), used by Morning, Reflection and Check-in ---------- */
+.q-step { margin: 0 0 12px; padding: 14px; border-radius: 16px; background: var(--bg); border: 1px solid var(--border); }
+.q-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.q-num {
+  display: grid; place-items: center; flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--aqua); color: var(--dark-blue); font-size: 0.85rem; font-weight: 700;
+}
+.q-title { font-weight: 600; font-size: 1rem; line-height: 1.35; padding-top: 2px; }
+.q-hint { margin: -8px 0 10px 36px; font-size: 0.8rem; color: var(--text-muted); }
+.q-step .choices, .q-step .segmented, .q-step .scale { margin: 0; }
+.q-textarea {
+  width: 100%; min-height: 84px; padding: 12px; border-radius: 12px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); font: inherit; resize: vertical;
+}
+.q-prompt {
+  margin: 0 0 14px; padding: 14px 16px; border-left: 3px solid var(--gold); border-radius: 0 14px 14px 0;
+  background: var(--bg); font-family: var(--font-heading); font-style: italic; font-size: 1.1rem; line-height: 1.45;
+}
+.segmented button.selected.no { background: var(--gold); border-color: var(--gold); color: var(--dark-blue); }
+.answer-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 14px; }
+.answer-summary > div { padding: 12px 14px; border-radius: 14px; background: var(--bg); border: 1px solid var(--border); }
+.answer-summary > div.wide { grid-column: 1 / -1; }
+.answer-summary dt { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px; }
+.answer-summary dd { margin: 0; font-weight: 600; font-size: 1.05rem; }
+.answer-summary .wide dd { font-weight: 400; font-style: italic; font-size: 0.98rem; }
+
+/* ---------- Home tiles: status chip on the right ---------- */
+.fold-row { grid-template-columns: auto 1fr auto auto; padding: 14px 16px; gap: 12px; }
+.fold-icon { width: 44px; height: 44px; border-radius: 14px; font-size: 1.25rem; }
+.fold-title { font-size: 1.05rem; }
+.fold-chip {
+  padding: 5px 11px; border-radius: 99px; font-size: 0.78rem; font-weight: 700; white-space: nowrap;
+  background: var(--bg); color: var(--text-muted);
+}
+.fold-chip.highlight { background: var(--aqua); color: var(--dark-blue); }
+.fold-chip.locked { background: transparent; color: var(--gold-text, #9a7a1c); border: 1px solid var(--gold); }
+.fold-chip.done { color: var(--teal); }
+
+/* ---------- Home on the dark blue background ---------- */
+.dashboard.dark .fold { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.1); box-shadow: none; }
+.dashboard.dark .fold.open { background: rgba(255, 255, 255, 0.08); border-color: rgba(87, 189, 162, 0.55); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); }
+.dashboard.dark .fold-row { color: #fff; }
+.dashboard.dark .fold-summary { color: #9aa2bf; }
+.dashboard.dark .fold.locked .fold-title { color: #b4bad0; }
+.dashboard.dark .fold-row > svg { color: #8f96b3; }
+.dashboard.dark .fold-icon { background: rgba(255, 255, 255, 0.08); }
+.dashboard.dark .fold-icon.done { background: rgba(87, 189, 162, 0.16); }
+.dashboard.dark .fold-icon.locked { background: var(--gold); }
+.dashboard.dark .fold-icon.ready { background: var(--aqua); }
+.dashboard.dark .fold-chip { background: rgba(255, 255, 255, 0.08); color: #c4c9dc; }
+.dashboard.dark .fold-chip.highlight { background: var(--aqua); color: var(--dark-blue); }
+.dashboard.dark .fold-chip.locked { background: transparent; color: var(--gold); border-color: rgba(220, 177, 60, 0.7); }
+.dashboard.dark .fold-chip.done { color: var(--aqua); }
+.dashboard.dark .fold-body { border-top-color: rgba(255, 255, 255, 0.1); }
+.dashboard.dark .streak-card { border: 1px solid rgba(255, 255, 255, 0.1); }
+.dashboard.dark .aphorism { color: #c4c9dc; }
+.dashboard.dark .streak { color: var(--aqua); }
+.dashboard.dark .q-step { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.09); }
+.dashboard.dark .q-title { color: #fff; }
+.dashboard.dark .q-hint, .dashboard.dark .scale-labels { color: #9aa2bf; }
+.dashboard.dark .q-textarea { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
+.dashboard.dark .q-textarea::placeholder { color: #8f96b3; }
+.dashboard.dark .q-prompt { background: rgba(255, 255, 255, 0.05); color: #fff; }
+.dashboard.dark .choices button,
+.dashboard.dark .segmented button,
+.dashboard.dark .scale button { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
+.dashboard.dark .choices button.selected,
+.dashboard.dark .segmented button.selected,
+.dashboard.dark .scale button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
+.dashboard.dark .segmented button.selected.no { background: var(--gold); border-color: var(--gold); }
+.dashboard.dark .answer-summary > div { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.09); }
+.dashboard.dark .answer-summary dt { color: #9aa2bf; }
+.dashboard.dark .answer-summary dd { color: #fff; }
+.dashboard.dark .card-accent { background: rgba(220, 177, 60, 0.08); border-color: rgba(220, 177, 60, 0.45); }
+.dashboard.dark .card-celebrate { background: rgba(220, 177, 60, 0.1); border-color: rgba(220, 177, 60, 0.3); }
+.dashboard.dark .card-gentle { background: rgba(87, 189, 162, 0.1); border-color: rgba(87, 189, 162, 0.3); }
+.dashboard.dark .notice-good { background: rgba(87, 189, 162, 0.14); color: var(--aqua); }
+.dashboard.dark .done-badge, .dashboard.dark .form-success { color: var(--aqua); }
+.dashboard.dark .btn-text { color: #fff; }
+.dashboard.dark .hint { color: #9aa2bf; }
+.dashboard.dark .steps-list { color: #c4c9dc; }
+.dashboard.dark .fold-body > .card, .dashboard.dark .fold-body > * > .card { background: none; border: none; padding: 0; margin: 0; }

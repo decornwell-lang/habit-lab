@@ -7,6 +7,7 @@ import { saveCheckin } from "../../lib/data.js";
 import { formatDate, isBeforeCheckinOpens, checkinOpensLabel, todayKey } from "../../lib/dates.js";
 import { COMMITMENT_QUESTION, CRAVING_QUESTION, CRAVING_SCALE } from "../../lib/content.js";
 import ShareButton from "../ShareButton.jsx";
+import QuestionStep from "./QuestionStep.jsx";
 
 const scaleValues = Array.from({ length: CRAVING_SCALE.max - CRAVING_SCALE.min + 1 }, (_, i) => CRAVING_SCALE.min + i);
 
@@ -93,19 +94,18 @@ export default function DailyCheckin({ uid, current, progress, content, existing
     : `Today's check-in · Day ${progress.day}`;
 
   const streakLine =
-    streak > 0 ? `${streak} ${streak === 1 ? "day" : "days"}` : "Starts with your next Yes.";
+    streak > 0 ? `Streak · ${streak} ${streak === 1 ? "day" : "days"}` : "Your streak starts with your next Yes.";
 
   if (!editing) {
     return (
       <section className="card">
         <p className="card-label">{cardLabel}</p>
-        <h2>✓ Saved</h2>
-        <p className="streak">{streakLine}</p>
-        <ul className="summary">
-          <li>Kept: <strong>{existing?.maintained ? "Yes" : "No"}</strong></li>
-          <li>Cravings: <strong>{existing?.craving} / {CRAVING_SCALE.max}</strong></li>
-          {existing?.answer && <li>“{existing.answer}”</li>}
-        </ul>
+        <p className="streak">✓ Saved · {streakLine}</p>
+        <dl className="answer-summary">
+          <div><dt>Commitment kept</dt><dd>{existing?.maintained ? "Yes" : "No"}</dd></div>
+          <div><dt>Cravings</dt><dd>{existing?.craving} / {CRAVING_SCALE.max}</dd></div>
+          {existing?.answer && <div className="wide"><dt>{content.openQuestion}</dt><dd>“{existing.answer}”</dd></div>}
+        </dl>
         {existing && (
           <ShareButton text={groupReport({ checkin: existing, progress, content, streak })} />
         )}
@@ -119,21 +119,17 @@ export default function DailyCheckin({ uid, current, progress, content, existing
 
   return (
     <section className="card">
-      <p className="card-label">{cardLabel}</p>
-      <h2>How was today?</h2>
       <p className="streak">{streakLine}</p>
 
       <form onSubmit={handleSubmit}>
-        <fieldset className="question">
-          <legend>{COMMITMENT_QUESTION}</legend>
+        <QuestionStep n={1} title={COMMITMENT_QUESTION}>
           <div className="segmented">
-            <button type="button" className={maintained === true ? "selected" : ""} aria-pressed={maintained === true} onClick={() => setMaintained(true)}>Yes</button>
-            <button type="button" className={maintained === false ? "selected" : ""} aria-pressed={maintained === false} onClick={() => setMaintained(false)}>No</button>
+            <button type="button" className={maintained === true ? "selected yes" : ""} aria-pressed={maintained === true} onClick={() => setMaintained(true)}>Yes</button>
+            <button type="button" className={maintained === false ? "selected no" : ""} aria-pressed={maintained === false} onClick={() => setMaintained(false)}>No</button>
           </div>
-        </fieldset>
+        </QuestionStep>
 
-        <fieldset className="question">
-          <legend>{CRAVING_QUESTION}</legend>
+        <QuestionStep n={2} title={CRAVING_QUESTION}>
           <div className="scale" style={{ gridTemplateColumns: `repeat(${scaleValues.length}, 1fr)` }}>
             {scaleValues.map((n) => (
               <button type="button" key={n} className={craving === n ? "selected" : ""} aria-pressed={craving === n} onClick={() => setCraving(n)}>
@@ -142,12 +138,11 @@ export default function DailyCheckin({ uid, current, progress, content, existing
             ))}
           </div>
           <div className="scale-labels"><span>{CRAVING_SCALE.lowLabel}</span><span>{CRAVING_SCALE.highLabel}</span></div>
-        </fieldset>
+        </QuestionStep>
 
-        <div className="field">
-          <label htmlFor="answer">{content.openQuestion}</label>
-          <textarea id="answer" rows={3} value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="Optional, a few words is enough" />
-        </div>
+        <QuestionStep n={3} title={content.openQuestion} hint="Optional">
+          <textarea className="q-textarea" rows={3} aria-label={content.openQuestion} value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="A few words is enough" />
+        </QuestionStep>
 
         {error && <p className="form-error" role="alert">{error}</p>}
         <button className="btn btn-primary" disabled={busy}>{busy ? "Saving…" : "Submit check-in"}</button>

@@ -1,7 +1,8 @@
 // Home tab: each section in its own full-width frame that opens when tapped (one at a time).
-// Each item: { id, icon, tone, title, summary, highlight, done, locked, content }.
-//   tone "gold" tints the icon; done turns it aqua with a ✓ summary style;
-//   locked shows the tile dimmed and it can't be opened.
+// Each item: { id, icon, tone, title, subtitle, status, highlight, done, locked, content }.
+//   subtitle is a short line under the title; status is a chip on the right
+//   (e.g. "Ready", "Opens 18:00", "✓ Done"). highlight makes the chip bright,
+//   done makes it quiet, and locked tiles can't be opened.
 // `initialOpen` opens one frame to start with (used when a notification is tapped).
 import { useState } from "react";
 
@@ -26,10 +27,13 @@ export default function Folds({ items, initialOpen = null }) {
             <span className={`fold-icon ${item.done ? "done" : item.tone || ""}`} aria-hidden="true">{item.icon}</span>
             <span className="fold-text">
               <span className="fold-title">{item.title}</span>
-              {item.summary && (
-                <span className={`fold-summary ${item.highlight ? "highlight" : ""} ${item.done ? "done" : ""}`}>{item.summary}</span>
-              )}
+              {item.subtitle && <span className="fold-summary">{item.subtitle}</span>}
             </span>
+            {item.status && (
+              <span className={`fold-chip ${item.highlight ? "highlight" : ""} ${item.done ? "done" : ""} ${item.locked ? "locked" : ""}`}>
+                {item.status}
+              </span>
+            )}
             <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>

@@ -38,7 +38,7 @@ import WhatsAppIcon from "../components/WhatsAppIcon.jsx";
 import { LockIcon, PencilIcon } from "../components/TileIcons.jsx";
 
 // Tabs shown on the dark blue background, like the Breathe screen.
-const DARK_TABS = ["practices", "breathe", "upcoming"];
+const DARK_TABS = ["home", "practices", "breathe", "upcoming"];
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -180,26 +180,26 @@ export default function Dashboard() {
 
   // The day's three tiles. Each is locked (🔒) until its hour, when its notification
   // goes out, then ready to fill in (✏️) until done (✓). They lock again at midnight.
-  const tile = ({ id, icon, tone, title, isDone, doneText }) => {
+  const tile = ({ id, icon, tone, title, subtitle, isDone, doneText }) => {
     const hour = promptHour(id);
     const locked = now.getHours() < hour;
-    if (locked) return { id, icon: <LockIcon />, tone: "locked", title, summary: `Opens ${String(hour).padStart(2, "0")}:00`, locked: true };
-    if (isDone) return { id, icon, tone, title, summary: doneText, done: true };
-    return { id, icon: <PencilIcon />, tone: "ready", title, summary: "Ready", highlight: true };
+    if (locked) return { id, icon: <LockIcon />, tone: "locked", title, subtitle, status: `Opens ${String(hour).padStart(2, "0")}:00`, locked: true };
+    if (isDone) return { id, icon, tone, title, subtitle, status: doneText, done: true };
+    return { id, icon: <PencilIcon />, tone: "ready", title, subtitle, status: "Ready", highlight: true };
   };
 
   // Home tiles, top to bottom. Notifications open a tile directly, e.g. /dashboard?open=morning.
   const homeItems = [
     active && {
-      ...tile({ id: "morning", icon: "☀️", tone: "gold", title: "Morning", isDone: Boolean(data.day.morning), doneText: "✓ Shared" }),
+      ...tile({ id: "morning", icon: "☀️", tone: "gold", title: "Morning", subtitle: "How are you feeling?", isDone: Boolean(data.day.morning), doneText: "✓ Shared" }),
       content: <MorningPrompt {...prompt} existing={data.day.morning} />,
     },
     active && {
-      ...tile({ id: "reflection", icon: "✍️", tone: "gold", title: "Reflection", isDone: Boolean(data.day.reflection), doneText: "✓ Shared" }),
+      ...tile({ id: "reflection", icon: "✍️", tone: "gold", title: "Reflection", subtitle: "Today's question", isDone: Boolean(data.day.reflection), doneText: "✓ Shared" }),
       content: <ReflectionPrompt {...prompt} content={content} existing={data.day.reflection} />,
     },
     current && checkinProgress?.state === "active" && {
-      ...tile({ id: "checkin", icon: "🌿", title: "Check-in", isDone: checkedIn, doneText: "✓ Done" }),
+      ...tile({ id: "checkin", icon: "🌿", title: "Check-in", subtitle: "How was today?", isDone: checkedIn, doneText: "✓ Done" }),
       content: (
         <DailyCheckin uid={user.uid} current={current} content={checkinContent} progress={checkinProgress}
           existing={data.checkins[checkinDay]} streak={streak} day={checkinDay} onSaved={handleCheckinSaved} />
@@ -209,7 +209,7 @@ export default function Dashboard() {
       id: "group",
       icon: "💬",
       title: "Cohort group",
-      summary: "WhatsApp",
+      subtitle: "WhatsApp",
       content: (
         <a className="btn btn-whatsapp" href={groupLink} target="_blank" rel="noreferrer"><WhatsAppIcon /> Open the group</a>
       ),
