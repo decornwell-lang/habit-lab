@@ -1,4 +1,4 @@
-// A full-screen dark panel over Home (morning intention, evening review), closed with ✕.
+// A full-screen dark panel over Home (intention, evening review, craving), closed with ✕.
 export default function Sheet({ label, onClose, children }) {
   return (
     <div className="sheet" role="dialog" aria-label={label}>

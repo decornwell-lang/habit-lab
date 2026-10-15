@@ -39,7 +39,7 @@ export default handle(async (req, res) => {
     } catch {
       local = localNow(DEFAULT_TIME_ZONE);
     }
-    const prompt = DAILY_PROMPTS.find((p) => p.hour === local.hour && p.notify !== false);
+    const prompt = DAILY_PROMPTS.find((p) => p.hour === local.hour);
     // promptsSent remembers the last date each prompt went out, so it's sent once a day.
     if (!prompt || user.promptsSent?.[prompt.id] === local.date) continue;
 
@@ -64,7 +64,7 @@ export default handle(async (req, res) => {
         kind: "prompt",
         title: prompt.title,
         body: prompt.body.replace("{day}", cohortDay),
-        link: prompt.link || `/dashboard?open=${prompt.id}`,
+        link: `/dashboard?open=${prompt.id}`,
       },
       webpush: { headers: { Urgency: "high" } },
     });

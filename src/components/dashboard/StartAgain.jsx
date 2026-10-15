@@ -1,4 +1,4 @@
-// The "Start again" path, shown after a "No" or "Not right now".
+// The "Start again" path, shown after answering "Not right now" to "Still in your practice?".
 // Gentle by design: history and badges are always kept.
 import { useState } from "react";
 import { updateMembership } from "../../lib/data.js";

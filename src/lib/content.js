@@ -1,4 +1,4 @@
-// Weekly content: themes and prompts (from src/content/prompts.json),
+// Weekly content: each week's theme (from src/content/prompts.json),
 // combined with what the admin has set (meditation and PDF links).
 import prompts from "../content/prompts.json";
 

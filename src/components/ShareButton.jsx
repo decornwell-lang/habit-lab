@@ -1,4 +1,4 @@
-// "Share in the group": on phones it opens the share sheet over the app (pick the
+// "Share to WhatsApp": on phones it opens the share sheet over the app (pick the
 // WhatsApp group there and you stay in the app). Elsewhere it opens WhatsApp
 // with the message ready.
 import WhatsAppIcon from "./WhatsAppIcon.jsx";

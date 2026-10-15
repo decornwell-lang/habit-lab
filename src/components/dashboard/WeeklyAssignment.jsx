@@ -1,5 +1,5 @@
 // Weekly assignment (Practices tab): a download link to the week's PDF. No submission.
-export default function WeeklyReflection({ content }) {
+export default function WeeklyAssignment({ content }) {
   return (
     <section className="card">
       <p className="card-label">Weekly assignment</p>

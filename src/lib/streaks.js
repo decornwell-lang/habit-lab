@@ -1,5 +1,6 @@
 // Streaks and badges.
-// A streak is the number of consecutive days with a "Yes" check-in.
+// A streak is the number of days in a row with a smoke-free check-in (the evening
+// review: "Did you smoke today? No"), stored as `maintained: true`.
 // A "No" or a missed day pauses it; history is never deleted.
 import { addDays, daysBetween } from "./dates.js";
 

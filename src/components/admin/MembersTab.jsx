@@ -71,10 +71,9 @@ export default function MembersTab({ data, reload, onViewCheckins }) {
       { label: "Cohort", value: (c) => data.cohorts.find((x) => x.id === c.cohortId)?.name },
       { label: "Day", value: (c) => c.day },
       { label: "Week", value: (c) => c.week },
-      { label: "Maintained", value: (c) => (c.maintained ? "Yes" : "No") },
-      { label: "Cravings", value: (c) => c.cravings ?? c.craving },
+      { label: "Smoke-free", value: (c) => (c.maintained ? "Yes" : "No") },
+      { label: "Cravings (0-5)", value: (c) => c.craving },
       { label: "Question", value: (c) => c.question },
-      { label: "Answer", value: (c) => c.answer },
     ]);
   }
 

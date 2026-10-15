@@ -17,7 +17,7 @@ import { aphorismFor } from "../lib/aphorisms.js";
 import { computeStreak, badgesForStreak } from "../lib/streaks.js";
 
 import PreCohort from "../components/dashboard/PreCohort.jsx";
-import WeeklyReflection from "../components/dashboard/WeeklyReflection.jsx";
+import WeeklyAssignment from "../components/dashboard/WeeklyAssignment.jsx";
 import LiveSession from "../components/dashboard/LiveSession.jsx";
 import JoinCohort from "../components/dashboard/JoinCohort.jsx";
 import Leaderboard from "../components/dashboard/Leaderboard.jsx";
@@ -31,7 +31,7 @@ import BadgesCard from "../components/dashboard/BadgesCard.jsx";
 import Folds from "../components/dashboard/Folds.jsx";
 import BreatheTab from "../components/dashboard/BreatheTab.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
-import { MorningPrompt } from "../components/dashboard/DailyPrompts.jsx";
+import MorningCheckin from "../components/dashboard/MorningCheckin.jsx";
 import { promptTime } from "../content/dailyPrompts.js";
 import Sheet from "../components/dashboard/Sheet.jsx";
 import IntentionScreen from "../components/dashboard/IntentionScreen.jsx";
@@ -54,7 +54,7 @@ export default function Dashboard() {
   const [sheet, setSheet] = useState(null); // full-screen panel: "intention", "evening" or "craving"
   const [params, setParams] = useSearchParams();
   const [tabTaps, setTabTaps] = useState(0); // tapping a tab again starts it afresh (e.g. Breathe → choose a practice)
-  const today = todayKey(); // calendar day: practice, meditation, cohort day number
+  const today = todayKey(); // calendar day: morning check-in, intention, evening review, cohort day
   const checkinDay = checkinDayKey(); // the check-in day (turns over at 21:00, see dates.js)
 
   const tab = TABS.some((t) => t.id === params.get("tab")) ? params.get("tab") : DEFAULT_TAB;
@@ -195,8 +195,7 @@ export default function Dashboard() {
 
   const dayLabel = active ? `Day ${current.progress.day} ` : "";
   // Saves a daytime answer into Home's state, so the row shows it straight away.
-  const onSaved = (key, answer, practised) =>
-    setData((d) => ({ ...d, day: { ...d.day, [key]: answer, ...(practised !== undefined && { practised }) } }));
+  const onSaved = (key, answer) => setData((d) => ({ ...d, day: { ...d.day, [key]: answer } }));
   const prompt = { uid: user.uid, today, dayLabel, onSaved };
   const groupLink = current?.cohort.whatsappGroupLink;
 
@@ -215,7 +214,7 @@ export default function Dashboard() {
   const homeItems = [
     active && {
       ...tile({ id: "morning", icon: "☀️", tone: "gold", title: "Morning", subtitle: "How are you feeling?", isDone: Boolean(data.day.morning), doneText: "✓ Shared" }),
-      content: <MorningPrompt {...prompt} existing={data.day.morning} />,
+      content: <MorningCheckin {...prompt} existing={data.day.morning} />,
     },
     active && {
       ...tile({ id: "intention", icon: "🎯", tone: "gold", title: "Intention", subtitle: "One minute with a question", isDone: Boolean(data.intention), doneText: "✓ Done" }),
@@ -304,7 +303,7 @@ export default function Dashboard() {
       {tab === "practices" && (
         <>
           <TodaysPractice content={content} />
-          <WeeklyReflection content={content} />
+          <WeeklyAssignment content={content} />
           <LiveSession settings={data.settings} />
         </>
       )}

@@ -1,9 +1,10 @@
-// "Your journey": one dot per cohort day.
-//   filled teal  = commitment kept
-//   gold ring    = a hard day, and you came back (a "No" check-in)
+// "Your journey": one dot per cohort day (from the evening review, the day's check-in).
+//   filled aqua  = a smoke-free day ("Did you smoke today? No")
+//   gold ring    = a hard day, and you came back (answered "Yes")
 //   pale         = no check-in
 //   outlined     = today, and days still to come are faint
 import { addDays, todayKey, daysBetween } from "../../lib/dates.js";
+import { habitStreakLabel } from "../../lib/cohorts.js";
 
 export default function JourneyMap({ current, checkins }) {
   const { cohort, progress } = current;
@@ -26,7 +27,7 @@ export default function JourneyMap({ current, checkins }) {
   return (
     <section className="card">
       <p className="card-label">Your journey</p>
-      <h2>{kept} {kept === 1 ? "day" : "days"} of practice</h2>
+      <h2>{kept} {kept === 1 ? "day" : "days"} {habitStreakLabel(cohort.habitType)}</h2>
       {returned > 0 && (
         <p className="muted small">
           And {returned} {returned === 1 ? "time" : "times"} you met a hard day and came back. That counts too.
@@ -40,7 +41,7 @@ export default function JourneyMap({ current, checkins }) {
         ))}
       </ol>
       <ul className="journey-legend">
-        <li><span className="dot kept" /> Kept</li>
+        <li><span className="dot kept" /> {cohort.habitType === "smoking" ? "Smoke-free" : "Kept"}</li>
         <li><span className="dot returned" /> Returned</li>
         <li><span className="dot today" /> Today</li>
       </ul>

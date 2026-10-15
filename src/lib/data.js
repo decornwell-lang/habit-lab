@@ -87,10 +87,6 @@ export async function getReflection(uid, id) {
   return (await getDoc(doc(db, "users", uid, "reflections", id))).data() || null;
 }
 
-export async function getActivity(uid, date) {
-  return (await getDoc(doc(db, "users", uid, "activity", date))).data() || {};
-}
-
 // Saves a reflection and marks it done in that day's activity (counts only).
 export async function saveReflection(uid, id, data, activity) {
   const batch = writeBatch(db);
@@ -110,14 +106,14 @@ export async function saveCraving(uid, data) {
   return ref.id;
 }
 
-// A member's answers for one calendar day: { morning, meditation, reflection, practised }.
+// A member's morning check-in for one calendar day: { morning }.
 export async function getDay(uid, date) {
   return (await getDoc(doc(db, "users", uid, "practice", date))).data() || {};
 }
 
-// Saves one answer (key is "morning", "meditation" or "reflection"); `extra` adds fields such as practised.
-export async function saveDayAnswer(uid, date, key, value, extra = {}) {
-  await setDoc(doc(db, "users", uid, "practice", date), { date, [key]: value, ...extra, at: serverTimestamp() }, { merge: true });
+// Saves one of the day's answers (the morning check-in: key "morning").
+export async function saveDayAnswer(uid, date, key, value) {
+  await setDoc(doc(db, "users", uid, "practice", date), { date, [key]: value, at: serverTimestamp() }, { merge: true });
 }
 
 export async function savePracticeCheck(uid, data) {

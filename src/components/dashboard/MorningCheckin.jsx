@@ -1,5 +1,5 @@
-// The morning check-in on Home: physically, emotionally, mentally, and an optional note.
-// Each saves to users/{uid}/practice/{today} and can be shared in the WhatsApp group.
+// The morning check-in on Home (opens 07:00): physically, emotionally, mentally, and an
+// optional note. Saves to users/{uid}/practice/{today}; then Share to WhatsApp.
 // Wording and choices: src/content/dailyPrompts.js.
 import { saveDayAnswer } from "../../lib/data.js";
 import { MORNING_QUESTIONS, MORNING_CHOICES } from "../../content/dailyPrompts.js";
@@ -8,7 +8,7 @@ import QuickAnswer from "./QuickAnswer.jsx";
 const withNote = (lines, note) => (note?.trim() ? [...lines, "", note.trim()] : lines).join("\n");
 
 // dayLabel is e.g. "Day 9 " (or "" outside a cohort). onSaved(key, answer) updates Home.
-export function MorningPrompt({ uid, today, dayLabel, existing, onSaved }) {
+export default function MorningCheckin({ uid, today, dayLabel, existing, onSaved }) {
   return (
     <QuickAnswer
       questions={MORNING_QUESTIONS.map((q) => ({ ...q, choices: MORNING_CHOICES }))}

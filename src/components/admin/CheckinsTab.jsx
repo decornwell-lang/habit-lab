@@ -1,5 +1,5 @@
-// Admin → Check-ins: read-only. Shows who has recently said "No" or
-// "Not right now", and every check-in for a selected member.
+// Admin → Check-ins: read-only. Shows recent days when members smoked, recent
+// "Not right now" answers, and every check-in (evening review) for a selected member.
 import { useEffect, useState } from "react";
 import { getAllCheckins, getUserPracticeChecks } from "../../lib/data.js";
 import { badgeInfo } from "../../lib/streaks.js";
@@ -30,7 +30,7 @@ export default function CheckinsTab({ data, selectedUid, setSelectedUid }) {
   return (
     <section>
       <div className="card">
-        <h2>Recent “No” answers</h2>
+        <h2>Recent days with smoking</h2>
         {recentNo.length === 0 ? (
           <p className="muted">None yet.</p>
         ) : (
@@ -38,7 +38,6 @@ export default function CheckinsTab({ data, selectedUid, setSelectedUid }) {
             {recentNo.map((c) => (
               <li key={`${c.uid}-${c.date}`}>
                 <button className="link-btn" onClick={() => setSelectedUid(c.uid)}>{nameOf(c.uid)}</button> · {c.date} · day {c.day}
-                {c.answer && <span className="muted"> · “{c.answer}”</span>}
               </li>
             ))}
           </ul>
@@ -73,17 +72,16 @@ export default function CheckinsTab({ data, selectedUid, setSelectedUid }) {
 
           <div className="table-wrap">
             <table>
-              <thead><tr><th>Date</th><th>Cohort</th><th>Day</th><th>Kept?</th><th>Craving</th><th>Answer</th></tr></thead>
+              <thead><tr><th>Date</th><th>Cohort</th><th>Day</th><th>Smoke-free?</th><th>Cravings (0–5)</th></tr></thead>
               <tbody>
-                {mine.length === 0 && <tr><td colSpan={6} className="muted">No check-ins yet.</td></tr>}
+                {mine.length === 0 && <tr><td colSpan={5} className="muted">No check-ins yet.</td></tr>}
                 {mine.map((c) => (
                   <tr key={c.date} className={c.maintained ? "" : "flag"}>
                     <td>{c.date}</td>
                     <td>{cohortName(c.cohortId)}</td>
                     <td>{c.day}</td>
                     <td>{c.maintained ? "Yes" : "No"}</td>
-                    <td>{c.cravings ?? c.craving}</td>
-                    <td>{c.answer}</td>
+                    <td>{c.craving}</td>
                   </tr>
                 ))}
               </tbody>

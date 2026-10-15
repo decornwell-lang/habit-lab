@@ -1,4 +1,4 @@
-// A quick answer to a daily prompt: a few tap-to-choose questions and/or a
+// The morning check-in's answer form: a few tap-to-choose questions and/or a
 // short text, then one button: "Save", which then becomes "Share to WhatsApp"
 // (the share sheet opens with the answer ready for the cohort's group).
 import { useState } from "react";

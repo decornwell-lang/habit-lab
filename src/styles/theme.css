@@ -903,10 +903,6 @@ td.actions { white-space: nowrap; }
   width: 100%; min-height: 84px; padding: 12px; border-radius: 12px; border: 1px solid var(--border);
   background: var(--surface); color: var(--text); font: inherit; resize: vertical;
 }
-.q-prompt {
-  margin: 0 0 14px; padding: 14px 16px; border-left: 3px solid var(--gold); border-radius: 0 14px 14px 0;
-  background: var(--bg); font-family: var(--font-heading); font-style: italic; font-size: 1.1rem; line-height: 1.45;
-}
 .segmented button.selected.no { background: var(--gold); border-color: var(--gold); color: var(--dark-blue); }
 
 /* ---------- Home tiles: status chip on the right ---------- */
@@ -944,7 +940,6 @@ td.actions { white-space: nowrap; }
 .dashboard.dark .q-hint, .dashboard.dark .scale-labels { color: #9aa2bf; }
 .dashboard.dark .q-textarea { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
 .dashboard.dark .q-textarea::placeholder { color: #8f96b3; }
-.dashboard.dark .q-prompt { background: rgba(255, 255, 255, 0.05); color: #fff; }
 .dashboard.dark .choices button, .dashboard.dark .segmented button { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
 .dashboard.dark .choices button.selected, .dashboard.dark .segmented button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
 .dashboard.dark .segmented button.selected.no { background: var(--gold); border-color: var(--gold); }
@@ -985,7 +980,6 @@ td.actions { white-space: nowrap; }
 .evening > .muted { margin: 0 0 16px; }
 .evening-honest { margin-top: 14px; }
 .evening-honest p { margin: 0 0 8px; color: #e9eaf2; font-style: italic; }
-.breathe-stepper.counter span { min-width: 72px; font-size: 1.3rem; }
 .q-input { min-height: 44px; padding: 0 12px; border-radius: 12px; font: inherit; }
 .skip-link { align-self: center; }
 

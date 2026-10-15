@@ -1,5 +1,4 @@
-// PlaceholderPage: a simple page used for menu pages that aren't written yet
-// (About, Contact, The Habit Lab, Offerings). Step 8 replaces these.
+// PlaceholderPage: a simple page with a title and a message (used for "Page not found").
 export default function PlaceholderPage({ eyebrow, title, children }) {
   return (
     <main className="page">
