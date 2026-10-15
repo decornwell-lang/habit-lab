@@ -19,8 +19,10 @@ export const NOTE_PROMPT = "If something came up, write a sentence or two.";
 export const MAX_TEXT = 280; // characters, for every free-text answer
 
 // This week's second question: weeks counted from Monday 5 January 2026, so everyone sees the same one.
+// Counted in calendar days (not hours), so clock changes don't shift the week.
 export function weeklyQuestion(date = new Date()) {
-  const weeks = Math.floor((date - new Date(2026, 0, 5)) / (7 * 86400000));
+  const days = (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(2026, 0, 5)) / 86400000;
+  const weeks = Math.floor(days / 7);
   return WEEKLY_QUESTIONS[((weeks % WEEKLY_QUESTIONS.length) + WEEKLY_QUESTIONS.length) % WEEKLY_QUESTIONS.length];
 }
 
