@@ -160,6 +160,17 @@ export async function getAllCheckins() {
   return snap.docs.map((d) => ({ uid: d.ref.parent.parent.id, ...d.data() }));
 }
 
+// Owner only: every member's daily counts (no words): { uid, date, intention, evening, cravings }.
+export async function getAllActivity() {
+  const snap = await getDocs(collectionGroup(db, "activity"));
+  return snap.docs.map((d) => ({ uid: d.ref.parent.parent.id, ...d.data() }));
+}
+
+// Owner only, and only for members who ticked the reflection consent (enforced by the rules).
+export async function getMemberReflections(uid) {
+  return list(await getDocs(collection(db, "users", uid, "reflections")));
+}
+
 export async function getUserPracticeChecks(uid) {
   return list(await getDocs(collection(db, "users", uid, "practiceChecks")));
 }

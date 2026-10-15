@@ -1,4 +1,4 @@
-// Admin dashboard (owner only): members, cohorts, content, check-ins, messages and aphorisms.
+// Admin dashboard (owner only): members, cohorts, content, check-ins, reflections, messages and aphorisms.
 import { useCallback, useEffect, useState } from "react";
 import {
   getAllUsers, getAllPublicProfiles, getAllMemberships, getCohorts, getContentSettings,
@@ -9,8 +9,9 @@ import ContentTab from "../components/admin/ContentTab.jsx";
 import CheckinsTab from "../components/admin/CheckinsTab.jsx";
 import AphorismsTab from "../components/admin/AphorismsTab.jsx";
 import MessagesTab from "../components/admin/MessagesTab.jsx";
+import ReflectionsTab from "../components/admin/ReflectionsTab.jsx";
 
-const TABS = ["Members", "Cohorts", "Content", "Check-ins", "Messages", "Aphorisms"];
+const TABS = ["Members", "Cohorts", "Content", "Check-ins", "Reflections", "Messages", "Aphorisms"];
 
 export default function Admin() {
   const [tab, setTab] = useState("Members");
@@ -63,6 +64,7 @@ export default function Admin() {
       {data && tab === "Cohorts" && <CohortsTab cohorts={data.cohorts} reload={load} />}
       {data && tab === "Content" && <ContentTab settings={data.settings} reload={load} />}
       {data && tab === "Check-ins" && <CheckinsTab data={data} selectedUid={selectedUid} setSelectedUid={setSelectedUid} />}
+      {data && tab === "Reflections" && <ReflectionsTab data={data} />}
       {data && tab === "Messages" && <MessagesTab cohorts={data.cohorts} users={data.users} />}
       {tab === "Aphorisms" && <AphorismsTab />}
     </main>
