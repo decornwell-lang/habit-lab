@@ -1,14 +1,18 @@
 // Upcoming tab: cohorts that haven't started yet, with a "Join" button.
-// Free cohorts are joined straight away; paid ones go to Stripe Checkout.
+// Free cohorts are joined straight away. Paid ones first show the price (VAT included),
+// the 14-day cancellation terms and a box to tick, then go to Stripe's payment page.
 import { useState } from "react";
 import { joinCohortDirectly } from "../../lib/data.js";
 import { apiPost } from "../../lib/api.js";
 import { formatDate, todayKey } from "../../lib/dates.js";
 import { formatPrice } from "../../lib/cohorts.js";
+import { JOIN_TERMS } from "../../content/site.js";
 
 export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
   const [busyId, setBusyId] = useState(null);
   const [error, setError] = useState("");
+  const [confirming, setConfirming] = useState(null); // the paid cohort whose terms are showing
+  const [agreed, setAgreed] = useState(false);
   const joinedIds = new Set(memberships.map((m) => m.cohortId));
   const open = cohorts
     .filter((c) => c.status !== "finished" && c.startDate >= todayKey())
@@ -22,7 +26,7 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
         await joinCohortDirectly(uid, cohort.id);
         await onJoined();
       } else {
-        const { url, joined } = await apiPost("/api/create-checkout", { cohortId: cohort.id });
+        const { url, joined } = await apiPost("/api/create-checkout", { cohortId: cohort.id, acceptedTerms: true });
         if (joined) await onJoined();
         else window.location.href = url; // off to Stripe's secure payment page
         return;
@@ -52,9 +56,22 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
               {joinedIds.has(c.id) ? (
                 <span className="joined">✓ Joined</span>
               ) : (
-                <button className="btn btn-primary btn-small" onClick={() => handleJoin(c)} disabled={busyId !== null}>
+                <button className="btn btn-primary btn-small" disabled={busyId !== null}
+                  onClick={() => (Number(c.price) ? (setConfirming(confirming === c.id ? null : c.id), setAgreed(false)) : handleJoin(c))}>
                   {busyId === c.id ? "Please wait…" : "Join"}
                 </button>
+              )}
+              {confirming === c.id && (
+                <div className="join-terms">
+                  <p className="join-price"><strong>{formatPrice(c)}</strong> <span className="muted small">{JOIN_TERMS.price}</span></p>
+                  <p className="small">{JOIN_TERMS.cancel}</p>
+                  <label className="checkbox">
+                    <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} /> {JOIN_TERMS.agree}
+                  </label>
+                  <button className="btn btn-primary" disabled={!agreed || busyId !== null} onClick={() => handleJoin(c)}>
+                    {busyId === c.id ? "Please wait…" : "Continue to payment"}
+                  </button>
+                </div>
               )}
             </li>
           ))}

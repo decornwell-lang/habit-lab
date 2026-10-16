@@ -25,3 +25,12 @@ export const site = {
 // Consent shown on sign-up and in My account (off by default). Without it, David sees
 // only how many reflections a member has done, never their words.
 export const REFLECTION_CONSENT = "I agree that my reflections can be seen by David for support purposes.";
+
+// Shown before paying for a cohort (Upcoming → Join). Have this checked against your
+// terms; members must tick the box to continue to payment.
+export const JOIN_TERMS = {
+  price: "VAT included",
+  cancel:
+    "You can cancel within 14 days of paying for a full refund. If the cohort starts within those 14 days, you're asking for it to begin straight away; if you cancel after it has started, you'll be refunded for the days still to come.",
+  agree: "I've read this and want my place.",
+};

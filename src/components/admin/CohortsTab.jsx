@@ -5,13 +5,14 @@ import { HABIT_TYPES, habitLabel, formatPrice } from "../../lib/cohorts.js";
 import { cleanGroupLink } from "../../lib/phone.js";
 import { todayKey, formatDate } from "../../lib/dates.js";
 
-const EMPTY = { name: "", habitType: "smoking", startDate: "", durationDays: 33, price: 0, currency: "gbp", status: "upcoming", whatsappGroupLink: "" };
+// Prices are in euros, VAT included.
+const EMPTY = { name: "", habitType: "smoking", startDate: "", durationDays: 33, price: 99, status: "upcoming", whatsappGroupLink: "" };
 
 // Two ready-made cohorts: the real first cohort, and a free one starting
 // today so you can try every feature straight away.
 const SAMPLES = [
-  { name: "Non-Smoking Cohort, November 2026", habitType: "smoking", startDate: "2026-11-16", durationDays: 33, price: 99, currency: "gbp", status: "upcoming" },
-  { name: "Test Cohort (free, starts today)", habitType: "smoking", startDate: todayKey(), durationDays: 33, price: 0, currency: "gbp", status: "active" },
+  { name: "Non-Smoking Cohort, November 2026", habitType: "smoking", startDate: "2026-11-16", durationDays: 33, price: 99, status: "upcoming" },
+  { name: "Test Cohort (free, starts today)", habitType: "smoking", startDate: todayKey(), durationDays: 33, price: 0, status: "active" },
 ];
 
 export default function CohortsTab({ cohorts, reload }) {
@@ -35,7 +36,7 @@ export default function CohortsTab({ cohorts, reload }) {
       startDate: form.startDate,
       durationDays: Number(form.durationDays),
       price: Number(form.price),
-      currency: form.currency.trim().toLowerCase() || "gbp",
+      currency: "eur",
       status: form.status,
       whatsappGroupLink: cleanGroupLink(form.whatsappGroupLink || "") || null,
     };
@@ -85,8 +86,7 @@ export default function CohortsTab({ cohorts, reload }) {
             <div className="field"><label>Duration (days)</label><input type="number" min="1" name="durationDays" value={form.durationDays} onChange={update} /></div>
           </div>
           <div className="field-row">
-            <div className="field"><label>Price (0 = free)</label><input type="number" min="0" step="0.01" name="price" value={form.price} onChange={update} /></div>
-            <div className="field"><label>Currency</label><input name="currency" value={form.currency} onChange={update} /></div>
+            <div className="field"><label>Price in € incl. VAT (0 = free)</label><input type="number" min="0" step="0.01" name="price" value={form.price} onChange={update} /></div>
           </div>
           <div className="field">
             <label>WhatsApp group invite link</label>

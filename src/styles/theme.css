@@ -433,6 +433,11 @@ a { color: var(--primary); }
 .cohort-list li:last-child { border-bottom: none; }
 .cohort-list h3 { margin: 0 0 2px; font-size: 1.05rem; }
 .cohort-list p { margin: 0; }
+.cohort-list li:has(.join-terms) { flex-wrap: wrap; }
+.join-terms { flex: 1 1 100%; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.join-terms p { margin: 0 0 10px; }
+.join-terms .checkbox { margin: 0 0 12px; }
+.dashboard.dark .join-terms { border-color: rgba(255, 255, 255, 0.1); }
 .joined { color: var(--primary); font-weight: 600; white-space: nowrap; }
 
 /* ---------- Dashboard tabs (fixed to the bottom) ---------- */

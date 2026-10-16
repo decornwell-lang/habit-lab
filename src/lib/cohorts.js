@@ -82,11 +82,13 @@ export function checkinsFor(checkins, cohort) {
   return Object.fromEntries(mine.map((c) => [c.date, c]));
 }
 
+// Prices are in euros and include VAT, e.g. "€99" (or "Free").
 export function formatPrice(cohort) {
   const amount = Number(cohort.price) || 0;
   if (!amount) return "Free";
-  return new Intl.NumberFormat("en-GB", {
+  return new Intl.NumberFormat("en-IE", {
     style: "currency",
-    currency: (cohort.currency || "gbp").toUpperCase(),
+    currency: "EUR",
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
   }).format(amount);
 }

@@ -4,6 +4,7 @@
 // Needs these environment variables (set them in Vercel, and in .env.local):
 //   FIREBASE_SERVICE_ACCOUNT  the Firebase service account key (the whole JSON, on one line)
 //   STRIPE_SECRET_KEY         Stripe secret key (sk_test_... until launch)
+//   STRIPE_TAX                "on" once Stripe Tax is set up (works out the VAT inside each price)
 import { initializeApp, cert, getApps } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
