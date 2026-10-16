@@ -145,7 +145,7 @@ a { color: var(--primary); }
   text-decoration: none;
   min-width: 0;
 }
-.wordmark img { height: 26px; width: auto; }
+.wordmark img { height: 32px; width: auto; }
 .wordmark span {
   font-family: var(--font-heading);
   font-size: 1.05rem;
@@ -158,7 +158,7 @@ a { color: var(--primary); }
 .header-spacer { width: var(--tap); }
 @media (max-width: 400px) {
   .wordmark { gap: 8px; }
-  .wordmark img { height: 20px; }
+  .wordmark img { height: 28px; }
   .wordmark span { font-size: 0.92rem; letter-spacing: 0; }
 }
 

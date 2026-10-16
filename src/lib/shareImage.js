@@ -40,7 +40,10 @@ export async function makeShareImage({ badge, days, label }) {
 
   ctx.fillStyle = COLOURS.background;
   ctx.fillRect(0, 0, size, size);
-  if (logo) ctx.drawImage(logo, size / 2 - 90, 70, 180, 73);
+  if (logo) {
+    const h = 72, w = (logo.width / logo.height) * h; // keep the logo's own proportions
+    ctx.drawImage(logo, size / 2 - w / 2, 70, w, h);
+  }
 
   const cx = size / 2;
   ctx.textAlign = "center";
