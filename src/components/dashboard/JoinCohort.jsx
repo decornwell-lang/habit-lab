@@ -6,7 +6,7 @@
 import { useState } from "react";
 import { joinCohortDirectly } from "../../lib/data.js";
 import { formatDate, todayKey } from "../../lib/dates.js";
-import { formatPrice } from "../../lib/cohorts.js";
+import { formatPrice, startsIn } from "../../lib/cohorts.js";
 import AlcoholScreening from "./AlcoholScreening.jsx";
 import PaymentPopup from "../PaymentPopup.jsx";
 
@@ -53,7 +53,9 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
               <div>
                 <h3>{c.name}</h3>
                 <p className="muted small">
-                  Starts {formatDate(c.startDate, { weekday: "short" })} · {c.durationDays} days · {formatPrice(c)}{Number(c.price) > 0 && " incl. VAT"}{c.capacity ? ` · ${c.capacity} places` : ""}
+                  <strong className="cohort-countdown">{startsIn(c.startDate, todayKey())}</strong>
+                  <br />
+                  {formatDate(c.startDate, { weekday: "short" })} · {c.durationDays} days · {formatPrice(c)}{Number(c.price) > 0 && " incl. VAT"}{c.capacity ? ` · ${c.capacity} places` : ""}
                 </p>
               </div>
               {joinedIds.has(c.id) ? (

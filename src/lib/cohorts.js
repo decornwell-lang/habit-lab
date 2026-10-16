@@ -82,6 +82,12 @@ export function checkinsFor(checkins, cohort) {
   return Object.fromEntries(mine.map((c) => [c.date, c]));
 }
 
+// "starts in 80 days", "starts tomorrow" or "starts today": the countdown on cohort listings.
+export function startsIn(startDate, today) {
+  const days = daysBetween(today, startDate);
+  return days > 1 ? `starts in ${days} days` : days === 1 ? "starts tomorrow" : "starts today";
+}
+
 // Prices are in euros and include VAT, e.g. "€99" (or "Free").
 export function formatPrice(cohort) {
   const amount = Number(cohort.price) || 0;

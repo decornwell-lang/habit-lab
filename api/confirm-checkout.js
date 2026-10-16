@@ -32,6 +32,7 @@ export default handle(async (req, res) => {
     amount: (session.amount_total || 0) / 100,
     currency: session.currency,
     stripeSessionId: session.id,
+    plan: session.metadata.plan || "cohort", // "year": the cohort plus a full year
     ...(session.metadata.screeningAdvised
       ? { screening: { advised: session.metadata.screeningAdvised === "true", at: new Date().toISOString() } }
       : {}),

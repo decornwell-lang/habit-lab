@@ -8,7 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { site } from "../content/site.js";
 import { getPublicCohorts } from "../lib/data.js";
-import { formatPrice, habitInfo } from "../lib/cohorts.js";
+import { formatPrice, habitInfo, startsIn } from "../lib/cohorts.js";
 import { formatDate, todayKey } from "../lib/dates.js";
 import SignUpForm from "../components/SignUpForm.jsx";
 import PaymentPopup from "../components/PaymentPopup.jsx";
@@ -74,7 +74,9 @@ function OpenCohorts() {
             <div>
               <h3>{c.name}</h3>
               <p className="muted small">
-                {habitInfo(c.habitType).tab} · Starts {formatDate(c.startDate, { weekday: "short" })} · {c.durationDays} days · {formatPrice(c)}{c.capacity ? ` · ${c.capacity} places` : ""}
+                <strong className="cohort-countdown">{startsIn(c.startDate, todayKey())}</strong>
+                <br />
+                {habitInfo(c.habitType).tab} · {formatDate(c.startDate, { weekday: "short" })} · {c.durationDays} days · {formatPrice(c)}{c.capacity ? ` · ${c.capacity} places` : ""}
               </p>
             </div>
             {payHere(c) ? (

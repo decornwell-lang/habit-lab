@@ -10,7 +10,7 @@ import {
   getContentSettings, getDay, getReflectionsForDay, saveCheckin, updateUserProfile, clearOldStreak,
 } from "../lib/data.js";
 import { apiPost } from "../lib/api.js";
-import { todayKey, checkinDayKey, timeZoneName, formatDate } from "../lib/dates.js";
+import { todayKey, checkinDayKey, timeZoneName } from "../lib/dates.js";
 import { memberCohorts, checkinsFor, habitInfo, habitStreakLabel } from "../lib/cohorts.js";
 import { weekContent } from "../lib/content.js";
 import { aphorismFor } from "../lib/aphorisms.js";
@@ -18,6 +18,7 @@ import { profileStreaks, cohortStreakEntry } from "../lib/streaks.js";
 
 import PreCohort from "../components/dashboard/PreCohort.jsx";
 import CohortCountdown from "../components/dashboard/CohortCountdown.jsx";
+import WhatsAppGroupCard from "../components/dashboard/WhatsAppGroupCard.jsx";
 import WeeklyAssignment from "../components/dashboard/WeeklyAssignment.jsx";
 import LiveSession from "../components/dashboard/LiveSession.jsx";
 import JoinCohort from "../components/dashboard/JoinCohort.jsx";
@@ -38,12 +39,10 @@ import { promptTime } from "../content/dailyPrompts.js";
 import AppBadge from "../components/AppBadge.jsx";
 import { publicIdentity } from "../lib/identity.js";
 import { useDark } from "../lib/theme.js";
-import { GROUP_PODS } from "../content/site.js";
 import Sheet from "../components/dashboard/Sheet.jsx";
 import IntentionScreen from "../components/dashboard/IntentionScreen.jsx";
 import EveningReview from "../components/dashboard/EveningReview.jsx";
 import TodaysPractice from "../components/dashboard/TodaysPractice.jsx";
-import WhatsAppIcon from "../components/WhatsAppIcon.jsx";
 import Explainer from "../components/Explainer.jsx";
 import { LockIcon, PencilIcon } from "../components/TileIcons.jsx";
 
@@ -276,7 +275,6 @@ export default function Dashboard() {
   // Saves a reflection or morning answer into Home's state, so its tile updates straight away.
   const onSavedDay = (key, answer) => setData((d) => ({ ...d, day: { ...d.day, [key]: answer } }));
   const onSavedReflection = (id, entry) => setData((d) => ({ ...d, reflections: { ...d.reflections, [id]: entry } }));
-  const groupLink = current?.cohort.whatsappGroupLink;
 
   // The day's three tiles for one cohort. Each is locked (🔒) until its hour, when its
   // notification goes out, then ready to fill in (✏️) until done (✓). They lock again at midnight.
@@ -318,24 +316,6 @@ export default function Dashboard() {
   // e.g. /dashboard?open=morning&cohort=abc.
   const homeItems = [
     ...(current?.progress.state === "active" ? dayTiles(current) : []),
-    // The cohort's WhatsApp group: the link only appears from the day the cohort starts.
-    current && current.progress.state !== "finished" && {
-      id: "group",
-      icon: "💬",
-      title: "Cohort group",
-      subtitle: "WhatsApp",
-      status: current.progress.state === "upcoming" ? `Opens ${formatDate(current.progress.start, { weekday: undefined, year: undefined })}` : undefined,
-      content: current.progress.state === "upcoming" ? (
-        <p className="muted">The group link will be here on {formatDate(current.progress.start, { year: undefined })}, the day your cohort begins.</p>
-      ) : groupLink ? (
-        <>
-          <a className="btn btn-whatsapp" href={groupLink} target="_blank" rel="noreferrer"><WhatsAppIcon /> Open the group</a>
-          <p className="muted small group-pods">{GROUP_PODS}</p>
-        </>
-      ) : (
-        <p className="muted">The group link will be here soon.</p>
-      ),
-    },
   ].filter(Boolean);
   const aphorism = aphorismFor(today); // approved or owner-written lines only (src/lib/aphorisms.js)
 
@@ -387,6 +367,7 @@ export default function Dashboard() {
           {current && <BadgesCard streak={streak} current={current} />}
           {/* key: switching cohort starts its tiles afresh (no answers carried over) */}
           <Folds key={current?.cohort.id} items={homeItems} initialOpen={params.get("open")} />
+          {current && <WhatsAppGroupCard current={current} />}
           {current ? (
             <>
               <StreakCard streak={streak} best={best} current={current} checkins={checkinsFor(data.checkins, current.cohort)} onCorrect={correctCheckin} />

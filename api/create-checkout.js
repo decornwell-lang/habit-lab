@@ -1,4 +1,6 @@
-// POST /api/create-checkout  { cohortId, screening, returnPath, embedded }
+// POST /api/create-checkout  { cohortId, plan, screening, returnPath, embedded }
+// plan: "cohort" (the cohort's own price, 33 days) or "year" (the cohort plus a full year,
+// price in config/pricing.json).
 // Works for signed-in members and for visitors: a visitor pays first (Stripe asks for
 // their email) and creates their account afterwards; confirm-checkout then links the
 // payment to the account with that email.
@@ -10,11 +12,15 @@
 // Prices are in euros and include VAT: the member pays exactly the price shown. With
 // STRIPE_TAX=on (after Stripe Tax is set up in the Stripe dashboard), Stripe works out
 // the VAT inside that price for the member's country and shows it on the receipt.
+import { createRequire } from "node:module";
 import { handle, optionalUser, db, stripe, siteOrigin, HttpError } from "./_lib/server.js";
+
+const pricing = createRequire(import.meta.url)("../config/pricing.json");
 
 export default handle(async (req, res) => {
   const user = await optionalUser(req); // null for a visitor paying before creating an account
   const { cohortId, screening, returnPath, embedded } = req.body || {};
+  const plan = req.body?.plan === "year" ? "year" : "cohort";
   if (!cohortId) throw new HttpError(400, "Missing cohort.");
 
   const snap = await db().doc(`cohorts/${cohortId}`).get();
@@ -37,15 +43,18 @@ export default handle(async (req, res) => {
         quantity: 1,
         price_data: {
           currency: "eur",
-          unit_amount: Math.round(Number(cohort.price) * 100),
+          unit_amount: Math.round(Number(plan === "year" ? pricing.products.year.price : cohort.price) * 100),
           tax_behavior: "inclusive", // VAT is inside the price, never added on top
-          product_data: { name: cohort.name, description: `${cohort.durationDays}-day cohort starting ${cohort.startDate}` },
+          product_data: plan === "year"
+            ? { name: `${cohort.name} + a full year`, description: `${cohort.durationDays}-day cohort starting ${cohort.startDate}, then access for a full year` }
+            : { name: cohort.name, description: `${cohort.durationDays}-day cohort starting ${cohort.startDate}` },
         },
       },
     ],
     metadata: {
       ...(user ? { uid: user.uid } : { guest: "true" }),
       cohortId,
+      plan,
       ...(screening ? { screeningAdvised: String(Boolean(screening.advised)) } : {}), // alcohol-free screening: was the advice shown?
     },
     ...(embedded

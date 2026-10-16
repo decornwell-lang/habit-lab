@@ -1234,3 +1234,23 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .cohort-switcher .explainer-btn { align-self: center; }
 .group-pods { margin: 12px 0 0; }
 .regulation-video { width: 100%; align-self: center; }
+.cohort-countdown { color: var(--cohort, var(--teal)); font-weight: 600; }
+.dashboard.dark .cohort-countdown { color: var(--aqua); }
+/* Payment pop-up: 33 days or a full year (PaymentPopup.jsx) */
+.plan-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0 4px; }
+.plan-choices button {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px; text-align: left; cursor: pointer;
+  border: 1.5px solid var(--border); border-radius: 14px; background: #fff; color: var(--text); font: inherit;
+}
+.plan-choices button.selected { border-color: var(--teal); background: var(--accent-soft); }
+.plan-price { font-family: var(--font-heading); font-size: 1.5rem; color: var(--heading); }
+.plan-vat { margin: 0 0 10px; }
+/* Home: the cohort's WhatsApp group (WhatsAppGroupCard.jsx) */
+.whatsapp-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+.whatsapp-head h2 { margin: 0 0 4px; font-size: 1.1rem; }
+.whatsapp-head p { margin: 0; }
+.whatsapp-logo { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; background: #25d366; color: #fff; }
+.whatsapp-logo svg { width: 26px; height: 26px; }
+.whatsapp-card .btn-whatsapp { width: 100%; margin-top: 0; }
+.whatsapp-card .btn-whatsapp:disabled { opacity: 0.55; border-style: dashed; cursor: default; }
+.payment-popup .muted { color: var(--text-muted); } /* the pop-up is white, even over dark screens */
