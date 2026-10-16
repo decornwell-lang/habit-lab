@@ -37,7 +37,10 @@ export const JOIN_TERMS = {
 export const EXPLAINERS = [
   { id: "home", label: "Home (the same for every cohort)" },
   { id: "intention", label: "Intention" },
-  { id: "breathe", label: "Breathe" },
+  { id: "breathe", label: "Breathe (choosing a practice)" },
+  { id: "coherent", label: "Breathe → Coherent breathing" },
+  { id: "breathingSpace", label: "Breathe → 3-Step Breathing Space" },
+  { id: "regulation", label: "Breathe → Nervous system regulation" },
   { id: "practices", label: "Practices" },
   { id: "upcoming", label: "Upcoming" },
 ];

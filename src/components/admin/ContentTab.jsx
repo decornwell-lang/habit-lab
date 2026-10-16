@@ -1,5 +1,5 @@
 // Admin → Content: Zoom link, next session, each week's meditation and PDF, the 3-Step
-// Breathing Space and nervous system regulation recordings (Breathe tab), and the explainer videos.
+// Breathing Space recording (Breathe tab), and the explainer videos (camera icons).
 import { useState } from "react";
 import { saveContentSettings } from "../../lib/data.js";
 import { weekPrompts, WEEKS_IN_PROGRAMME } from "../../lib/content.js";
@@ -13,7 +13,6 @@ export default function ContentTab({ settings, reload }) {
     nextSessionAt: settings.nextSessionAt || "",
     currentWeek: settings.currentWeek || 1,
     breathingSpaceUrl: settings.breathingSpaceUrl || "",
-    regulationUrl: settings.regulationUrl || "",
     explainers: Object.fromEntries(EXPLAINERS.map((x) => [x.id, settings.explainers?.[x.id] || ""])),
     weeks: Object.fromEntries(weekNumbers.map((w) => [w, { title: "", meditationUrl: "", reflectionUrl: "", ...settings.weeks?.[w] }])),
   });
@@ -44,14 +43,10 @@ export default function ContentTab({ settings, reload }) {
       </section>
 
       <section className="card">
-        <h2>Breathing practice recordings</h2>
+        <h2>3-Step Breathing Space</h2>
         <div className="field">
           <label>Recording link (Breathe tab)</label>
           <input value={form.breathingSpaceUrl} onChange={(e) => setForm({ ...form, breathingSpaceUrl: e.target.value })} placeholder="Leave empty to use David's recording in the app" />
-        </div>
-        <div className="field">
-          <label>Nervous system regulation video (Breathe tab)</label>
-          <input value={form.regulationUrl} onChange={(e) => setForm({ ...form, regulationUrl: e.target.value })} placeholder="A YouTube link (or a video file)" />
         </div>
       </section>
 
