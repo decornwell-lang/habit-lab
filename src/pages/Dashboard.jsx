@@ -65,7 +65,7 @@ export default function Dashboard() {
   const [celebrate, setCelebrate] = useState(null); // { badgeId, row }: a new badge to celebrate
   const [cohortChoice, setCohortChoice] = useState(readCohortChoice); // which cohort Home shows
   const [startAgain, setStartAgain] = useState(null); // the cohort row, after "Not right now"
-  const [sheet, setSheet] = useState(null); // full-screen panel: "intention" or "evening"
+  const [sheet, setSheet] = useState(null); // full-screen panel: "evening"
   const [params, setParams] = useSearchParams();
   const [tabTaps, setTabTaps] = useState(0); // tapping a tab again starts it afresh (e.g. Breathe → choose a practice)
   const dark = useDark(profile); // light, dark or automatic (My account)
@@ -167,7 +167,7 @@ export default function Dashboard() {
   useEffect(() => {
     const target = params.get("open");
     if (params.get("cohort")) chooseCohort(params.get("cohort"));
-    if (target === "intention" || target === "evening") setSheet(target);
+    if (target === "evening") setSheet(target); // the morning check-in and intention open in their tiles
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Remember the member's time zone (the daily notifications go out at local times).
@@ -300,7 +300,14 @@ export default function Dashboard() {
       },
       {
         ...tile({ id: "intention", icon: "🎯", tone: "gold", title: "Intention", subtitle: "One minute with a question", isDone: Boolean(intention), doneText: "✓ Done" }),
-        onOpen: () => setSheet("intention"),
+        // Opens inside its tile, like the morning check-in, with its explainer video on the right.
+        content: (
+          <>
+            {explainerRow("intention", "About the intention")}
+            <IntentionScreen uid={user.uid} date={today} cohortId={id} group={group} existing={intention} firstName={firstName}
+              onSaved={(entry) => onSavedReflection(`${today}_intention_${id}`, entry)} />
+          </>
+        ),
       },
       {
         ...tile({ id: "evening", icon: "🌙", title: "Evening review", subtitle: "A minute to reflect on today",
@@ -409,13 +416,6 @@ export default function Dashboard() {
       )}
 
       {/* The chosen cohort's intention and evening review */}
-      {sheet === "intention" && current && (
-        <Sheet label="Your intention for today" onClose={() => setSheet(null)} explainer={explainers.intention || ""}>
-          <IntentionScreen uid={user.uid} date={today} cohortId={current.cohort.id} group={habitInfo(current.cohort.habitType).tab}
-            existing={data.reflections[`${today}_intention_${current.cohort.id}`]} firstName={firstName}
-            onSaved={(entry) => onSavedReflection(`${today}_intention_${current.cohort.id}`, entry)} />
-        </Sheet>
-      )}
       {sheet === "evening" && current && (
         <Sheet label="Evening review" onClose={() => setSheet(null)}>
           <EveningReview uid={user.uid} date={today} existing={data.reflections[`${today}_evening_${current.cohort.id}`]}

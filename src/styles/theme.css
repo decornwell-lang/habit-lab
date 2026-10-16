@@ -1018,7 +1018,7 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .char-count { margin: 4px 0 0; text-align: right; font-size: 0.75rem; color: #8f96b3; }
 
 /* Morning intention: one screen, no scrolling */
-.intention { display: flex; flex-direction: column; justify-content: center; flex: 1; min-height: calc(100dvh - 40px); gap: 0; }
+.intention { display: flex; flex-direction: column; gap: 0; } /* inside its tile on Home */
 .intention-core { margin: 0 0 6px; font-size: 1.45rem; line-height: 1.25; }
 .intention-invite { margin: 0 0 2vh; color: #c4c9dc; font-size: 0.92rem; line-height: 1.5; }
 .intention .q-textarea { min-height: 64px; }
@@ -1280,3 +1280,7 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .payment-inline .icon-btn, .payment-popup .icon-btn { color: var(--text); }
 .dashboard.dark .cohort-tile .cohort-countdown { color: var(--cohort); }
 .dashboard .payment-inline .muted, .dashboard .payment-popup .muted { color: var(--text-muted); } /* white panels over dark screens */
+/* Intention inside its tile: text colours for dark and light Home */
+.fold-body .intention-invite { color: var(--text-muted); }
+.dashboard.dark .fold-body .intention-invite { color: #c4c9dc; }
+.dashboard:not(.dark) .fold-body .intention-intro { color: var(--gold-text); }
