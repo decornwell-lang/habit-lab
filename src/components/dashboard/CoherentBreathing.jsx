@@ -18,6 +18,8 @@ function loadSettings() {
   }
 }
 
+const HINT = "Gentle, quiet, diaphragmatic belly breathing through your nose.";
+
 export default function CoherentBreathing() {
   const [settings, setSettings] = useState(loadSettings);
   const [startedAt, setStartedAt] = useState(null); // null = not running
@@ -81,7 +83,8 @@ export default function CoherentBreathing() {
   return (
     <>
       <h2>Coherent breathing</h2>
-      <p className="breathe-hint">Gentle, quiet, diaphragmatic belly breathing through your nose.</p>
+      {/* While breathing, this line moves under the ball (its space stays, so the ball doesn't move). */}
+      <p className={`breathe-hint ${running ? "is-hidden" : ""}`}>{HINT}</p>
 
       <div className="breathe-stage">
         {/* The ball is the start button: tap it to begin. */}
@@ -98,11 +101,13 @@ export default function CoherentBreathing() {
         </button>
       </div>
 
-      <div className="breathe-controls">
+      <div className={`breathe-controls ${running ? "running" : ""}`}>
         {running && (
           <>
-            <p className="breathe-clock">{clock} left</p>
-            <button className="btn btn-text breathe-text-btn" onClick={stop}>Stop</button>
+            <p className="breathe-hint">{HINT}</p>
+            <button className="btn btn-ghost breathe-stop" onClick={stop} aria-label={`${clock} left. Stop`}>
+              <span className="breathe-stop-clock">{clock}</span>{"\u00a0·\u00a0"}Stop
+            </button>
           </>
         )}
         {finished && (

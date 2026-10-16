@@ -1285,3 +1285,11 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .dashboard.dark .fold-body .intention-invite { color: #c4c9dc; }
 .dashboard:not(.dark) .fold-body .intention-intro { color: var(--gold-text); }
 .regulation-caption { align-self: start; margin-top: 14px; }
+
+/* Coherent breathing while it runs: the line under the ball, the countdown and Stop in an
+   outline button at the bottom of the (fixed-height) controls area */
+.breathe-hint.is-hidden { visibility: hidden; }
+.breathe-controls.running { height: 212px; justify-content: space-between; }
+.breathe-controls.running .breathe-hint { margin-top: 6px; }
+.breathe-stop { width: auto; min-width: 200px; color: #fff; border-color: rgba(255, 255, 255, 0.45); margin-bottom: 4px; }
+.breathe-stop-clock { font-variant-numeric: tabular-nums; }
