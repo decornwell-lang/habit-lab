@@ -97,10 +97,7 @@ export default function CoherentBreathing({ explainer }) {
               <span className="breathe-count">{count}</span>
             </span>
           ) : (
-            <span>
-              <span className="breathe-word resting">{finished ? "✓" : `${settings.minutes}:00`}</span>
-              {!finished && <span className="breathe-tap">Tap to start</span>}
-            </span>
+            <span className="breathe-word resting">{finished ? "✓" : "Start"}</span>
           )}
         </button>
       </div>

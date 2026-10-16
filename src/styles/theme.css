@@ -799,11 +799,10 @@ td.actions { white-space: nowrap; }
   transform: scale(0.8); transition: transform var(--breath, 7s) ease-in-out;
   box-shadow: 0 10px 40px rgba(87, 189, 162, 0.3);
 }
-.breathe-circle.out { transform: scale(0.55); }
+.breathe-circle.out { transform: scale(0.65); }
 button.breathe-circle { border: 0; padding: 0; font: inherit; cursor: pointer; }
 button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
-.breathe-tap { display: block; margin-top: 6px; font-size: 1.45rem; font-weight: 600; letter-spacing: 0.04em; opacity: 0.85; } /* drawn small with the ball, so larger */
-.breathe-circle.in { transform: scale(1.12); }
+.breathe-circle.in { transform: scale(1.25); }
 .breathe-circle > span { display: flex; flex-direction: column; align-items: center; }
 .breathe-word { font-family: var(--font-heading); font-size: 1.35rem; font-weight: 600; margin: 0; }
 .breathe-count { font-family: var(--font-heading); font-size: 2.6rem; line-height: 1.1; margin-top: 2px; }
@@ -876,7 +875,7 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 
 /* Coherent breathing: a fixed spot for the ball and a fixed-height controls area,
    so the ball stays in the same place before, during and after */
-.breathe-stage { --ball: min(220px, 23vh); display: grid; place-items: center; width: 100%; height: calc(var(--ball) * 1.12); margin: 4px 0 8px; }
+.breathe-stage { --ball: min(220px, 23vh); display: grid; place-items: center; width: 100%; height: calc(var(--ball) * 1.25); margin: 4px 0 8px; } /* room for the ball fully grown */
 .breathe-stage .breathe-circle { width: var(--ball); height: var(--ball); margin: 0; }
 .breathe-controls { width: 100%; min-height: 212px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
 .breathe-controls .breathe-clock { margin-top: 8px; }
