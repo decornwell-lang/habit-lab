@@ -46,8 +46,9 @@ export function profileStreakFor(profile, cohort) {
 }
 
 // A cohort's entry for the public profile: { habitType, streak, lastYesDate, badges }.
-// Counts back from today if today is already checked in (e.g. marked on the journey),
-// otherwise from the check-in day (see checkinDayKey in dates.js). Badges once earned are kept.
+// Counts back from today once today's evening review is done (from 21:00), otherwise from
+// the check-in day (see checkinDayKey in dates.js), so a day and its badge only count after
+// that evening's check-in. Badges once earned are kept.
 export function cohortStreakEntry(cohort, checkins, profile, today, checkinDay) {
   const map = checkinsFor(checkins, cohort);
   const from = map[today] ? today : checkinDay;

@@ -4,7 +4,8 @@
 //   pale         = no check-in
 //   outlined     = today, and days still to come are faint
 // Long cohorts (which may run for years) show five weeks at a time: the last four and the next.
-// Tap today or a past day to correct it (e.g. a smoke-free day logged by mistake as smoked).
+// Tap a past day to correct it (e.g. a smoke-free day logged by mistake as smoked). Today
+// can't be tapped: it only counts once its evening review is done (from 21:00).
 import { useState } from "react";
 import { addDays, todayKey, daysBetween, formatDate } from "../../lib/dates.js";
 import { habitInfo, habitStreakLabel } from "../../lib/cohorts.js";
@@ -63,7 +64,7 @@ export default function JourneyMap({ current, checkins, onCorrect }) {
       <ol className="journey" aria-label={`Day by day, ${kept} days kept`}>
         {visible.map((d) => (
           <li key={d.date} className={`dot ${d.state}${editing?.date === d.date ? " editing" : ""}`} title={`Day ${d.day}`}>
-            {onCorrect && d.state !== "future" ? (
+            {onCorrect && d.date < today ? (
               <button type="button" className="dot-button" aria-label={`Day ${d.day}: ${d.state}. Change`}
                 onClick={() => { setError(""); setEditing(editing?.date === d.date ? null : d); }} />
             ) : (
@@ -87,7 +88,7 @@ export default function JourneyMap({ current, checkins, onCorrect }) {
           {error && <p className="form-error" role="alert">{error}</p>}
         </div>
       )}
-      {onCorrect && !editing && <p className="muted small">Made a mistake? Tap a day to change it.</p>}
+      {onCorrect && !editing && <p className="muted small">Made a mistake? Tap a past day to change it.</p>}
       <ul className="journey-legend">
         <li><span className="dot kept" /> {habit.kept}</li>
         <li><span className="dot returned" /> Returned</li>

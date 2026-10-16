@@ -219,7 +219,7 @@ export default function Dashboard() {
     }]);
   }
 
-  // A correction from the journey: mark a past day (or today) kept or not.
+  // A correction from the journey: mark a past day kept or not (today is only set by the evening review).
   async function correctCheckin(date, day, maintained) {
     await saveCheckins([{ row: current, date, checkin: { day, week: Math.ceil(day / 7), maintained, corrected: true } }]);
   }
