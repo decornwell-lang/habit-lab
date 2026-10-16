@@ -31,3 +31,17 @@ export const REFLECTION_CONSENT = "I agree that my reflections can be seen by Da
 export const JOIN_TERMS = {
   price: "VAT included",
 };
+
+// Screens that can have an explainer video (Admin → Content → Explainer videos). The video
+// icon only appears on a screen once its link is set.
+export const EXPLAINERS = [
+  { id: "home", label: "Home" },
+  { id: "morning", label: "Morning check-in" },
+  { id: "intention", label: "Intention" },
+  { id: "evening", label: "Evening review" },
+  { id: "breathe", label: "Breathe (choosing a practice)" },
+  { id: "coherent", label: "Coherent breathing" },
+  { id: "breathingSpace", label: "3-Step Breathing Space" },
+  { id: "practices", label: "Practices" },
+  { id: "upcoming", label: "Upcoming" },
+];

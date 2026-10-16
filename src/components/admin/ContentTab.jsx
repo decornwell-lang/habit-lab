@@ -1,8 +1,9 @@
-// Admin → Content: Zoom link, next session, each week's meditation and PDF,
-// and the 3-Step Breathing Space recording (Breathe tab).
+// Admin → Content: Zoom link, next session, each week's meditation and PDF, the 3-Step
+// Breathing Space recording (Breathe tab), and an explainer video for each screen.
 import { useState } from "react";
 import { saveContentSettings } from "../../lib/data.js";
 import { weekPrompts, WEEKS_IN_PROGRAMME } from "../../lib/content.js";
+import { EXPLAINERS } from "../../content/site.js";
 
 const weekNumbers = Array.from({ length: WEEKS_IN_PROGRAMME }, (_, i) => i + 1);
 
@@ -12,6 +13,7 @@ export default function ContentTab({ settings, reload }) {
     nextSessionAt: settings.nextSessionAt || "",
     currentWeek: settings.currentWeek || 1,
     breathingSpaceUrl: settings.breathingSpaceUrl || "",
+    explainers: Object.fromEntries(EXPLAINERS.map((x) => [x.id, settings.explainers?.[x.id] || ""])),
     weeks: Object.fromEntries(weekNumbers.map((w) => [w, { title: "", meditationUrl: "", reflectionUrl: "", ...settings.weeks?.[w] }])),
   });
   const [message, setMessage] = useState("");
@@ -46,6 +48,21 @@ export default function ContentTab({ settings, reload }) {
           <label>Recording link (Breathe tab)</label>
           <input value={form.breathingSpaceUrl} onChange={(e) => setForm({ ...form, breathingSpaceUrl: e.target.value })} placeholder="Leave empty to use David's recording in the app" />
         </div>
+      </section>
+
+      <section className="card">
+        <h2>Explainer videos</h2>
+        <p className="muted small">
+          A link for a screen adds a small video icon there; members tap it to watch. YouTube, Vimeo, Google Drive or a
+          video file. Leave a box empty for no icon.
+        </p>
+        {EXPLAINERS.map((x) => (
+          <div className="field" key={x.id}>
+            <label htmlFor={`explainer-${x.id}`}>{x.label}</label>
+            <input id={`explainer-${x.id}`} value={form.explainers[x.id]} placeholder="https://www.youtube.com/watch?v=…"
+              onChange={(e) => setForm({ ...form, explainers: { ...form.explainers, [x.id]: e.target.value.trim() } })} />
+          </div>
+        ))}
       </section>
 
       <section className="card">

@@ -4,6 +4,7 @@
 // the length (1 to 10 minutes) and the gong; all are remembered on the device.
 import { useEffect, useRef, useState } from "react";
 import { playGong, unlockAudio } from "../../lib/gong.js";
+import Explainer from "../Explainer.jsx";
 
 const DEFAULTS = { breath: 7, minutes: 3, gong: true }; // breath = seconds for each in- and out-breath
 const BREATH_RANGE = [3, 10];
@@ -18,7 +19,7 @@ function loadSettings() {
   }
 }
 
-export default function CoherentBreathing() {
+export default function CoherentBreathing({ explainer }) {
   const [settings, setSettings] = useState(loadSettings);
   const [startedAt, setStartedAt] = useState(null); // null = not running
   const [elapsed, setElapsed] = useState(0);
@@ -80,7 +81,10 @@ export default function CoherentBreathing() {
   const ballClass = running ? (grown && inPhase ? "in" : "out") : "out";
   return (
     <>
-      <h2>Coherent breathing</h2>
+      <div className="title-with-explainer">
+        <h2>Coherent breathing</h2>
+        <Explainer url={explainer} label="About coherent breathing" />
+      </div>
       <p className="breathe-hint">Gentle, quiet, diaphragmatic belly breathing through your nose.</p>
 
       <div className="breathe-stage">

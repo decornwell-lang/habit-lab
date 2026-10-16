@@ -1,0 +1,37 @@
+// A small video icon that opens an explainer video full screen (e.g. David explaining
+// why the intention matters). Renders nothing until a link is set for that screen in
+// Admin → Content → Explainer videos (settings.explainers, ids in src/content/site.js).
+import { useState } from "react";
+import { videoSource } from "../lib/video.js";
+import YouTubePlayer from "./YouTubePlayer.jsx";
+
+export default function Explainer({ url, label = "Watch the explainer" }) {
+  const [open, setOpen] = useState(false);
+  const video = videoSource(url);
+  if (!video) return null;
+  return (
+    <>
+      <button type="button" className="explainer-btn" onClick={() => setOpen(true)} aria-label={label} title={label}>
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+          <rect x="3" y="6" width="13" height="12" rx="2.5" />
+          <path d="M16 10.5l5-3v9l-5-3z" />
+        </svg>
+      </button>
+      {open && (
+        <div className="video-modal" role="dialog" aria-label={label} onClick={(e) => e.target === e.currentTarget && setOpen(false)}>
+          <button className="icon-btn video-modal-close" onClick={() => setOpen(false)} aria-label="Close">
+            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+          <div className="video-modal-player">
+            {video.type === "youtube" && <YouTubePlayer id={video.id} title={label} />}
+            {video.type === "iframe" && <div className="video"><iframe src={video.src} title={label} allow="autoplay; fullscreen" allowFullScreen /></div>}
+            {(video.type === "video" || video.type === "audio") && <div className="video"><video src={video.src} controls autoPlay playsInline /></div>}
+            {video.type === "link" && <a className="btn btn-primary" href={video.src} target="_blank" rel="noreferrer">Open the video</a>}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

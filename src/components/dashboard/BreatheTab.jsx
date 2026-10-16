@@ -3,25 +3,30 @@
 import { useState } from "react";
 import CoherentBreathing from "./CoherentBreathing.jsx";
 import BreathingSpace from "./BreathingSpace.jsx";
+import Explainer from "../Explainer.jsx";
 
 const PRACTICES = [
   { id: "coherent", title: "Coherent breathing", text: "Slow, even breaths with a guide. You choose the pace and length." },
   { id: "space", title: "3-Step Breathing Space", text: "A 3-minute guided pause, from MBCT." },
 ];
 
-export default function BreatheTab({ settings }) {
+// explainers: explainer video links (Admin → Content), shown as a video icon by each title.
+export default function BreatheTab({ settings, explainers = {} }) {
   const [practice, setPractice] = useState(null); // tapping the Breathe tab again returns here (see Dashboard.jsx)
 
   return (
     <section className="breathe-screen" aria-label="Breathing">
       <div className="breathe-inner">
-        {practice === "coherent" && <CoherentBreathing />}
-        {practice === "space" && <BreathingSpace url={settings.breathingSpaceUrl} />}
+        {practice === "coherent" && <CoherentBreathing explainer={explainers.coherent} />}
+        {practice === "space" && <BreathingSpace url={settings.breathingSpaceUrl} explainer={explainers.breathingSpace} />}
         {!practice && (
           // The two practices sit in the middle of the screen, with the title just above.
           <div className="breathe-chooser">
             <div className="breathe-chooser-head">
-              <h2>Craving?</h2>
+              <div className="title-with-explainer">
+                <h2>Craving?</h2>
+                <Explainer url={explainers.breathe} label="About the breathing practices" />
+              </div>
               <p className="breathe-hint">Choose a practice.</p>
             </div>
             <div className="breathe-choices">

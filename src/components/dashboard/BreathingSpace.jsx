@@ -5,6 +5,7 @@
 // then widening again to the whole body.
 import { useRef, useState } from "react";
 import { videoSource } from "../../lib/video.js";
+import Explainer from "../Explainer.jsx";
 
 const STEPS = [
   { title: "Becoming aware", text: "Pause. Notice what's here: thoughts, feelings, sensations in the body." },
@@ -14,11 +15,14 @@ const STEPS = [
 
 const RECORDING = "/audio/three-step-breathing-space.m4a";
 
-export default function BreathingSpace({ url }) {
+export default function BreathingSpace({ url, explainer }) {
   const media = videoSource(url || RECORDING);
   return (
     <>
-      <h2>3-Step Breathing Space</h2>
+      <div className="title-with-explainer">
+        <h2>3-Step Breathing Space</h2>
+        <Explainer url={explainer} label="About the 3-Step Breathing Space" />
+      </div>
       <p className="breathe-hint">Three minutes, three steps.</p>
 
       {media?.type === "audio" && <AudioPlayer src={media.src} />}
