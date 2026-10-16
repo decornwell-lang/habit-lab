@@ -60,3 +60,10 @@ The number (default 14) and the theme (optional, e.g. urges, lapses, identity, "
 **3. Publish.** Approved lines reach members only when you push the change (GitHub Desktop). Each approved line gets the next free day, so every member sees the same line on the same day.
 
 **Daily choice** (`src/lib/aphorisms.js`): the approved line whose `showOn` is today; otherwise the library line for the day of the year (day-of-year modulo the library's length); otherwise nothing.
+
+## Security
+- **Database rules** (`firestore.rules`): members read and write only their own data; payments and access are written only by the server; reflections need the member's consent before David can read them.
+- **Security headers** (`vercel.json`): the site can't be shown inside other sites; HTTPS only.
+- **Firebase web key** is limited to the site's own addresses (Google Cloud → APIs & Services → Credentials → Browser key → Website restrictions). Email enumeration protection is on (Firebase → Authentication → Settings → User actions).
+- **Adding a custom domain?** Add it in two places, or sign-in stops working there: Firebase → Authentication → Settings → Authorized domains, and the Browser key's Website restrictions (e.g. `https://yourdomain.com/*`).
+- Turn on two-factor authentication for the accounts behind the app: email, Google, Vercel, GitHub and Stripe.
