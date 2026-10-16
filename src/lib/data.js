@@ -13,7 +13,7 @@
 //   notices/{id}                      messages from the owner (also sent as push notifications)
 import {
   doc, getDoc, getDocs, setDoc, updateDoc, addDoc, collection, collectionGroup,
-  query, where, orderBy, limit, writeBatch, arrayUnion, serverTimestamp, increment,
+  query, where, orderBy, limit, writeBatch, arrayUnion, serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase.js";
 
@@ -80,11 +80,11 @@ export async function saveCheckin(uid, data, id = `${data.date}_${data.cohortId}
   return id;
 }
 
-// ---------- Morning intention, evening review and cravings ----------
+// ---------- Morning intention and evening review ----------
 //   users/{uid}/reflections/{id}   the member's own words. Private: the owner can read
 //                                  them only if the member agreed (reflectionConsent).
-//                                  ids: "2026-10-15_intention", "2026-10-15_evening", or random for cravings
-//   users/{uid}/activity/{date}    counts only, no words: { intention, evening, cravings }.
+//                                  ids: "2026-10-15_intention", "2026-10-15_evening"
+//   users/{uid}/activity/{date}    counts only, no words: { intention, evening }.
 //                                  The owner can always read these.
 export async function getReflection(uid, id) {
   return (await getDoc(doc(db, "users", uid, "reflections", id))).data() || null;
@@ -96,17 +96,6 @@ export async function saveReflection(uid, id, data, activity) {
   batch.set(doc(db, "users", uid, "reflections", id), { ...data, updatedAt: serverTimestamp() }, { merge: true });
   batch.set(doc(db, "users", uid, "activity", data.date), { date: data.date, ...activity }, { merge: true });
   await batch.commit();
-}
-
-// Saves one craving note (several a day are fine) and adds 1 to that day's craving count.
-// Returns the new note's id.
-export async function saveCraving(uid, data) {
-  const ref = doc(collection(db, "users", uid, "reflections"));
-  const batch = writeBatch(db);
-  batch.set(ref, { ...data, type: "craving", at: serverTimestamp() });
-  batch.set(doc(db, "users", uid, "activity", data.date), { date: data.date, cravings: increment(1) }, { merge: true });
-  await batch.commit();
-  return ref.id;
 }
 
 // A member's morning check-in for one calendar day: { morning }.
@@ -159,7 +148,7 @@ export async function getAllCheckins() {
   return snap.docs.map((d) => ({ uid: d.ref.parent.parent.id, ...d.data() }));
 }
 
-// Owner only: every member's daily counts (no words): { uid, date, intention, evening, cravings }.
+// Owner only: every member's daily counts (no words): { uid, date, intention, evening }.
 export async function getAllActivity() {
   const snap = await getDocs(collectionGroup(db, "activity"));
   return snap.docs.map((d) => ({ uid: d.ref.parent.parent.id, ...d.data() }));

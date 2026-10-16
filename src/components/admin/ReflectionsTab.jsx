@@ -1,6 +1,6 @@
-// Admin → Reflections: read-only. For one cohort: morning intentions, evening reviews and
-// craving notes per day (counts only), a craving summary over time, and each member's
-// words only if they ticked the consent box (the security rules enforce this too).
+// Admin → Reflections: read-only. For one cohort: morning intentions and evening reviews
+// per day (counts only), and each member's words only if they ticked the consent box
+// (the security rules enforce this too).
 import { useEffect, useMemo, useState } from "react";
 import { getAllActivity, getMemberReflections } from "../../lib/data.js";
 import { addDays, todayKey, formatDate } from "../../lib/dates.js";
@@ -32,16 +32,13 @@ export default function ReflectionsTab({ data }) {
       intentions: today.filter((a) => a.intention).length,
       reviews: today.filter((a) => a.evening === "done").length,
       skipped: today.filter((a) => a.evening === "skipped").length,
-      cravings: today.reduce((n, a) => n + (a.cravings || 0), 0),
     };
   });
-  const maxCravings = Math.max(1, ...perDay.map((d) => d.cravings));
   const totals = (uid) => {
     const mine = rows.filter((a) => a.uid === uid);
     return {
       intentions: mine.filter((a) => a.intention).length,
       reviews: mine.filter((a) => a.evening === "done").length,
-      cravings: mine.reduce((n, a) => n + (a.cravings || 0), 0),
     };
   };
 
@@ -65,24 +62,10 @@ export default function ReflectionsTab({ data }) {
       </div>
 
       <div className="card">
-        <h2>Craving notes per day</h2>
-        <p className="muted small">Last {DAYS} days · {members.length} {members.length === 1 ? "member" : "members"}</p>
-        <ol className="bar-list">
-          {perDay.map((d) => (
-            <li key={d.date} title={`${formatDate(d.date, { weekday: "short", year: undefined })}: ${d.cravings} craving ${d.cravings === 1 ? "note" : "notes"}`}>
-              <span className="bar-label">{formatDate(d.date, { weekday: "short", month: "short", year: undefined })}</span>
-              <span className="bar-track"><span className="bar" style={{ width: `${(d.cravings / maxCravings) * 100}%` }} /></span>
-              <span className="bar-value">{d.cravings}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
-
-      <div className="card">
         <h2>Daily activity</h2>
         <div className="table-wrap">
           <table>
-            <thead><tr><th>Day</th><th>Intentions</th><th>Evening reviews</th><th>Skipped</th><th>Craving notes</th></tr></thead>
+            <thead><tr><th>Day</th><th>Intentions</th><th>Evening reviews</th><th>Skipped</th></tr></thead>
             <tbody>
               {perDay.map((d) => (
                 <tr key={d.date}>
@@ -90,7 +73,6 @@ export default function ReflectionsTab({ data }) {
                   <td>{d.intentions} / {members.length}</td>
                   <td>{d.reviews} / {members.length}</td>
                   <td>{d.skipped}</td>
-                  <td>{d.cravings}</td>
                 </tr>
               ))}
             </tbody>
@@ -108,7 +90,7 @@ export default function ReflectionsTab({ data }) {
               <li key={m.id}>
                 <div className="refl-member-row">
                   <span className="person-name">{`${m.firstName || ""} ${m.surname || ""}`.trim() || m.id}</span>
-                  <span className="muted small">{t.intentions} intentions · {t.reviews} reviews · {t.cravings} cravings</span>
+                  <span className="muted small">{t.intentions} intentions · {t.reviews} reviews</span>
                   {consented ? (
                     <button className="link-btn" onClick={() => toggleMember(m.id)}>{openUid === m.id ? "Hide" : "Read"}</button>
                   ) : (
@@ -149,17 +131,10 @@ function MemberEntries({ entries, cohorts }) {
               {e.tomorrow && <><br />Tomorrow: <em>“{e.tomorrow}”</em></>}
             </p>
           ))}
-          {e.type === "craving" && (
-            <p>
-              {e.strength != null && `Strength ${e.strength}/10`}
-              {e.areas?.length > 0 && ` · ${e.areas.join(", ")}${e.other ? ` (${e.other})` : ""}`}
-              {e.happening && <><br /><em>“{e.happening}”</em></>}
-            </p>
-          )}
         </li>
       ))}
     </ul>
   );
 }
 
-const LABELS = { intention: "Morning intention", evening: "Evening review", craving: "Craving note" };
+const LABELS = { intention: "Morning intention", evening: "Evening review" };

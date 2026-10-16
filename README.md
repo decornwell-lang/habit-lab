@@ -20,7 +20,7 @@ Copy `.env.example` to `.env.local` and fill in the Firebase (and later Stripe) 
 - `src/components/dashboard/`: the member dashboard. Tabs: **Home** (badge box and the day's prompts), **Practices** (meditation, weekly assignment, live session), **Breathe** (3-minute breathing), **Upcoming** (cohorts to join)
 - `src/components/admin/`: the Admin tabs
 - `src/lib/`: helpers (Firestore data, dates, streaks and badges, push notifications…)
-- `src/content/`: wording you can edit: site text, info pages, weekly themes, daily notifications (`dailyPrompts.js`), intention / evening review / craving wording (`intention.js`), country codes
+- `src/content/`: wording you can edit: site text, info pages, weekly themes, daily notifications (`dailyPrompts.js`), intention / evening review wording (`intention.js`), country codes
 - `api/`: server functions on Vercel (Stripe, sending messages, the hourly daily prompts)
 - `firestore.rules`: database security rules (paste into Firebase console → Firestore → Rules)
 - `src/styles/theme.css`: colours, fonts, spacing (change the look here)
@@ -33,12 +33,12 @@ Members get three notifications a day, each at their own local time (their phone
 
 A member can be in several cohorts at once (e.g. alcohol for years, plus a fitness cohort). Each cohort has its own streak, badges, journey and leaderboard; buttons at the top of Home switch between them. The habits, their evening questions and streak wording are in `src/lib/cohorts.js` (`HABIT_TYPES`).
 
-This week's meditation (Practices tab) doesn't send a notification. "I'm craving right now" is on demand and never notifies. Times and wording: `src/content/dailyPrompts.js`.
+This week's meditation (Practices tab) doesn't send a notification. Times and wording: `src/content/dailyPrompts.js`.
 
 How they're sent: `.github/workflows/daily-prompts.yml` runs every hour and calls `api/daily-prompts.js`. This uses GitHub's free scheduler, so the Firebase Blaze plan is **not** needed. Needs `CRON_SECRET` in both Vercel and GitHub (Settings → Secrets and variables → Actions). Members without notifications switched on still see every prompt as a tile on Home.
 
 ## Reflections and privacy
-Morning intentions, evening reviews and craving notes are stored per member in `users/{uid}/reflections`, with counts only in `users/{uid}/activity`. David can read a member's words only if they ticked "I agree that my reflections can be seen by David…" (sign-up or My account); otherwise he sees counts only. This is enforced by `firestore.rules`, which must be published in the Firebase console.
+Morning intentions and evening reviews are stored per member in `users/{uid}/reflections`, with counts only in `users/{uid}/activity`. David can read a member's words only if they ticked "I agree that my reflections can be seen by David…" (sign-up or My account); otherwise he sees counts only. This is enforced by `firestore.rules`, which must be published in the Firebase console.
 
 ## Aphorisms (AI drafts, owner approval)
 Members see one short line under "Hello" on Home each day. Lines drafted by AI are **never** shown until you approve them.

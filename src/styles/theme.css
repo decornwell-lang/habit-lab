@@ -1000,14 +1000,6 @@ td.actions { white-space: nowrap; }
 .sheet .segmented button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
 .sheet .segmented button.selected.no { background: var(--gold); border-color: var(--gold); }
 
-/* Craving flow (CravingFlow.jsx) */
-.craving { padding-top: 24px; display: flex; flex-direction: column; }
-.craving h2 { margin: 0 0 2px; }
-.craving > .muted { margin: 0 0 16px; }
-.craving .btn { margin-top: 10px; }
-.sheet .craving .craving-coherent { align-self: center; color: var(--aqua); margin-top: 4px; }
-.craving-other { width: 100%; margin-top: 10px; }
-.craving-emergency { margin: 18px 0 0; text-align: center; font-size: 0.82rem; color: #9aa2bf; }
 .strength { display: flex; align-items: center; gap: 14px; }
 .strength input[type="range"] { flex: 1; accent-color: var(--aqua); height: 32px; }
 .strength-value { min-width: 36px; text-align: center; font-family: var(--font-heading); font-size: 1.6rem; color: #fff; }
@@ -1022,13 +1014,7 @@ td.actions { white-space: nowrap; }
 .sheet .share-options .checkbox { color: #e9eaf2; }
 .sheet .save-share, .sheet .btn-whatsapp { margin-top: 10px; }
 
-/* Admin → Reflections: craving notes per day (one series, so one colour) */
-.bar-list { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 6px; }
-.bar-list li { display: grid; grid-template-columns: 96px 1fr 32px; align-items: center; gap: 10px; font-size: 0.85rem; }
-.bar-label { color: var(--text-muted); white-space: nowrap; }
-.bar-track { height: 10px; }
-.bar { display: block; height: 100%; min-width: 2px; background: var(--teal); border-radius: 0 4px 4px 0; }
-.bar-value { text-align: right; font-variant-numeric: tabular-nums; color: var(--text); }
+/* Admin → Reflections: members and their words */
 .refl-members { list-style: none; padding: 0; margin: 0; }
 .refl-members > li { padding: 12px 0; border-bottom: 1px solid var(--border); }
 .refl-member-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }

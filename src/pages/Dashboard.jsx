@@ -37,7 +37,6 @@ import { promptTime } from "../content/dailyPrompts.js";
 import Sheet from "../components/dashboard/Sheet.jsx";
 import IntentionScreen from "../components/dashboard/IntentionScreen.jsx";
 import EveningReview from "../components/dashboard/EveningReview.jsx";
-import CravingFlow from "../components/dashboard/CravingFlow.jsx";
 import TodaysPractice from "../components/dashboard/TodaysPractice.jsx";
 import WhatsAppIcon from "../components/WhatsAppIcon.jsx";
 import { LockIcon, PencilIcon } from "../components/TileIcons.jsx";
@@ -63,16 +62,16 @@ export default function Dashboard() {
   const [celebrate, setCelebrate] = useState(null); // { badgeId, row }: a new badge to celebrate
   const [cohortChoice, setCohortChoice] = useState(readCohortChoice); // which cohort Home shows
   const [startAgain, setStartAgain] = useState(null); // the cohort row, after "Not right now"
-  const [sheet, setSheet] = useState(null); // full-screen panel: "intention", "evening" or "craving"
+  const [sheet, setSheet] = useState(null); // full-screen panel: "intention" or "evening"
   const [params, setParams] = useSearchParams();
   const [tabTaps, setTabTaps] = useState(0); // tapping a tab again starts it afresh (e.g. Breathe → choose a practice)
   const today = todayKey(); // calendar day: morning check-in, intention, evening review, cohort day
   const checkinDay = checkinDayKey(); // the check-in day (turns over at 21:00, see dates.js)
 
   const tab = TABS.some((t) => t.id === params.get("tab")) ? params.get("tab") : DEFAULT_TAB;
-  function setTab(id, extra = {}) {
+  function setTab(id) {
     setTabTaps((n) => n + 1);
-    setParams(id === DEFAULT_TAB ? {} : { tab: id, ...extra });
+    setParams(id === DEFAULT_TAB ? {} : { tab: id });
     window.scrollTo(0, 0);
   }
 
@@ -274,14 +273,6 @@ export default function Dashboard() {
         isDone: Boolean(data.evening), doneText: data.evening?.skipped ? "Skipped" : "✓ Done" }),
       onOpen: () => setSheet("evening"),
     },
-    activeRows.some((r) => habitInfo(r.cohort.habitType).cravings) && {
-      id: "craving",
-      icon: "🌊",
-      tone: "calm",
-      title: "I'm craving right now",
-      subtitle: "Notice it, then breathe with it",
-      onOpen: () => setSheet("craving"),
-    },
     current && groupLink && {
       id: "group",
       icon: "💬",
@@ -360,7 +351,7 @@ export default function Dashboard() {
       )}
 
       {/* Breathe: coherent breathing or the 3-Step Breathing Space, for a craving */}
-      {tab === "breathe" && <BreatheTab key={tabTaps} settings={data.settings} initialPractice={params.get("practice")} />}
+      {tab === "breathe" && <BreatheTab key={tabTaps} settings={data.settings} />}
 
       {/* Upcoming: cohorts that haven't started yet */}
       {tab === "upcoming" && (
@@ -371,12 +362,6 @@ export default function Dashboard() {
         <Sheet label="Your intention for today" onClose={() => setSheet(null)}>
           <IntentionScreen uid={user.uid} date={today} existing={data.intention} firstName={firstName}
             onSaved={(intention) => setData((d) => ({ ...d, intention }))} />
-        </Sheet>
-      )}
-      {sheet === "craving" && (
-        <Sheet label="I'm craving right now" onClose={() => setSheet(null)}>
-          <CravingFlow uid={user.uid} date={today} firstName={firstName}
-            onBreathe={(practice) => { setSheet(null); setTab("breathe", { practice }); }} />
         </Sheet>
       )}
       {sheet === "evening" && (

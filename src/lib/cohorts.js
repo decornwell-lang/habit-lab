@@ -8,7 +8,7 @@ import { daysBetween, addDays } from "./dates.js";
 //   question  the evening review's question for this cohort
 //   keptWhen  the answer to `question` that keeps the streak going
 //   kept, missed  a day on the journey, e.g. "Smoke-free" / "Smoked"
-//   cravings  true if the craving questions and "I'm craving right now" apply
+//   cravings  true if the evening review's craving questions apply
 export const HABIT_TYPES = [
   { id: "smoking", label: "Smoking", tab: "Smoke-free", streak: "smoke-free", question: "Did you smoke today?", keptWhen: "no", kept: "Smoke-free", missed: "Smoked", cravings: true },
   { id: "alcohol", label: "Alcohol", tab: "Alcohol-free", streak: "alcohol-free", question: "Did you drink alcohol today?", keptWhen: "no", kept: "Alcohol-free", missed: "Drank", cravings: true },
