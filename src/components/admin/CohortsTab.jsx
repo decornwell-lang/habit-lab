@@ -1,4 +1,6 @@
-// Admin → Cohorts: create and edit cohorts.
+// Admin → Cohorts: create and edit cohorts. Two views: current (upcoming, active and
+// finished) and Archived. Archiving only tidies this list and hides the cohort from
+// members' Upcoming tab; members keep everything (their days, streaks and access).
 import { useState } from "react";
 import { saveCohort } from "../../lib/data.js";
 import { HABIT_TYPES, habitLabel, formatPrice } from "../../lib/cohorts.js";
@@ -19,6 +21,16 @@ export default function CohortsTab({ cohorts, reload }) {
   const [editingId, setEditingId] = useState(null); // null = closed, "new" = new cohort
   const [form, setForm] = useState(EMPTY);
   const [message, setMessage] = useState("");
+  const [view, setView] = useState("current"); // "current" or "archived"
+  const archived = cohorts.filter((c) => c.archived);
+  const current = cohorts.filter((c) => !c.archived);
+  const shown = view === "archived" ? archived : current;
+
+  async function setArchived(cohort, value) {
+    await saveCohort(cohort.id, { archived: value });
+    setMessage(value ? `${cohort.name} archived.` : `${cohort.name} is back in the current list.`);
+    await reload();
+  }
 
   function edit(cohort) {
     setEditingId(cohort ? cohort.id : "new");
@@ -61,6 +73,15 @@ export default function CohortsTab({ cohorts, reload }) {
       </div>
       {message && <p className="form-success">{message}</p>}
 
+      <div className="segmented view-switch" role="tablist" aria-label="Which cohorts">
+        <button type="button" role="tab" aria-selected={view === "current"} className={view === "current" ? "selected" : ""} onClick={() => setView("current")}>
+          Upcoming &amp; active ({current.length})
+        </button>
+        <button type="button" role="tab" aria-selected={view === "archived"} className={view === "archived" ? "selected" : ""} onClick={() => setView("archived")}>
+          Archived ({archived.length})
+        </button>
+      </div>
+
       {editingId && (
         <form className="card" onSubmit={handleSave}>
           <h2>{editingId === "new" ? "New cohort" : "Edit cohort"}</h2>
@@ -101,7 +122,10 @@ export default function CohortsTab({ cohorts, reload }) {
         <table>
           <thead><tr><th>Name</th><th>Habit</th><th>Starts</th><th>Days</th><th>Price</th><th>Status</th><th>Members</th><th></th></tr></thead>
           <tbody>
-            {cohorts.map((c) => (
+            {shown.length === 0 && (
+              <tr><td colSpan={8} className="muted">{view === "archived" ? "No archived cohorts." : "No cohorts."}</td></tr>
+            )}
+            {shown.map((c) => (
               <tr key={c.id}>
                 <td>{c.name}</td>
                 <td>{habitLabel(c.habitType)}</td>
@@ -110,7 +134,10 @@ export default function CohortsTab({ cohorts, reload }) {
                 <td>{formatPrice(c)}</td>
                 <td><span className={`tag tag-${c.status}`}>{c.status}</span></td>
                 <td>{c.memberIds?.length || 0}</td>
-                <td className="actions"><button className="link-btn" onClick={() => edit(c)}>Edit</button></td>
+                <td className="actions">
+                  <button className="link-btn" onClick={() => edit(c)}>Edit</button>
+                  <button className="link-btn" onClick={() => setArchived(c, !c.archived)}>{c.archived ? "Unarchive" : "Archive"}</button>
+                </td>
               </tr>
             ))}
           </tbody>

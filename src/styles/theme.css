@@ -1174,3 +1174,6 @@ td.actions { white-space: nowrap; }
 .appearance-photo > div { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .upload-btn { cursor: pointer; }
 .avatar-photo { border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+
+/* Admin → Cohorts: "Upcoming & active" / "Archived" */
+.view-switch { margin: 0 0 14px; }

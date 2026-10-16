@@ -19,7 +19,7 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
   const needsScreening = (c) => c.habitType === "alcohol" && !screened[c.id];
   const joinedIds = new Set(memberships.map((m) => m.cohortId));
   const open = cohorts
-    .filter((c) => c.status !== "finished" && c.startDate >= todayKey())
+    .filter((c) => !c.archived && c.status !== "finished" && c.startDate >= todayKey())
     .sort((a, b) => a.startDate.localeCompare(b.startDate));
 
   // result: the screening just completed (state may not have updated yet).
