@@ -80,12 +80,14 @@ export function cohortStreakEntry(cohort, cohorts, checkins, profile, today, che
   };
 }
 
-// Badge milestones, in days. After one year, a badge is earned every year.
+// Badge milestones, in days: 1, 7, 20 and 33 (a full cohort), then 66 days, 6 months and a
+// year for members who carry on; after one year, a badge is earned every year.
 // Each badge is drawn as a gold seal with `num` and `unit` inside (see Badge.jsx).
 const MILESTONES = [
   { id: "d1", days: 1, num: 1, unit: "day" },
   { id: "d7", days: 7, num: 7, unit: "days" },
-  { id: "d30", days: 30, num: 30, unit: "days" },
+  { id: "d20", days: 20, num: 20, unit: "days" },
+  { id: "d33", days: 33, num: 33, unit: "days" },
   { id: "d66", days: 66, num: 66, unit: "days" },
   { id: "m6", days: 182, num: 6, unit: "months" },
   { id: "y1", days: 365, num: 1, unit: "year" },
@@ -101,6 +103,10 @@ export function badgesForStreak(streak) {
 export function badgeInfo(id) {
   const found = MILESTONES.find((b) => b.id === id);
   if (found) return found;
+  if (/^d\d+$/.test(id)) { // a day badge no longer awarded (e.g. the old 30-day one): still shown
+    const days = Number(id.slice(1));
+    return { id, days, num: days, unit: "days", label: `${days} days`, name: `${days}-day badge` };
+  }
   const years = Number(id.slice(1));
   return { id, days: years * 365, num: years, unit: "years", label: `${years} years`, name: `${years}-year badge` };
 }
