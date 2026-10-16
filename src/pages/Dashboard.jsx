@@ -19,6 +19,7 @@ import { profileStreaks, cohortStreakEntry } from "../lib/streaks.js";
 import PreCohort from "../components/dashboard/PreCohort.jsx";
 import CohortCountdown from "../components/dashboard/CohortCountdown.jsx";
 import WhatsAppGroupCard from "../components/dashboard/WhatsAppGroupCard.jsx";
+import TherapyTile from "../components/dashboard/TherapyTile.jsx";
 import WeeklyAssignment from "../components/dashboard/WeeklyAssignment.jsx";
 import LiveSession from "../components/dashboard/LiveSession.jsx";
 import JoinCohort from "../components/dashboard/JoinCohort.jsx";
@@ -411,7 +412,7 @@ export default function Dashboard() {
 
       {/* Upcoming: cohorts that haven't started yet */}
       {tab === "upcoming" && (
-        <>{explainerRow("upcoming", "About joining a cohort")}<JoinCohort uid={user.uid} cohorts={data.cohorts} memberships={data.memberships} onJoined={load} /></>
+        <>{explainerRow("upcoming", "About joining a cohort")}<TherapyTile /><JoinCohort uid={user.uid} cohorts={data.cohorts} memberships={data.memberships} onJoined={load} /></>
       )}
 
       {/* The chosen cohort's intention and evening review */}

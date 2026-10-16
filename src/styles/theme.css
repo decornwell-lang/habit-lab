@@ -1293,3 +1293,13 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .breathe-controls.running .breathe-hint { margin-top: 6px; }
 .breathe-stop { width: auto; min-width: 200px; color: #fff; border-color: rgba(255, 255, 255, 0.45); margin-bottom: 4px; }
 .breathe-stop-clock { font-variant-numeric: tabular-nums; }
+
+/* Upcoming: book a psychotherapy session (TherapyTile.jsx) */
+.therapy-tile { display: grid; grid-template-columns: 96px 1fr; gap: 16px; align-items: start; border-color: color-mix(in srgb, var(--gold) 50%, transparent) !important; }
+.therapy-photo { width: 96px; height: 120px; object-fit: cover; border-radius: 14px; }
+.therapy-body h2 { margin: 0 0 4px; }
+.therapy-body .card-label { color: var(--gold); }
+.therapy-details { margin: 0 0 6px; font-weight: 600; color: var(--gold); }
+.therapy-body .muted { margin: 0 0 12px; }
+.therapy-body .btn { width: 100%; }
+@media (max-width: 380px) { .therapy-tile { grid-template-columns: 78px 1fr; } .therapy-photo { width: 78px; height: 100px; } }

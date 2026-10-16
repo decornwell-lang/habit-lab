@@ -48,3 +48,13 @@ export const EXPLAINERS = [
 // Under "Open the group" (Home → Cohort group), once the cohort has begun.
 export const GROUP_PODS =
   "We recommend finding two or three others in the group to form a small pod of 3–4 people, to support one another day to day. Pods form themselves: just reach out.";
+
+// Upcoming tab, top: a one-to-one psychotherapy session with David. Until booking is
+// connected to a calendar, "Book a session" opens WhatsApp with a message ready.
+export const THERAPY = {
+  title: "Psychotherapy with David",
+  details: "One-to-one session · 60 minutes · €120",
+  text: "Body-centred psychotherapy, online by Zoom or in person in Mallorca. Confidential and personal.",
+  button: "Book a session",
+  link: "https://wa.me/34603450095?text=" + encodeURIComponent("Hello David, I'd like to book a psychotherapy session."),
+};
