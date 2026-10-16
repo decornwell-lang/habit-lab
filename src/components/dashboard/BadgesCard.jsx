@@ -1,10 +1,11 @@
 // "Badges earned" on Home: the current badge (gold seal) and the next one to earn,
-// with how many days to go. Sharing sends a picture of the gold medal with the
-// challenge below it (e.g. "Smoke-free").
+// with how many days to go. Sharing sends a picture of the gold medal with
+// "I earned a 7-day smoke-free badge" below it.
 import { currentBadge, nextBadge } from "../../lib/streaks.js";
 import { habitStreakLabel } from "../../lib/cohorts.js";
 import Badge from "../Badge.jsx";
 import ShareImageButton from "../ShareImageButton.jsx";
+import { badgeHeadline } from "../../lib/shareImage.js";
 
 export default function BadgesCard({ streak, current }) {
   const label = habitStreakLabel(current.cohort.habitType); // e.g. "smoke-free"
@@ -18,7 +19,7 @@ export default function BadgesCard({ streak, current }) {
         <p className="card-label">Badges earned</p>
         {badge && (
           <ShareImageButton label="Share my badge" image={{ badge, label }} fileName={`my-badge-${badge.id}.png`}
-            text={`I earned my ${badge.name}: ${label} with The Habit Lab by David Ernest Cornwell 🏅`} />
+            text={`${badgeHeadline(badge, label)} with The Habit Lab by David Ernest Cornwell 🏅`} />
         )}
       </div>
 
