@@ -1,6 +1,6 @@
 // Upcoming tab: cohorts that haven't started yet, with a "Join" button.
 // Free cohorts are joined straight away. Paid ones first show the price (VAT included),
-// the 14-day cancellation terms and a box to tick, then go to Stripe's payment page.
+// then go to Stripe's payment page.
 // Alcohol-free cohorts start with a short screening (AlcoholScreening.jsx); only whether
 // its advice was shown is saved with the membership.
 import { useState } from "react";
@@ -15,7 +15,6 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
   const [busyId, setBusyId] = useState(null);
   const [error, setError] = useState("");
   const [confirming, setConfirming] = useState(null); // the paid cohort whose terms are showing
-  const [agreed, setAgreed] = useState(false);
   const [screened, setScreened] = useState({}); // cohort id → { advised } once the screening is done
   const needsScreening = (c) => c.habitType === "alcohol" && !screened[c.id];
   const joinedIds = new Set(memberships.map((m) => m.cohortId));
@@ -33,7 +32,7 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
         await joinCohortDirectly(uid, cohort.id, "free", screening ? { screening } : {});
         await onJoined();
       } else {
-        const { url, joined } = await apiPost("/api/create-checkout", { cohortId: cohort.id, acceptedTerms: true, screening });
+        const { url, joined } = await apiPost("/api/create-checkout", { cohortId: cohort.id, screening });
         if (joined) await onJoined();
         else window.location.href = url; // off to Stripe's secure payment page
         return;
@@ -64,7 +63,7 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
                 <span className="joined">✓ Joined</span>
               ) : (
                 <button className="btn btn-primary btn-small" disabled={busyId !== null}
-                  onClick={() => (Number(c.price) || needsScreening(c) ? (setConfirming(confirming === c.id ? null : c.id), setAgreed(false)) : handleJoin(c))}>
+                  onClick={() => (Number(c.price) || needsScreening(c) ? setConfirming(confirming === c.id ? null : c.id) : handleJoin(c))}>
                   {busyId === c.id ? "Please wait…" : "Join"}
                 </button>
               )}
@@ -79,11 +78,7 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
               {confirming === c.id && !needsScreening(c) && Number(c.price) > 0 && (
                 <div className="join-terms">
                   <p className="join-price"><strong>{formatPrice(c)}</strong> <span className="muted small">{JOIN_TERMS.price}</span></p>
-                  <p className="small">{JOIN_TERMS.cancel}</p>
-                  <label className="checkbox">
-                    <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} /> {JOIN_TERMS.agree}
-                  </label>
-                  <button className="btn btn-primary" disabled={!agreed || busyId !== null} onClick={() => handleJoin(c)}>
+                  <button className="btn btn-primary" disabled={busyId !== null} onClick={() => handleJoin(c)}>
                     {busyId === c.id ? "Please wait…" : "Continue to payment"}
                   </button>
                 </div>

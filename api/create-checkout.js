@@ -1,4 +1,4 @@
-// POST /api/create-checkout  { cohortId, acceptedTerms }
+// POST /api/create-checkout  { cohortId, screening }
 // Starts a Stripe Checkout payment for a paid cohort and returns its URL.
 // Prices are in euros and include VAT: the member pays exactly the price shown. With
 // STRIPE_TAX=on (after Stripe Tax is set up in the Stripe dashboard), Stripe works out
@@ -7,9 +7,8 @@ import { handle, requireUser, db, stripe, siteOrigin, HttpError } from "./_lib/s
 
 export default handle(async (req, res) => {
   const user = await requireUser(req);
-  const { cohortId, acceptedTerms, screening } = req.body || {};
+  const { cohortId, screening } = req.body || {};
   if (!cohortId) throw new HttpError(400, "Missing cohort.");
-  if (acceptedTerms !== true) throw new HttpError(400, "Please read and tick the cancellation terms first.");
 
   const snap = await db().doc(`cohorts/${cohortId}`).get();
   if (!snap.exists) throw new HttpError(404, "That cohort no longer exists.");
@@ -37,7 +36,6 @@ export default handle(async (req, res) => {
     metadata: {
       uid: user.uid,
       cohortId,
-      acceptedTermsAt: new Date().toISOString(), // the 14-day cancellation terms
       ...(screening ? { screeningAdvised: String(Boolean(screening.advised)) } : {}), // alcohol-free screening: was the advice shown?
     },
     success_url: `${origin}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
