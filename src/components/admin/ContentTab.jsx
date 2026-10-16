@@ -4,6 +4,9 @@ import { useState } from "react";
 import { saveContentSettings } from "../../lib/data.js";
 import { weekPrompts, WEEKS_IN_PROGRAMME } from "../../lib/content.js";
 import { EXPLAINERS } from "../../content/site.js";
+import { weekOfYear } from "../../lib/dates.js";
+
+const ASSIGNMENT_WEEKS = Array.from({ length: 52 }, (_, i) => i + 1);
 
 const weekNumbers = Array.from({ length: WEEKS_IN_PROGRAMME }, (_, i) => i + 1);
 
@@ -14,11 +17,14 @@ export default function ContentTab({ settings, reload }) {
     currentWeek: settings.currentWeek || 1,
     breathingSpaceUrl: settings.breathingSpaceUrl || "",
     regulationUrl: settings.regulationUrl || "",
+    assignments: Object.fromEntries(ASSIGNMENT_WEEKS.map((n) => [n, { title: "", pdfUrl: "", ...settings.assignments?.[n] }])),
     explainers: Object.fromEntries(EXPLAINERS.map((x) => [x.id, settings.explainers?.[x.id] || ""])),
     weeks: Object.fromEntries(weekNumbers.map((w) => [w, { title: "", meditationUrl: "", reflectionUrl: "", ...settings.weeks?.[w] }])),
   });
   const [message, setMessage] = useState("");
 
+  const setAssignment = (n, field, value) =>
+    setForm((f) => ({ ...f, assignments: { ...f.assignments, [n]: { ...f.assignments[n], [field]: value } } }));
   const setWeek = (w, field, value) =>
     setForm((f) => ({ ...f, weeks: { ...f.weeks, [w]: { ...f.weeks[w], [field]: value } } }));
 
@@ -38,7 +44,7 @@ export default function ContentTab({ settings, reload }) {
           <input value={form.zoomLink} onChange={(e) => setForm({ ...form, zoomLink: e.target.value })} placeholder="https://zoom.us/j/…" />
         </div>
         <div className="field">
-          <label>Next session date and time</label>
+          <label>One-off session date and time (only if a session moves; otherwise every Monday 18:00 CET)</label>
           <input type="datetime-local" value={form.nextSessionAt} onChange={(e) => setForm({ ...form, nextSessionAt: e.target.value })} />
         </div>
       </section>
@@ -53,6 +59,27 @@ export default function ContentTab({ settings, reload }) {
           <label>Nervous system regulation video (shown in the middle of its page)</label>
           <input value={form.regulationUrl} onChange={(e) => setForm({ ...form, regulationUrl: e.target.value })} placeholder="https://youtu.be/…" />
         </div>
+      </section>
+
+      <section className="card">
+        <h2>Weekly assignments</h2>
+        <p className="muted small">
+          52 assignments, one for each week of the year (week 1 starts in early January), used again every year.
+          This week is <strong>week {weekOfYear()}</strong>. Until a week's assignment is set, members see the cohort week's reflection.
+        </p>
+        {ASSIGNMENT_WEEKS.map((n) => (
+          <details key={n} className="week-box" open={n === weekOfYear()}>
+            <summary>Week {n}{form.assignments[n].title ? `: ${form.assignments[n].title}` : ""}{n === weekOfYear() ? " (this week)" : ""}</summary>
+            <div className="field">
+              <label>Title shown to members</label>
+              <input value={form.assignments[n].title} onChange={(e) => setAssignment(n, "title", e.target.value)} placeholder="A Posture of Presence" />
+            </div>
+            <div className="field">
+              <label>PDF link</label>
+              <input value={form.assignments[n].pdfUrl} onChange={(e) => setAssignment(n, "pdfUrl", e.target.value.trim())} placeholder="https://…" />
+            </div>
+          </details>
+        ))}
       </section>
 
       <section className="card">

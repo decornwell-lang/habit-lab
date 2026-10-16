@@ -394,7 +394,7 @@ export default function Dashboard() {
         <>
           {explainerRow("practices", "About Practices")}
           <TodaysPractice content={content} />
-          <WeeklyAssignment content={content} />
+          <WeeklyAssignment content={content} settings={data.settings} />
           <LiveSession settings={data.settings} />
         </>
       )}

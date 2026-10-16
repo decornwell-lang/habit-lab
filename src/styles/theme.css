@@ -1254,3 +1254,4 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .whatsapp-card .btn-whatsapp { width: 100%; margin-top: 0; }
 .whatsapp-card .btn-whatsapp:disabled { opacity: 0.55; border-style: dashed; cursor: default; }
 .payment-popup .muted { color: var(--text-muted); } /* the pop-up is white, even over dark screens */
+.live-next { margin: 0 0 14px; }

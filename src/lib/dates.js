@@ -62,3 +62,34 @@ export function formatDateTime(iso) {
     minute: "2-digit",
   });
 }
+
+// The week of the year (ISO 8601: weeks start on Monday; week 1 holds the first Thursday).
+// Used to pick the weekly assignment, 1 to 52; a rare week 53 counts as week 1.
+export function weekOfYear(date = new Date()) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - day); // the Thursday of this week
+  const week = Math.ceil(((d - Date.UTC(d.getUTCFullYear(), 0, 1)) / 86400000 + 1) / 7);
+  return week > 52 ? 1 : week;
+}
+
+// The next weekly session as a moment in time: e.g. every Monday (1) at 18:00 in
+// Europe/Madrid, which is 18:00 CET in winter and CEST in summer.
+export function nextWeeklySession({ weekday = 1, hour = 18, minute = 0, timeZone = "Europe/Madrid" } = {}, now = new Date()) {
+  const parts = (d) => Object.fromEntries(
+    new Intl.DateTimeFormat("en-GB", { timeZone, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", weekday: "short", hourCycle: "h23" })
+      .formatToParts(d).map((p) => [p.type, p.value])
+  );
+  for (let i = 0; i <= 7; i++) {
+    const p = parts(new Date(now.getTime() + i * 86400000));
+    const days = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+    if (days[p.weekday] !== weekday) continue;
+    // That day at hh:mm in the session's time zone, as an instant.
+    const guess = Date.UTC(+p.year, +p.month - 1, +p.day, hour, minute);
+    const g = parts(new Date(guess));
+    const offset = Date.UTC(+g.year, +g.month - 1, +g.day, +g.hour, +g.minute) - guess;
+    const at = new Date(guess - offset);
+    if (at > now) return at;
+  }
+  return null;
+}
