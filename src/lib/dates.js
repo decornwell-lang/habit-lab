@@ -51,18 +51,6 @@ export function formatDate(key, options = {}) {
   });
 }
 
-export function formatDateTime(iso) {
-  const date = new Date(iso);
-  if (!iso || isNaN(date)) return "";
-  return date.toLocaleString("en-GB", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
 // The week of the year (ISO 8601: weeks start on Monday; week 1 holds the first Thursday).
 // Used to pick the weekly assignment, 1 to 52; a rare week 53 counts as week 1.
 export function weekOfYear(date = new Date()) {

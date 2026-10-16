@@ -71,8 +71,8 @@ function Hourglass() {
 }
 
 // The recording: a Start button that becomes a countdown of the time left.
-// The Start button that becomes the countdown (also used by NervousSystem.jsx).
-export function AudioPlayer({ src }) {
+// The Start button that becomes the countdown.
+function AudioPlayer({ src }) {
   const audio = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [left, setLeft] = useState(null); // seconds left, once the length is known

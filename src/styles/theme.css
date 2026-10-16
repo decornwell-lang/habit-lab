@@ -807,12 +807,10 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .breathe-circle > span { display: flex; flex-direction: column; align-items: center; }
 .breathe-word { font-family: var(--font-heading); font-size: 1.35rem; font-weight: 600; margin: 0; }
 .breathe-count { font-family: var(--font-heading); font-size: 2.6rem; line-height: 1.1; margin-top: 2px; }
-.breathe-clock { margin: 0; color: #8f96b3; font-size: 0.9rem; font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
 .breathe-hint { color: #c4c9dc; margin: 4px auto 12px; max-width: 340px; }
 .breathe-done { font-family: var(--font-heading); font-size: 1.8rem; margin: 0; }
 .breathe-screen .btn { max-width: 320px; }
 .breathe-screen .btn-primary { color: var(--aqua); }
-.breathe-screen .breathe-text-btn { color: #fff; }
 @media (prefers-reduced-motion: reduce) { .breathe-circle { transition: none; } }
 .breathe-settings {
   width: 100%; max-width: 340px; margin: 0 auto 12px; padding: 4px 14px;
@@ -879,7 +877,6 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .breathe-stage { --ball: min(220px, 23vh); display: grid; place-items: center; width: 100%; height: calc(var(--ball) * 1.25); margin: 4px 0 8px; } /* room for the ball fully grown */
 .breathe-stage .breathe-circle { width: var(--ball); height: var(--ball); margin: 0; }
 .breathe-controls { width: 100%; min-height: 212px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
-.breathe-controls .breathe-clock { margin-top: 8px; }
 .breathe-word.resting { font-size: 2.3rem; } /* the resting ball is drawn small, so its text is larger */
 
 /* Dark blue tabs (Practices, Breathe, Upcoming): same background as the Breathe screen */

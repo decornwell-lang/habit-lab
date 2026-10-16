@@ -6,7 +6,7 @@ import { formatDate } from "../../lib/dates.js";
 import PdfButton from "../PdfButton.jsx";
 
 const WORKSHEET_HABITS = ["smoking", "alcohol", "gambling", "exercise"];
-export const worksheetUrl = (habitType) =>
+const worksheetUrl = (habitType) =>
   `/assets/before-you-begin-${WORKSHEET_HABITS.includes(habitType) ? habitType : "default"}.pdf`;
 
 // Shown on Home for a cohort that hasn't started yet.
