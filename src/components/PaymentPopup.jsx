@@ -10,7 +10,7 @@ import { formatPrice } from "../lib/cohorts.js";
 import pricing from "../../config/pricing.json";
 import EmbeddedPayment, { canEmbed } from "./EmbeddedPayment.jsx";
 
-export default function PaymentPopup({ cohort, screening, onPaid, onClose, inline = false }) {
+export default function PaymentPopup({ cohort, onPaid, onClose, inline = false }) {
   const [plan, setPlan] = useState("cohort");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -21,7 +21,7 @@ export default function PaymentPopup({ cohort, screening, onPaid, onClose, inlin
   async function goToStripe() {
     setBusy(true);
     try {
-      const { url, joined } = await apiPost("/api/create-checkout", { cohortId: cohort.id, plan, screening, returnPath: `/join/${cohort.id}` });
+      const { url, joined } = await apiPost("/api/create-checkout", { cohortId: cohort.id, plan, returnPath: `/join/${cohort.id}` });
       if (joined) onPaid(null);
       else window.location.href = url;
     } catch (err) {
@@ -57,7 +57,7 @@ export default function PaymentPopup({ cohort, screening, onPaid, onClose, inlin
 
         {error && <p className="form-error" role="alert">{error}</p>}
         {canEmbed ? (
-          <EmbeddedPayment key={plan} cohortId={cohort.id} plan={plan} screening={screening} onPaid={onPaid} />
+          <EmbeddedPayment key={plan} cohortId={cohort.id} plan={plan} onPaid={onPaid} />
         ) : (
           <button className="btn btn-primary" disabled={busy} onClick={goToStripe}>{busy ? "Opening Stripe…" : "Continue to payment"}</button>
         )}

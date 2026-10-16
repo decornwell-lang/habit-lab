@@ -13,7 +13,7 @@ const KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 export const canEmbed = Boolean(KEY);
 let stripePromise;
 
-export default function EmbeddedPayment({ cohortId, plan = "cohort", screening, onPaid, onCancel }) {
+export default function EmbeddedPayment({ cohortId, plan = "cohort", onPaid, onCancel }) {
   const box = useRef(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -24,7 +24,7 @@ export default function EmbeddedPayment({ cohortId, plan = "cohort", screening, 
     (async () => {
       stripePromise ??= loadStripe(KEY);
       const stripe = await stripePromise;
-      const { clientSecret, sessionId, joined } = await apiPost("/api/create-checkout", { cohortId, plan, screening, embedded: true });
+      const { clientSecret, sessionId, joined } = await apiPost("/api/create-checkout", { cohortId, plan, embedded: true });
       if (joined) return onPaid(null);
       if (cancelled) return;
       checkout = await stripe.initEmbeddedCheckout({

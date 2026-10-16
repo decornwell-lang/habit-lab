@@ -1,4 +1,4 @@
-// POST /api/create-checkout  { cohortId, plan, screening, returnPath, embedded }
+// POST /api/create-checkout  { cohortId, plan, returnPath, embedded }
 // plan: "cohort" (the cohort's own price, 33 days) or "year" (the cohort plus a full year,
 // price in config/pricing.json).
 // Works for signed-in members and for visitors: a visitor pays first (Stripe asks for
@@ -19,7 +19,7 @@ const pricing = createRequire(import.meta.url)("../config/pricing.json");
 
 export default handle(async (req, res) => {
   const user = await optionalUser(req); // null for a visitor paying before creating an account
-  const { cohortId, screening, returnPath, embedded } = req.body || {};
+  const { cohortId, returnPath, embedded } = req.body || {};
   const plan = req.body?.plan === "year" ? "year" : "cohort";
   if (!cohortId) throw new HttpError(400, "Missing cohort.");
 
@@ -55,7 +55,6 @@ export default handle(async (req, res) => {
       ...(user ? { uid: user.uid } : { guest: "true" }),
       cohortId,
       plan,
-      ...(screening ? { screeningAdvised: String(Boolean(screening.advised)) } : {}), // alcohol-free screening: was the advice shown?
     },
     ...(embedded
       ? { ui_mode: "embedded", redirect_on_completion: "if_required", return_url: `${origin}${back}?checkout=success&session_id={CHECKOUT_SESSION_ID}` }

@@ -1,11 +1,10 @@
 // Join steps, from the home page's "Join" (/join/<cohortId>). As few steps as possible
 // before paying:
-//   1. Screening (alcohol-free cohorts only)
-//   2. Payment (Stripe's form, here on the page; a visitor gives their email to Stripe)
-//   3. Your details (a visitor creates their account, filled in from the payment;
+//   1. Payment (Stripe's form, here on the page; a visitor gives their email to Stripe)
+//   2. Your details (a visitor creates their account, filled in from the payment;
 //      or logs in). Free cohorts start here instead.
-//   4. How others see you   5. Add to Home Screen   6. Notifications   → the dashboard
-// Steps 4 to 6 can be skipped. A visitor's payment is remembered on this device until
+//   3. How others see you   4. Add to Home Screen   5. Notifications   → the dashboard
+// Steps 3 to 5 can be skipped. A visitor's payment is remembered on this device until
 // their account is created, so closing the page after paying loses nothing
 // (src/lib/pendingPayment.js).
 import { useEffect, useState } from "react";
@@ -18,7 +17,6 @@ import { formatDate } from "../lib/dates.js";
 import { JOIN_TERMS } from "../content/site.js";
 import { useInstallMode } from "../lib/install.js";
 import SignUpForm from "../components/SignUpForm.jsx";
-import AlcoholScreening from "../components/dashboard/AlcoholScreening.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
 import InstallApp from "../components/InstallApp.jsx";
 import NotificationSettings from "../components/NotificationSettings.jsx";
@@ -36,7 +34,6 @@ export default function Join() {
   const installMode = useInstallMode();
   const [cohort, setCohort] = useState(undefined); // undefined = loading, null = not found
   const [joined, setJoined] = useState(null);
-  const [screening, setScreening] = useState(null);
   const [payment, setPayment] = useState(null); // a visitor's completed payment: { sessionId, email, firstName, surname }
   const [after, setAfter] = useState(0); // which of AFTER we're on
   const [busy, setBusy] = useState(false);
@@ -101,8 +98,6 @@ export default function Join() {
   }
 
   const paid = Number(cohort.price) > 0;
-  const needsScreening = cohort.habitType === "alcohol" && !screening;
-  const screeningResult = screening ? { advised: screening.advised, at: new Date().toISOString() } : null;
   const loginState = { from: `/join/${cohortId}` };
 
   // Free cohorts, for signed-in members.
@@ -111,7 +106,7 @@ export default function Join() {
     setError("");
     try {
       if (!paid) {
-        await joinCohortDirectly(user.uid, cohortId, "free", screeningResult ? { screening: screeningResult } : {});
+        await joinCohortDirectly(user.uid, cohortId, "free");
         setJoined(true);
       }
     } catch (err) {
@@ -146,7 +141,7 @@ export default function Join() {
       <p>{formatPrice(cohort)} <span className="muted small">{JOIN_TERMS.price}</span></p>
       <button className="btn btn-primary" onClick={() => setPaying(true)}>Pay {formatPrice(cohort)}</button>
       {!user && <p className="form-foot">Already a member? <Link to="/login" state={loginState}>Log in</Link> first.</p>}
-      {paying && <PaymentPopup cohort={cohort} screening={screeningResult} onPaid={paidHere} onClose={() => setPaying(false)} />}
+      {paying && <PaymentPopup cohort={cohort} onPaid={paidHere} onClose={() => setPaying(false)} />}
     </section>
   );
 
@@ -160,15 +155,11 @@ export default function Join() {
       );
     } else if (!paid) {
       body = <SignUpForm title="Your details" onDone={() => {}} loginState={loginState} />;
-    } else if (needsScreening) {
-      body = <section className="card"><AlcoholScreening busy={busy} onDone={setScreening} /></section>;
     } else {
       body = paymentStep;
     }
   } else if (joined === null) {
     body = <p className="muted">One moment…</p>;
-  } else if (!joined && needsScreening) {
-    body = <section className="card"><AlcoholScreening busy={busy} onDone={setScreening} /></section>;
   } else if (!joined) {
     body = paid ? paymentStep : (
       <section className="card">

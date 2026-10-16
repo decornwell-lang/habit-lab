@@ -3,7 +3,7 @@
 //
 // Collections:
 //   users/{uid}                       private profile (name, surname, email, phone, role, picture and name choice)
-//   users/{uid}/memberships/{cohortId} which cohorts they joined, payment, alcohol screening result
+//   users/{uid}/memberships/{cohortId} which cohorts they joined, payment
 //   users/{uid}/checkins/{date_cohortId}  daily check-ins (the evening review), one per cohort
 //   users/{uid}/practice/{date}       that day's morning check-ins ("morning_<cohortId>")
 //   users/{uid}/reflections/{id}      intentions and evening reviews (see below)
@@ -112,7 +112,7 @@ export async function getMemberships(uid) {
 
 // Free cohorts can be joined straight from the app. Paid cohorts go through
 // Stripe (see /api/create-checkout.js), which adds the member after payment.
-// extra: more fields for the membership, e.g. { screening: { advised: false } } (alcohol-free cohorts).
+// extra: more fields for the membership, e.g. { plan: "year" }.
 export async function joinCohortDirectly(uid, cohortId, method = "free", extra = {}) {
   const batch = writeBatch(db);
   batch.set(doc(db, "users", uid, "memberships", cohortId), { paid: false, method, joinedAt: serverTimestamp(), ...extra });

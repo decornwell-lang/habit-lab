@@ -1,7 +1,7 @@
 // Landing page: photo, name and intro, then the cohorts open to join. "Join" on a paid
 // cohort opens the payment pop-up right here; once paid, the join steps (Join.jsx) ask for
-// their details, picture and name, Home Screen and notifications. Alcohol-free and free
-// cohorts go to the join steps first (screening, or account details).
+// their details, picture and name, Home Screen and notifications. Free cohorts go to the
+// join steps first (account details).
 // Signed-in members see a link to their dashboard instead. Wording: src/content/site.js.
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -54,7 +54,7 @@ function OpenCohorts() {
   const [cohorts, setCohorts] = useState(null);
   const [paying, setPaying] = useState(null); // the cohort whose payment pop-up is open
   const navigate = useNavigate();
-  const payHere = (c) => Number(c.price) > 0 && c.habitType !== "alcohol"; // alcohol-free: screening first
+  const payHere = (c) => Number(c.price) > 0;
 
   useEffect(() => {
     getPublicCohorts()
