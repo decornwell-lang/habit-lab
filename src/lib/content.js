@@ -10,6 +10,14 @@ export function weekPrompts(habitType, week) {
   return weeks[index];
 }
 
+// The meditation from the nearest earlier week that has one (or any week), so Practices is
+// never empty when this week's video isn't set yet.
+function latestMeditation(settings, week) {
+  const weeks = settings.weeks || {};
+  for (let w = week; w >= 1; w--) if (weeks[w]?.meditationUrl) return weeks[w].meditationUrl;
+  return Object.values(weeks).find((w) => w?.meditationUrl)?.meditationUrl || "";
+}
+
 // Everything the dashboard shows for one week.
 // `settings` is the admin's Content settings (from Firestore).
 export function weekContent(habitType, week, settings = {}) {
@@ -19,7 +27,7 @@ export function weekContent(habitType, week, settings = {}) {
     week,
     ...p,
     title: admin.title || `Week ${week}: ${p.theme}`,
-    meditationUrl: admin.meditationUrl || "",
+    meditationUrl: admin.meditationUrl || latestMeditation(settings, week),
     reflectionUrl: admin.reflectionUrl || `/assets/reflections/week-${week}.pdf`,
   };
 }

@@ -9,17 +9,16 @@ const WORKSHEET_HABITS = ["smoking", "alcohol", "gambling", "exercise"];
 export const worksheetUrl = (habitType) =>
   `/assets/before-you-begin-${WORKSHEET_HABITS.includes(habitType) ? habitType : "default"}.pdf`;
 
-// `during`: shown in Practices once the cohort has begun (the diary carries on).
-export default function PreCohort({ current, during = false }) {
+// Shown on Home for a cohort that hasn't started yet.
+export default function PreCohort({ current }) {
   const { cohort, progress } = current;
   return (
     <section className="card card-accent">
-      <p className="card-label">{during ? "Your story and diary" : "Before you begin"}</p>
+      <p className="card-label">Before you begin</p>
       <h2>My story and my diary</h2>
       <p className="muted">
-        {during
-          ? "Keep your diary going as you go through the programme."
-          : `Two parts to work on before ${formatDate(progress.start, { weekday: undefined, year: undefined })}: your story, and a daily diary.`}
+        Two parts to work on before {formatDate(progress.start, { weekday: undefined, year: undefined })}: your story, and a
+        daily diary to keep as you go through the programme.
       </p>
       <PdfButton url={worksheetUrl(cohort.habitType)} label="Open the worksheet" fileName={`before-you-begin-${cohort.habitType}.pdf`} />
       <p className="small muted center">Print it, or keep it in a notebook. Private: nothing needs to be shared.</p>
