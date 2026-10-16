@@ -1,4 +1,4 @@
-// The morning check-in on Home (opens 07:00): physically, emotionally, mentally, and an
+// The morning check-in on Home (opens 06:00): physically, emotionally, mentally, and an
 // optional note. Saves to users/{uid}/practice/{today}; then Share to WhatsApp.
 // Wording and choices: src/content/dailyPrompts.js.
 import { saveDayAnswer } from "../../lib/data.js";

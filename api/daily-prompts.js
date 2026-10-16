@@ -1,5 +1,5 @@
 // POST /api/daily-prompts   (called every hour by a scheduled GitHub Action)
-// Sends the daily prompts (07:00 morning, 09:00 intention, 21:00 evening review) to members
+// Sends the daily prompts (06:00 morning, 08:00 intention, 21:00 evening review) to members
 // in an active cohort with notifications on, at each prompt's hour in the member's
 // own time zone. Times and wording: src/content/dailyPrompts.js.
 // Protected by the CRON_SECRET environment variable.

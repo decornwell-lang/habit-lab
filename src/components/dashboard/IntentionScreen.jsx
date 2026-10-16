@@ -1,4 +1,4 @@
-// Morning intention (opens at 09:00): one screen, no scrolling. A short reminder to
+// Morning intention (opens at 08:00): one screen, no scrolling. A short reminder to
 // reconnect with the intention, the question, a one-minute invitation and an optional
 // sentence or two. Once saved, the writing appears on the page (no longer in a box) and
 // the button becomes "Share to WhatsApp". Saved to users/{uid}/reflections/{date}_intention.

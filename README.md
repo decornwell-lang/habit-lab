@@ -27,8 +27,8 @@ Copy `.env.example` to `.env.local` and fill in the Firebase (and later Stripe) 
 
 ## Daily notifications
 Members get three notifications a day, each at their own local time (their phone's time zone is saved when they open the app; Europe/Madrid is used until then):
-- **07:00** How do you feel today? (Morning tile)
-- **09:00** Your intention for today (Intention tile: a minute with "What is my intention, in one sentence?")
+- **06:00** How do you feel today? (Morning tile)
+- **08:00** Your intention for today (Intention tile: a minute with "What is my intention, in one sentence?")
 - **21:00** Evening review, the day's final check-in. "Did you smoke today? No" keeps the streak.
 
 This week's meditation (Practices tab) doesn't send a notification. "I'm craving right now" is on demand and never notifies. Times and wording: `src/content/dailyPrompts.js`.

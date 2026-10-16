@@ -167,6 +167,13 @@ export default function Dashboard() {
     await handleCheckinSaved(today, checkin);
   }
 
+  // A correction from the journey: mark a past day (or today) smoke-free or not.
+  async function correctCheckin(date, day, maintained) {
+    const checkin = { ...data.checkins[date], cohortId: current.cohort.id, day, week: Math.ceil(day / 7), maintained, corrected: true };
+    await saveCheckin(user.uid, date, checkin);
+    await handleCheckinSaved(date, checkin);
+  }
+
   // Called after a check-in is saved: update streak, badges and the public profile.
   async function handleCheckinSaved(date, checkin) {
     const checkins = { ...data.checkins, [date]: checkin };
@@ -280,7 +287,7 @@ export default function Dashboard() {
           <Folds items={homeItems} initialOpen={params.get("open")} />
           {current ? (
             <>
-              <StreakCard streak={streak} current={current} checkins={data.checkins} />
+              <StreakCard streak={streak} current={current} checkins={data.checkins} onCorrect={correctCheckin} />
               <Folds items={[{
                 id: "leaderboard", icon: "🏆", tone: "gold", title: "Leaderboard", subtitle: "Your cohort's streaks",
                 content: <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} />,

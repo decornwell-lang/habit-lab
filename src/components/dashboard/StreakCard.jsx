@@ -6,7 +6,7 @@ import { habitStreakLabel } from "../../lib/cohorts.js";
 import JourneyMap from "./JourneyMap.jsx";
 import ShareImageButton from "../ShareImageButton.jsx";
 
-export default function StreakCard({ streak, current, checkins }) {
+export default function StreakCard({ streak, current, checkins, onCorrect }) {
   const { cohort, progress } = current;
   const label = habitStreakLabel(cohort.habitType); // e.g. "smoke-free"
 
@@ -36,7 +36,7 @@ export default function StreakCard({ streak, current, checkins }) {
           )}
         </div>
       </div>
-      <div className="journey-wrap"><JourneyMap current={current} checkins={checkins} /></div>
+      <div className="journey-wrap"><JourneyMap current={current} checkins={checkins} onCorrect={onCorrect} /></div>
     </section>
   );
 }
