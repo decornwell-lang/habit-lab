@@ -60,7 +60,7 @@ const WORKSHEETS = {
       "Who are you becoming? Describe yourself living free of gambling.",
     ],
     diaryIntro: "Keep this diary every day until the cohort begins, and keep going as you go through the programme. You don't need to change anything yet: just notice. Write one line for each time you gambled, and for each strong urge, even if you didn't act on it.",
-    columns: [["Time", 45], ["What I bet on, and how much", 105], ["Where (app, venue)", 75], ["Alone, or with whom?", 80], ["How I felt just before", 90], ["Urge 0 to 10", 90]],
+    columns: [["Time", 45], ["What I bet on, and how much", 105], ["Where (app, venue)", 75], ["Alone, or with whom?", 80], ["How I felt just before", 90], ["Urge 0 to 5", 90]],
     dayQuestions: [
       "How much time and money did I spend gambling today?",
       "Which urges could I let pass? Which felt very hard to resist, and why?",

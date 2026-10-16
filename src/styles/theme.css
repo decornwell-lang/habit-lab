@@ -1275,7 +1275,7 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .cohort-tile .btn { margin-top: 14px; }
 .cohort-tile .joined { margin: 12px 0 0; }
 /* Payment inside the cohort's tile (Upcoming): a white panel, as Stripe's form is white */
-.payment-inline { margin-top: 14px; padding: 14px; border-radius: 16px; background: #fff; color: var(--text); }
+.payment-inline { margin: 16px calc(-1 * var(--space) + 4px) 0; padding: 14px 10px; border-radius: 14px; background: #fff; color: var(--text); } /* reaches into the tile's side margins, so Stripe's form has room */
 .payment-inline .muted { color: var(--text-muted); }
 .payment-inline .icon-btn, .payment-popup .icon-btn { color: var(--text); }
 .dashboard.dark .cohort-tile .cohort-countdown { color: var(--cohort); }
@@ -1303,3 +1303,4 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .therapy-body .muted { margin: 0 0 12px; }
 .therapy-body .btn { width: 100%; }
 @media (max-width: 380px) { .therapy-tile { grid-template-columns: 78px 1fr; } .therapy-photo { width: 78px; height: 100px; } }
+.cohort-tile { scroll-margin-top: calc(72px + env(safe-area-inset-top)); } /* clears the header when scrolled to */
