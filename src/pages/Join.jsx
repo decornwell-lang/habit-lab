@@ -6,7 +6,8 @@
 //      or logs in). Free cohorts start here instead.
 //   4. How others see you   5. Add to Home Screen   6. Notifications   → the dashboard
 // Steps 4 to 6 can be skipped. A visitor's payment is remembered on this device until
-// their account is created, so closing the page after paying loses nothing.
+// their account is created, so closing the page after paying loses nothing
+// (src/lib/pendingPayment.js).
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
@@ -21,17 +22,11 @@ import AlcoholScreening from "../components/dashboard/AlcoholScreening.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
 import InstallApp from "../components/InstallApp.jsx";
 import NotificationSettings from "../components/NotificationSettings.jsx";
-import EmbeddedPayment, { canEmbed } from "../components/EmbeddedPayment.jsx";
+import PaymentPopup from "../components/PaymentPopup.jsx";
+import { getPendingPayment, setPendingPayment, clearPendingPayment } from "../lib/pendingPayment.js";
 
 const AFTER = ["leaderboard", "install", "notifications", "done"]; // the steps after joining, in order
 
-// A visitor's payment, kept on this device until their account is made.
-const paidKey = (cohortId) => `habitlab:paid:${cohortId}`;
-const store = {
-  get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
-  set: (k, v) => { try { localStorage.setItem(k, v); } catch { /* not remembered */ } },
-  remove: (k) => { try { localStorage.removeItem(k); } catch { /* nothing to remove */ } },
-};
 
 export default function Join() {
   const { cohortId } = useParams();
@@ -45,6 +40,7 @@ export default function Join() {
   const [payment, setPayment] = useState(null); // a visitor's completed payment: { sessionId, email, firstName, surname }
   const [after, setAfter] = useState(0); // which of AFTER we're on
   const [busy, setBusy] = useState(false);
+  const [paying, setPaying] = useState(true); // the payment pop-up opens as soon as the payment step shows
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -54,17 +50,17 @@ export default function Join() {
   // Back from Stripe's own page (or a bank check): remember the payment.
   useEffect(() => {
     const sessionId = params.get("session_id");
-    if (params.get("checkout") === "success" && sessionId) store.set(paidKey(cohortId), sessionId);
+    if (params.get("checkout") === "success" && sessionId) setPendingPayment(cohortId, sessionId);
     if (params.get("checkout") === "cancelled") setError("Payment cancelled. You haven't been charged.");
     if (params.get("checkout")) setParams({}, { replace: true });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // A visitor who has paid: fetch the email and name they gave Stripe, for "Your details".
   useEffect(() => {
-    const sessionId = store.get(paidKey(cohortId));
+    const sessionId = getPendingPayment(cohortId);
     if (user || !sessionId || payment) return;
     apiPost("/api/checkout-status", { sessionId })
-      .then((s) => (s.paid && s.cohortId === cohortId ? setPayment({ sessionId, ...s }) : store.remove(paidKey(cohortId))))
+      .then((s) => (s.paid && s.cohortId === cohortId ? setPayment({ sessionId, ...s }) : clearPendingPayment(cohortId)))
       .catch(() => {});
   }, [user, cohortId]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -72,11 +68,11 @@ export default function Join() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const sessionId = store.get(paidKey(cohortId));
+      const sessionId = getPendingPayment(cohortId);
       if (sessionId) {
         try {
           await apiPost("/api/confirm-checkout", { sessionId });
-          store.remove(paidKey(cohortId));
+          clearPendingPayment(cohortId);
         } catch (err) {
           setError(err.message);
         }
@@ -109,7 +105,7 @@ export default function Join() {
   const screeningResult = screening ? { advised: screening.advised, at: new Date().toISOString() } : null;
   const loginState = { from: `/join/${cohortId}` };
 
-  // Free cohorts (signed in), or Stripe's own page when the in-page form isn't set up.
+  // Free cohorts, for signed-in members.
   async function join() {
     setBusy(true);
     setError("");
@@ -117,11 +113,6 @@ export default function Join() {
       if (!paid) {
         await joinCohortDirectly(user.uid, cohortId, "free", screeningResult ? { screening: screeningResult } : {});
         setJoined(true);
-      } else {
-        const { url, joined: already } = await apiPost("/api/create-checkout", { cohortId, screening: screeningResult, returnPath: `/join/${cohortId}` });
-        if (already) setJoined(true);
-        else window.location.href = url; // off to Stripe's secure payment page; it brings them back here
-        return;
       }
     } catch (err) {
       setError(err.message || "We couldn't join you to this cohort. Please try again.");
@@ -131,28 +122,31 @@ export default function Join() {
 
   async function paidHere(sessionId) {
     if (user || !sessionId) return setJoined(true); // signed in: already confirmed
-    store.set(paidKey(cohortId), sessionId);
+    setPendingPayment(cohortId, sessionId);
+    setPaying(false);
     const s = await apiPost("/api/checkout-status", { sessionId }).catch(() => ({}));
     setPayment({ sessionId, ...s });
   }
 
   function finish() {
-    store.set("habitlab:cohort", cohortId); // open the dashboard on this cohort
+    try {
+      localStorage.setItem("habitlab:cohort", cohortId); // open the dashboard on this cohort
+    } catch {
+      // Not remembered; the dashboard picks a cohort itself.
+    }
     navigate("/dashboard");
   }
 
   const next = () => setAfter((a) => a + 1);
   const skip = <button className="btn btn-text" onClick={next}>Skip for now</button>;
+  // The payment pop-up opens straight away; closing it leaves a button to open it again.
   const paymentStep = (
     <section className="card">
       <h2>Payment</h2>
       <p>{formatPrice(cohort)} <span className="muted small">{JOIN_TERMS.price}</span></p>
-      {canEmbed ? (
-        <EmbeddedPayment cohortId={cohortId} screening={screeningResult} onPaid={paidHere} /> // Stripe's form, right here
-      ) : (
-        <button className="btn btn-primary" disabled={busy} onClick={join}>{busy ? "Please wait…" : "Continue to payment"}</button>
-      )}
+      <button className="btn btn-primary" onClick={() => setPaying(true)}>Pay {formatPrice(cohort)}</button>
       {!user && <p className="form-foot">Already a member? <Link to="/login" state={loginState}>Log in</Link> first.</p>}
+      {paying && <PaymentPopup cohort={cohort} screening={screeningResult} onPaid={paidHere} onClose={() => setPaying(false)} />}
     </section>
   );
 

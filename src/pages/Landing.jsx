@@ -1,14 +1,18 @@
-// Landing page: photo, name and intro, then the cohorts open to join. Joining one starts
-// the join steps (Join.jsx): details, payment, picture and name, Home Screen, notifications.
+// Landing page: photo, name and intro, then the cohorts open to join. "Join" on a paid
+// cohort opens the payment pop-up right here; once paid, the join steps (Join.jsx) ask for
+// their details, picture and name, Home Screen and notifications. Alcohol-free and free
+// cohorts go to the join steps first (screening, or account details).
 // Signed-in members see a link to their dashboard instead. Wording: src/content/site.js.
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { site } from "../content/site.js";
 import { getPublicCohorts } from "../lib/data.js";
 import { formatPrice, habitInfo } from "../lib/cohorts.js";
 import { formatDate, todayKey } from "../lib/dates.js";
 import SignUpForm from "../components/SignUpForm.jsx";
+import PaymentPopup from "../components/PaymentPopup.jsx";
+import { setPendingPayment } from "../lib/pendingPayment.js";
 
 export default function Landing() {
   const { user } = useAuth();
@@ -48,6 +52,9 @@ export default function Landing() {
 // Cohorts open to join (from publicCohorts, readable without signing in).
 function OpenCohorts() {
   const [cohorts, setCohorts] = useState(null);
+  const [paying, setPaying] = useState(null); // the cohort whose payment pop-up is open
+  const navigate = useNavigate();
+  const payHere = (c) => Number(c.price) > 0 && c.habitType !== "alcohol"; // alcohol-free: screening first
 
   useEffect(() => {
     getPublicCohorts()
@@ -70,13 +77,24 @@ function OpenCohorts() {
                 {habitInfo(c.habitType).tab} · Starts {formatDate(c.startDate, { weekday: "short" })} · {c.durationDays} days · {formatPrice(c)}
               </p>
             </div>
-            <Link to={`/join/${c.id}`} className="btn btn-primary btn-small">Join</Link>
+            {payHere(c) ? (
+              <button className="btn btn-primary btn-small" onClick={() => setPaying(c)}>Join</button>
+            ) : (
+              <Link to={`/join/${c.id}`} className="btn btn-primary btn-small">Join</Link>
+            )}
           </li>
         ))}
       </ul>
       <p className="form-foot">
         Already a member? <Link to="/login">Log in</Link>
       </p>
+      {paying && (
+        <PaymentPopup cohort={paying} onClose={() => setPaying(null)}
+          onPaid={(sessionId) => {
+            if (sessionId) setPendingPayment(paying.id, sessionId);
+            navigate(`/join/${paying.id}`); // next: their details
+          }} />
+      )}
     </section>
   );
 }

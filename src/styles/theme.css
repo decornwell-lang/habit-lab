@@ -1203,3 +1203,17 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 /* Stripe's payment form inside the app (EmbeddedPayment.jsx): on white, as Stripe draws it */
 .embedded-payment { flex: 1 1 100%; margin-top: 12px; }
 .embedded-payment > div:not(:empty) { border-radius: 14px; overflow: hidden; background: #fff; }
+
+/* Payment pop-up (PaymentPopup.jsx): a white panel over the page, rising from the bottom on phones */
+.payment-popup { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: rgba(5, 7, 20, 0.6); }
+.payment-popup-panel {
+  width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto; background: #fff; color: var(--text);
+  border-radius: 20px 20px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+}
+@media (min-width: 720px) {
+  .payment-popup { align-items: center; }
+  .payment-popup-panel { border-radius: 20px; }
+}
+.payment-popup-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+.payment-popup-head > div { display: flex; flex-direction: column; gap: 2px; }
+.payment-popup .embedded-payment { margin-top: 0; }

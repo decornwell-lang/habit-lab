@@ -1,15 +1,14 @@
 // Upcoming tab: cohorts that haven't started yet, with a "Join" button.
-// Free cohorts are joined straight away. For paid ones, "Join" opens Stripe's payment
-// form right here (EmbeddedPayment.jsx), or Stripe's own page if that isn't set up.
+// Free cohorts are joined straight away. For paid ones, "Join" opens the payment pop-up
+// (PaymentPopup.jsx).
 // Alcohol-free cohorts start with a short screening (AlcoholScreening.jsx); only whether
 // its advice was shown is saved with the membership.
 import { useState } from "react";
 import { joinCohortDirectly } from "../../lib/data.js";
-import { apiPost } from "../../lib/api.js";
 import { formatDate, todayKey } from "../../lib/dates.js";
 import { formatPrice } from "../../lib/cohorts.js";
 import AlcoholScreening from "./AlcoholScreening.jsx";
-import EmbeddedPayment, { canEmbed } from "../EmbeddedPayment.jsx";
+import PaymentPopup from "../PaymentPopup.jsx";
 
 export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
   const [busyId, setBusyId] = useState(null);
@@ -32,13 +31,8 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
       if (!Number(cohort.price)) {
         await joinCohortDirectly(uid, cohort.id, "free", screening ? { screening } : {});
         await onJoined();
-      } else if (canEmbed) {
-        setPaying({ cohortId: cohort.id, screening }); // the payment form opens under the cohort
       } else {
-        const { url, joined } = await apiPost("/api/create-checkout", { cohortId: cohort.id, screening });
-        if (joined) await onJoined();
-        else window.location.href = url; // off to Stripe's secure payment page
-        return;
+        setPaying({ cohort, screening }); // the payment pop-up
       }
     } catch (err) {
       console.error(err);
@@ -70,10 +64,10 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
                   {busyId === c.id ? "Please wait…" : "Join"}
                 </button>
               )}
-              {paying?.cohortId === c.id && (
-                <EmbeddedPayment cohortId={c.id} screening={paying.screening}
+              {paying?.cohort.id === c.id && (
+                <PaymentPopup cohort={c} screening={paying.screening}
                   onPaid={async () => { setPaying(null); await onJoined(); }}
-                  onCancel={() => setPaying(null)} />
+                  onClose={() => setPaying(null)} />
               )}
               {confirming === c.id && needsScreening(c) && (
                 <div className="join-terms">
