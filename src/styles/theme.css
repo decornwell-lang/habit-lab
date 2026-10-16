@@ -1166,3 +1166,11 @@ td.actions { white-space: nowrap; }
 .danger-confirm p { margin: 0 0 10px; }
 .btn-danger { color: #c2353a; }
 .danger-card { margin-top: 28px; border-color: #f0c9ca; }
+
+/* How others see you (AppearanceFields.jsx) */
+.appearance h3 { margin: 16px 0 8px; font-size: 1rem; }
+.appearance h3:first-child { margin-top: 0; }
+.appearance-photo { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.appearance-photo > div { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.upload-btn { cursor: pointer; }
+.avatar-photo { border-radius: 50%; object-fit: cover; flex-shrink: 0; }

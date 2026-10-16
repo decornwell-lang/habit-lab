@@ -29,8 +29,11 @@ export async function getPublicProfile(uid) {
   return snap.exists() ? { id: uid, ...snap.data() } : null;
 }
 
+// `name` is the name the member chose to show (see src/lib/identity.js); the older
+// `firstName` field is removed when it's saved, so a nickname never shows their real name.
 export async function savePublicProfile(uid, data) {
-  await setDoc(doc(db, "publicProfiles", uid), { ...data, updatedAt: serverTimestamp() }, { merge: true });
+  const extra = "name" in data ? { firstName: deleteField() } : {};
+  await setDoc(doc(db, "publicProfiles", uid), { ...data, ...extra, updatedAt: serverTimestamp() }, { merge: true });
 }
 
 // Removes the older single streak (streak, badges… at the top level) once it's in profile.cohorts.

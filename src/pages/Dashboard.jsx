@@ -35,6 +35,7 @@ import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
 import MorningCheckin from "../components/dashboard/MorningCheckin.jsx";
 import { promptTime } from "../content/dailyPrompts.js";
 import AppBadge from "../components/AppBadge.jsx";
+import { publicIdentity } from "../lib/identity.js";
 import Sheet from "../components/dashboard/Sheet.jsx";
 import IntentionScreen from "../components/dashboard/IntentionScreen.jsx";
 import EveningReview from "../components/dashboard/EveningReview.jsx";
@@ -248,8 +249,7 @@ export default function Dashboard() {
     }
 
     const publicProfile = {
-      firstName,
-      avatar: profile?.avatar || null,
+      ...publicIdentity(profile), // the name and picture the member chose
       leaderboardOptIn: Boolean(profile?.leaderboardOptIn),
       showHabit: profile?.showHabit !== false, // shown unless the member turned it off
       cohorts: streaks, // merged with the other cohorts already stored

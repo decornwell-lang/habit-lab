@@ -7,7 +7,6 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import { updateUserProfile, savePublicProfile, getPublicProfile } from "../lib/data.js";
 import { badgeInfo, sortBadges, profileStreaks } from "../lib/streaks.js";
 import { habitStreakLabel } from "../lib/cohorts.js";
-import { AVATARS } from "../content/avatars.js";
 import Avatar from "../components/Avatar.jsx";
 import ShareBadge from "../components/ShareBadge.jsx";
 import Badge from "../components/Badge.jsx";
@@ -16,6 +15,8 @@ import ChangePassword from "../components/ChangePassword.jsx";
 import { isValidPhone } from "../lib/phone.js";
 import PhoneInput from "../components/PhoneInput.jsx";
 import MyCohorts from "../components/MyCohorts.jsx";
+import AppearanceFields from "../components/AppearanceFields.jsx";
+import { publicIdentity } from "../lib/identity.js";
 import DeleteAccount from "../components/DeleteAccount.jsx";
 import { REFLECTION_CONSENT } from "../content/site.js";
 
@@ -24,7 +25,13 @@ export default function Account() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const afterLink = params.get("newPassword") === "1"; // just logged in with an emailed link
-  const [avatar, setAvatar] = useState(profile?.avatar || null);
+  // Picture and leaderboard name (AppearanceFields.jsx).
+  const [look, setLook] = useState({
+    avatar: profile?.avatar || null,
+    photo: profile?.photo || null,
+    nameChoice: profile?.nameChoice || "first",
+    nickname: profile?.nickname || "",
+  });
   const [optIn, setOptIn] = useState(Boolean(profile?.leaderboardOptIn));
   const [showHabit, setShowHabit] = useState(profile?.showHabit !== false);
   const [reflectionConsent, setReflectionConsent] = useState(Boolean(profile?.reflectionConsent));
@@ -52,9 +59,9 @@ export default function Account() {
     setBusy(true);
     try {
       // The phone number is private: only the owner sees it.
-      await updateUserProfile(user.uid, { avatar, leaderboardOptIn: optIn, showHabit, reflectionConsent, phone: phone || null });
+      await updateUserProfile(user.uid, { ...look, nickname: look.nickname.trim(), leaderboardOptIn: optIn, showHabit, reflectionConsent, phone: phone || null });
       // The public profile never holds surname, email or phone.
-      await savePublicProfile(user.uid, { firstName, avatar, leaderboardOptIn: optIn, showHabit });
+      await savePublicProfile(user.uid, { ...publicIdentity({ ...profile, ...look }), leaderboardOptIn: optIn, showHabit });
       setMessage("Saved.");
     } catch (err) {
       console.error(err);
@@ -109,22 +116,8 @@ export default function Account() {
       </section>
 
       <form className="card" onSubmit={handleSave}>
-        <h2>Avatar</h2>
-        <div className="avatar-grid" role="radiogroup" aria-label="Choose an avatar">
-          {AVATARS.map((a) => (
-            <button
-              type="button"
-              key={a.id}
-              role="radio"
-              aria-checked={avatar === a.id}
-              aria-label={a.id}
-              className={avatar === a.id ? "selected" : ""}
-              onClick={() => setAvatar(a.id)}
-            >
-              <Avatar id={a.id} size={48} />
-            </button>
-          ))}
-        </div>
+        <h2>How others see you</h2>
+        <AppearanceFields value={look} onChange={setLook} firstName={profile?.firstName || firstName} surname={profile?.surname} />
 
         <h2>Mobile number</h2>
         <div className="field">
@@ -146,7 +139,7 @@ export default function Account() {
           <input type="checkbox" checked={reflectionConsent} onChange={(e) => setReflectionConsent(e.target.checked)} />
           <span>{REFLECTION_CONSENT}</span>
         </label>
-        <p className="muted small">Surname and email are never shown.</p>
+        <p className="muted small">Your email and mobile are never shown.</p>
 
         {message && <p className="form-success" role="status">{message}</p>}
         <button className="btn btn-primary" disabled={busy}>{busy ? "Saving…" : "Save changes"}</button>

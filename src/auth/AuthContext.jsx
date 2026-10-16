@@ -71,13 +71,11 @@ export function AuthProvider({ children }) {
       role: "member",
       createdAt: serverTimestamp(),
     });
+    // What other members may see (only once they join the leaderboard): first name to begin with.
     await setDoc(doc(db, "publicProfiles", uid), {
-      firstName,
+      name: firstName,
       avatar: null,
       leaderboardOptIn: false,
-      streak: 0,
-      lastYesDate: null,
-      badges: [],
       updatedAt: serverTimestamp(),
     });
     return cred.user;

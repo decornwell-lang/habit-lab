@@ -1,5 +1,5 @@
 // Leaderboard (Home tile): members of this cohort who opted in, ranked by their streak
-// in it. Each row: rank, avatar, first name, the challenge (unless they hid it), their
+// in it. Each row: rank, picture, the name they chose, the challenge (unless they hid it), their
 // current badge and streak.
 import { useEffect, useState } from "react";
 import { getLeaderboard } from "../../lib/data.js";
@@ -40,9 +40,9 @@ export default function Leaderboard({ uid, cohort, optedIn, today }) {
             return (
               <li key={p.id} className={p.id === uid ? "me" : ""}>
                 <span className="lb-rank">{i + 1}</span>
-                <Avatar id={p.avatar} name={p.firstName} />
+                <Avatar id={p.avatar} photo={p.photo} name={p.name || p.firstName} />
                 <span className="lb-who">
-                  <strong>{p.firstName}</strong>
+                  <strong>{p.name || p.firstName}</strong>
                   {habit && <span className="lb-meta">{habit.charAt(0).toUpperCase() + habit.slice(1)}</span>}
                 </span>
                 {top && <Badge id={top} size={30} />}
