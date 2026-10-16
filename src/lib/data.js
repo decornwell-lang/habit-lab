@@ -42,6 +42,21 @@ export async function getLeaderboard() {
   return list(await getDocs(query(collection(db, "publicProfiles"), where("leaderboardOptIn", "==", true))));
 }
 
+// ---------- Access (written by the server after Stripe payments; see src/lib/access.js) ----------
+const toDate = (v) => (v?.toDate ? v.toDate() : v ?? null);
+
+// The member's access record, with dates as Dates: { firstJoinedAt, accessEndsAt, extended, lapsed }, or null.
+export async function getMember(uid) {
+  const data = (await getDoc(doc(db, "members", uid))).data();
+  return data ? { ...data, firstJoinedAt: toDate(data.firstJoinedAt), accessEndsAt: toDate(data.accessEndsAt) } : null;
+}
+
+// The member's cohort entitlements, with dates as Dates.
+export async function getEntitlements(uid) {
+  const snap = await getDocs(query(collection(db, "cohortEntitlements"), where("uid", "==", uid)));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data(), startsAt: toDate(d.data().startsAt), endsAt: toDate(d.data().endsAt) }));
+}
+
 // ---------- Cohorts ----------
 export async function getCohorts() {
   const cohorts = list(await getDocs(collection(db, "cohorts")));

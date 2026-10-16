@@ -1,0 +1,11 @@
+{
+  "_howToEdit": "Prices are in euros and include VAT (vatRate is used only if Stripe Tax isn't set up). Change a price here; nothing else needs editing. cohortDays: how long one cohort's access lasts. extendDays: how long an extension lasts, counted from the member's first join.",
+  "currency": "eur",
+  "vatRate": 0.21,
+  "cohortDays": 33,
+  "extendDays": 365,
+  "products": {
+    "cohort": { "name": "Cohort access, 33 days", "price": 99 },
+    "extension": { "name": "Extend to one year", "price": 99 }
+  }
+}
