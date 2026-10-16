@@ -87,7 +87,11 @@ export default function YouTubePlayer({ id, title }) {
   return (
     <div ref={box} className={`yt ${fullScreen ? "full" : ""}`}>
       <div ref={frame} className="yt-frame" />
-      {!started && <img className="yt-poster" src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" />}
+      {/* YouTube's picture of the video; hidden if YouTube only has its grey "no image" placeholder (120px wide) */}
+      {!started && (
+        <img className="yt-poster" src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt=""
+          onLoad={(e) => e.currentTarget.naturalWidth <= 120 && (e.currentTarget.style.display = "none")} />
+      )}
       <button type="button" className="yt-layer" onClick={playPause} aria-label={state === "playing" ? `Pause ${title}` : `Play ${title}`}>
         {state !== "playing" && (
           <span className="yt-play" aria-hidden="true">
