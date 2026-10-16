@@ -13,7 +13,7 @@
 //   notices/{id}                      messages from the owner (also sent as push notifications)
 import {
   doc, getDoc, getDocs, setDoc, updateDoc, addDoc, collection, collectionGroup,
-  query, where, orderBy, limit, writeBatch, arrayUnion, serverTimestamp,
+  query, where, orderBy, limit, writeBatch, arrayUnion, serverTimestamp, deleteField,
 } from "firebase/firestore";
 import { db } from "../firebase.js";
 
@@ -31,6 +31,11 @@ export async function getPublicProfile(uid) {
 
 export async function savePublicProfile(uid, data) {
   await setDoc(doc(db, "publicProfiles", uid), { ...data, updatedAt: serverTimestamp() }, { merge: true });
+}
+
+// Removes the older single streak (streak, badges… at the top level) once it's in profile.cohorts.
+export async function clearOldStreak(uid) {
+  await updateDoc(doc(db, "publicProfiles", uid), { streak: deleteField(), lastYesDate: deleteField(), badges: deleteField(), habitType: deleteField() });
 }
 
 export async function getLeaderboard() {

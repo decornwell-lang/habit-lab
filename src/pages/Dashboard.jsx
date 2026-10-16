@@ -7,14 +7,14 @@ import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import {
   getCohorts, getMemberships, getCheckins, getPublicProfile, savePublicProfile,
-  getContentSettings, getDay, getReflectionsForDay, saveCheckin, updateUserProfile,
+  getContentSettings, getDay, getReflectionsForDay, saveCheckin, updateUserProfile, clearOldStreak,
 } from "../lib/data.js";
 import { apiPost } from "../lib/api.js";
-import { todayKey, checkinDayKey, addDays, timeZoneName } from "../lib/dates.js";
+import { todayKey, checkinDayKey, timeZoneName } from "../lib/dates.js";
 import { memberCohorts, checkinsFor, habitInfo, habitStreakLabel } from "../lib/cohorts.js";
 import { weekContent } from "../lib/content.js";
 import { aphorismFor } from "../lib/aphorisms.js";
-import { computeStreak, badgesForStreak, profileStreakFor } from "../lib/streaks.js";
+import { profileStreakFor, cohortStreakEntry } from "../lib/streaks.js";
 
 import PreCohort from "../components/dashboard/PreCohort.jsx";
 import WeeklyAssignment from "../components/dashboard/WeeklyAssignment.jsx";
@@ -125,6 +125,34 @@ export default function Dashboard() {
     };
   }, [load]);
 
+  // Keeps the leaderboard right: if a cohort's stored streak differs from the check-ins
+  // (e.g. a new day, or the older single streak still at the top of the profile), save it.
+  useEffect(() => {
+    if (!data) return;
+    const today = todayKey();
+    const checkinDay = checkinDayKey();
+    const stored = data.publicProfile?.cohorts || {};
+    const changed = {};
+    for (const r of memberCohorts(data.cohorts, data.memberships, today)) {
+      if (r.progress.state === "upcoming") continue;
+      const entry = cohortStreakEntry(r.cohort, data.checkins, data.publicProfile, today, checkinDay);
+      const s = stored[r.cohort.id];
+      if (!s || s.streak !== entry.streak || s.lastYesDate !== entry.lastYesDate || (s.badges || []).length !== entry.badges.length) {
+        changed[r.cohort.id] = entry;
+      }
+    }
+    const old = data.publicProfile && "streak" in data.publicProfile;
+    if (!Object.keys(changed).length && !old) return;
+    (async () => {
+      if (Object.keys(changed).length) await savePublicProfile(user.uid, { cohorts: changed });
+      if (old) await clearOldStreak(user.uid);
+      setData((d) => {
+        const { streak, lastYesDate, badges, habitType, ...rest } = d.publicProfile || {}; // eslint-disable-line no-unused-vars
+        return { ...d, publicProfile: { ...rest, cohorts: { ...rest.cohorts, ...changed } } };
+      });
+    })().catch(console.error);
+  }, [data, user.uid]);
+
   // Re-check the time every minute, so the Home tiles unlock on time while the app is open.
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -211,12 +239,10 @@ export default function Dashboard() {
     let celebrateNext = null;
     const streaks = {};
     for (const { row, checkin } of saves) {
-      const before = profileStreakFor(data.publicProfile, row.cohort);
-      const streak = computeStreak(checkinsFor(checkins, row.cohort), checkinDay);
-      const lastYesDate = streak === 0 ? null : checkinsFor(checkins, row.cohort)[checkinDay]?.maintained ? checkinDay : addDays(checkinDay, -1);
-      const earned = new Set(before?.badges || []);
-      const newBadges = badgesForStreak(streak).filter((b) => !earned.has(b));
-      streaks[row.cohort.id] = { habitType: row.cohort.habitType, streak, lastYesDate, badges: [...earned, ...newBadges] };
+      const before = profileStreakFor(data.publicProfile, row.cohort)?.badges || [];
+      const entry = cohortStreakEntry(row.cohort, checkins, data.publicProfile, today, checkinDay);
+      streaks[row.cohort.id] = entry;
+      const newBadges = entry.badges.filter((b) => !before.includes(b));
       if (checkin.maintained && newBadges.length) celebrateNext = { badgeId: newBadges.at(-1), row };
     }
 
@@ -236,7 +262,7 @@ export default function Dashboard() {
     if (celebrateNext) setCelebrate(celebrateNext);
   }
 
-  const streak = current ? computeStreak(checkinsFor(data.checkins, current.cohort), checkinDay) : 0;
+  const streak = current ? cohortStreakEntry(current.cohort, data.checkins, data.publicProfile, today, checkinDay).streak : 0;
 
   // Saves a reflection or morning answer into Home's state, so its tile updates straight away.
   const onSavedDay = (key, answer) => setData((d) => ({ ...d, day: { ...d.day, [key]: answer } }));
