@@ -22,11 +22,6 @@ const OTHER_HABIT = { label: "Practice", tab: "Practice", streak: "of practice",
 export const habitInfo = (id) => HABIT_TYPES.find((h) => h.id === id) || { ...OTHER_HABIT, id };
 export const habitLabel = (id) => habitInfo(id).label;
 export const habitStreakLabel = (id) => habitInfo(id).streak;
-// "your first smoke-free day", "your first day of exercise"
-export const firstDayPhrase = (id) => {
-  const streak = habitStreakLabel(id);
-  return streak.startsWith("of ") ? `your first day ${streak}` : `your first ${streak} day`;
-};
 
 // Where the member is today in a cohort.
 // If they chose "Restart from day 1", their own start date is used instead.

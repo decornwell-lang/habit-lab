@@ -80,14 +80,17 @@ export async function saveCheckin(uid, data, id = `${data.date}_${data.cohortId}
   return id;
 }
 
-// ---------- Morning intention and evening review ----------
+// ---------- Morning intention and evening review (one of each per cohort per day) ----------
 //   users/{uid}/reflections/{id}   the member's own words. Private: the owner can read
 //                                  them only if the member agreed (reflectionConsent).
-//                                  ids: "2026-10-15_intention", "2026-10-15_evening"
-//   users/{uid}/activity/{date}    counts only, no words: { intention, evening }.
+//                                  ids: "2026-10-15_intention_<cohortId>", "2026-10-15_evening_<cohortId>"
+//   users/{uid}/activity/{date}    counts only, no words, per cohort:
+//                                  { intention: { <cohortId>: true }, evening: { <cohortId>: "done" | "skipped" } }.
 //                                  The owner can always read these.
-export async function getReflection(uid, id) {
-  return (await getDoc(doc(db, "users", uid, "reflections", id))).data() || null;
+// The day's reflections, keyed by id.
+export async function getReflectionsForDay(uid, date) {
+  const snap = await getDocs(query(collection(db, "users", uid, "reflections"), where("date", "==", date)));
+  return Object.fromEntries(snap.docs.map((d) => [d.id, d.data()]));
 }
 
 // Saves a reflection and marks it done in that day's activity (counts only).
@@ -98,12 +101,12 @@ export async function saveReflection(uid, id, data, activity) {
   await batch.commit();
 }
 
-// A member's morning check-in for one calendar day: { morning }.
+// A member's morning check-ins for one calendar day: { "morning_<cohortId>": {...} }.
 export async function getDay(uid, date) {
   return (await getDoc(doc(db, "users", uid, "practice", date))).data() || {};
 }
 
-// Saves one of the day's answers (the morning check-in: key "morning").
+// Saves one of the day's answers (the morning check-in: key "morning_<cohortId>").
 export async function saveDayAnswer(uid, date, key, value) {
   await setDoc(doc(db, "users", uid, "practice", date), { date, [key]: value, at: serverTimestamp() }, { merge: true });
 }

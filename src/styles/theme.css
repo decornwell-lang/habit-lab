@@ -1103,3 +1103,12 @@ td.actions { white-space: nowrap; }
 }
 .cohort-switcher button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
 .cohort-switcher small { font-weight: 500; opacity: 0.8; }
+.cohort-switcher button { display: inline-flex; align-items: center; gap: 6px; }
+.switcher-count {
+  min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: #e5484d; color: #fff;
+  font-size: 0.75rem; font-weight: 700; line-height: 20px; text-align: center;
+}
+
+/* Under "Share to WhatsApp": which cohort's group to pick */
+.share-hint { margin: 6px 0 0; text-align: center; font-size: 0.82rem; color: var(--text-muted); }
+.dashboard.dark .share-hint, .sheet .share-hint { color: #9aa2bf; }

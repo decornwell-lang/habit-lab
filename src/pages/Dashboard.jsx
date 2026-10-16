@@ -7,7 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import {
   getCohorts, getMemberships, getCheckins, getPublicProfile, savePublicProfile,
-  getContentSettings, getDay, getReflection, saveCheckin, updateUserProfile,
+  getContentSettings, getDay, getReflectionsForDay, saveCheckin, updateUserProfile,
 } from "../lib/data.js";
 import { apiPost } from "../lib/api.js";
 import { todayKey, checkinDayKey, addDays, timeZoneName } from "../lib/dates.js";
@@ -69,6 +69,14 @@ export default function Dashboard() {
   const today = todayKey(); // calendar day: morning check-in, intention, evening review, cohort day
   const checkinDay = checkinDayKey(); // the check-in day (turns over at 21:00, see dates.js)
 
+  function chooseCohort(id) {
+    setCohortChoice(id);
+    try {
+      localStorage.setItem(COHORT_KEY, id);
+    } catch {
+      // Not remembered; fine.
+    }
+  }
   const tab = TABS.some((t) => t.id === params.get("tab")) ? params.get("tab") : DEFAULT_TAB;
   function setTab(id) {
     setTabTaps((n) => n + 1);
@@ -79,17 +87,16 @@ export default function Dashboard() {
   const load = useCallback(async () => {
     try {
       const date = todayKey();
-      const [cohorts, memberships, checkins, publicProfile, settings, day, intention, evening] = await Promise.all([
+      const [cohorts, memberships, checkins, publicProfile, settings, day, reflections] = await Promise.all([
         getCohorts(),
         getMemberships(user.uid),
         getCheckins(user.uid),
         getPublicProfile(user.uid),
         getContentSettings(),
         getDay(user.uid, date),
-        getReflection(user.uid, `${date}_intention`).catch(() => null),
-        getReflection(user.uid, `${date}_evening`).catch(() => null),
+        getReflectionsForDay(user.uid, date).catch(() => ({})),
       ]);
-      setData({ cohorts, memberships, checkins, publicProfile, settings, day, intention, evening });
+      setData({ cohorts, memberships, checkins, publicProfile, settings, day, reflections });
     } catch (err) {
       console.error(err);
       setError("We couldn't load your dashboard. Please refresh the page.");
@@ -125,8 +132,10 @@ export default function Dashboard() {
     return () => clearInterval(timer);
   }, []);
 
+  // A notification opens its cohort's tile, e.g. /dashboard?open=evening&cohort=abc.
   useEffect(() => {
     const target = params.get("open");
+    if (params.get("cohort")) chooseCohort(params.get("cohort"));
     if (target === "intention" || target === "evening") setSheet(target);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -156,42 +165,30 @@ export default function Dashboard() {
   if (error && !data) return <main className="page"><p className="form-error">{error}</p></main>;
   if (!data) return <main className="page"><p className="muted">Loading your dashboard…</p></main>;
 
-  // The member's cohorts. Home shows one at a time (badges, streak, journey, leaderboard,
-  // WhatsApp group); with more than one, buttons at the top switch between them.
-  // The morning check-in, intention and evening review cover all active cohorts.
+  // The member's cohorts. Home shows one at a time: its morning check-in, intention and
+  // evening review (each shared in that cohort's WhatsApp group), badges, streak, journey
+  // and leaderboard. With more than one, buttons at the top switch between them.
   const rows = memberCohorts(data.cohorts, data.memberships, today);
   const shown = rows.filter((r) => r.progress.state !== "finished");
   const choices = shown.length ? shown : rows.slice(0, 1); // or the latest finished cohort
   const current = choices.find((r) => r.cohort.id === cohortChoice) || choices[0] || null;
   const activeRows = rows.filter((r) => r.progress.state === "active");
-  const active = activeRows.length > 0;
-  function chooseCohort(id) {
-    setCohortChoice(id);
-    try {
-      localStorage.setItem(COHORT_KEY, id);
-    } catch {
-      // Not remembered; fine.
-    }
-  }
+
   const week = current?.progress.state === "active" ? current.progress.week : Number(data.settings.currentWeek) || 1;
   const habitType = current?.cohort.habitType || "smoking";
   const content = weekContent(habitType, week, data.settings);
   const firstName = profile?.firstName || user.displayName || "friend";
 
-  // The evening review is the day's check-in for each active cohort, e.g.
-  // "Did you smoke today? No" keeps the smoking streak. Unanswered questions save nothing.
-  async function saveEveningCheckins(evening) {
-    const saves = activeRows
-      .filter((r) => evening.answers?.[r.cohort.id])
-      .map((r) => ({
-        row: r,
-        date: today,
-        checkin: {
-          maintained: evening.answers[r.cohort.id] === habitInfo(r.cohort.habitType).keptWhen,
-          craving: habitInfo(r.cohort.habitType).cravings ? evening.intensity : null, // 0 to 5
-        },
-      }));
-    await saveCheckins(saves);
+  // The evening review is the day's check-in for its cohort: e.g. "Did you smoke today?
+  // No" keeps the smoking streak. No answer saves nothing.
+  async function saveEveningCheckin(row, evening) {
+    if (!evening.answer) return;
+    const habit = habitInfo(row.cohort.habitType);
+    await saveCheckins([{
+      row,
+      date: today,
+      checkin: { maintained: evening.answer === habit.keptWhen, craving: habit.cravings ? evening.intensity : null }, // craving: 0 to 5
+    }]);
   }
 
   // A correction from the journey: mark a past day (or today) kept or not.
@@ -240,16 +237,14 @@ export default function Dashboard() {
   }
 
   const streak = current ? computeStreak(checkinsFor(data.checkins, current.cohort), checkinDay) : 0;
-  const eveningHabits = activeRows.map((r) => ({ ...habitInfo(r.cohort.habitType), cohortId: r.cohort.id, habitType: r.cohort.habitType }));
 
-  const dayLabel = current?.progress.state === "active" ? `Day ${current.progress.day} ` : "";
-  // Saves a daytime answer into Home's state, so the row shows it straight away.
-  const onSaved = (key, answer) => setData((d) => ({ ...d, day: { ...d.day, [key]: answer } }));
-  const prompt = { uid: user.uid, today, dayLabel, onSaved };
+  // Saves a reflection or morning answer into Home's state, so its tile updates straight away.
+  const onSavedDay = (key, answer) => setData((d) => ({ ...d, day: { ...d.day, [key]: answer } }));
+  const onSavedReflection = (id, entry) => setData((d) => ({ ...d, reflections: { ...d.reflections, [id]: entry } }));
   const groupLink = current?.cohort.whatsappGroupLink;
 
-  // The day's three tiles. Each is locked (🔒) until its hour, when its notification
-  // goes out, then ready to fill in (✏️) until done (✓). They lock again at midnight.
+  // The day's three tiles for one cohort. Each is locked (🔒) until its hour, when its
+  // notification goes out, then ready to fill in (✏️) until done (✓). They lock again at midnight.
   const tile = ({ id, icon, tone, title, subtitle, isDone, doneText }) => {
     const { hour, minute } = promptTime(id);
     const locked = now.getHours() * 60 + now.getMinutes() < hour * 60 + minute;
@@ -258,22 +253,36 @@ export default function Dashboard() {
     if (isDone) return { id, icon, tone, title, subtitle, status: doneText, done: true };
     return { id, icon: <PencilIcon />, tone: "ready", title, subtitle, status: "Ready", highlight: true };
   };
+  const dayTiles = (row) => {
+    const id = row.cohort.id;
+    const morning = data.day[`morning_${id}`];
+    const intention = data.reflections[`${today}_intention_${id}`];
+    const evening = data.reflections[`${today}_evening_${id}`];
+    const group = habitInfo(row.cohort.habitType).tab;
+    return [
+      {
+        ...tile({ id: "morning", icon: "☀️", tone: "gold", title: "Morning", subtitle: "How are you feeling?", isDone: Boolean(morning), doneText: "✓ Shared" }),
+        content: <MorningCheckin uid={user.uid} today={today} cohortId={id} dayLabel={`Day ${row.progress.day} `} group={group}
+          existing={morning} onSaved={onSavedDay} />,
+      },
+      {
+        ...tile({ id: "intention", icon: "🎯", tone: "gold", title: "Intention", subtitle: "One minute with a question", isDone: Boolean(intention), doneText: "✓ Done" }),
+        onOpen: () => setSheet("intention"),
+      },
+      {
+        ...tile({ id: "evening", icon: "🌙", title: "Evening review", subtitle: "A minute to reflect on today",
+          isDone: Boolean(evening), doneText: evening?.skipped ? "Skipped" : "✓ Done" }),
+        onOpen: () => setSheet("evening"),
+      },
+    ];
+  };
+  // Tiles waiting (ready, not done) in each active cohort: the switcher and the app icon show these.
+  const waiting = Object.fromEntries(activeRows.map((r) => [r.cohort.id, dayTiles(r).filter((t) => t.highlight).length]));
 
-  // Home tiles, top to bottom. Notifications open a tile directly, e.g. /dashboard?open=morning.
+  // Home tiles for the chosen cohort, top to bottom. Notifications open a tile directly,
+  // e.g. /dashboard?open=morning&cohort=abc.
   const homeItems = [
-    active && {
-      ...tile({ id: "morning", icon: "☀️", tone: "gold", title: "Morning", subtitle: "How are you feeling?", isDone: Boolean(data.day.morning), doneText: "✓ Shared" }),
-      content: <MorningCheckin {...prompt} existing={data.day.morning} />,
-    },
-    active && {
-      ...tile({ id: "intention", icon: "🎯", tone: "gold", title: "Intention", subtitle: "One minute with a question", isDone: Boolean(data.intention), doneText: "✓ Done" }),
-      onOpen: () => setSheet("intention"),
-    },
-    active && {
-      ...tile({ id: "evening", icon: "🌙", title: "Evening review", subtitle: "A minute to reflect on today",
-        isDone: Boolean(data.evening), doneText: data.evening?.skipped ? "Skipped" : "✓ Done" }),
-      onOpen: () => setSheet("evening"),
-    },
+    ...(current?.progress.state === "active" ? dayTiles(current) : []),
     current && groupLink && {
       id: "group",
       icon: "💬",
@@ -290,8 +299,8 @@ export default function Dashboard() {
     <main className={`page dashboard ${DARK_TABS.includes(tab) ? "dark" : ""}`}>
       {tab === DEFAULT_TAB && aphorism && <p className="aphorism">“{aphorism.text}”</p>}
 
-      {/* The red number on the app icon: tiles ready but not done */}
-      <AppBadge count={homeItems.filter((i) => i.highlight).length} />
+      {/* The red number on the app icon: tiles ready but not done, in all cohorts */}
+      <AppBadge count={Object.values(waiting).reduce((a, b) => a + b, 0)} />
       {notice && <p className="notice notice-good" role="status">{notice}</p>}
       {error && <p className="form-error" role="alert">{error}</p>}
 
@@ -320,9 +329,10 @@ export default function Dashboard() {
           their time), my streak (with journey), then the leaderboard tile */}
       {tab === "home" && (
         <>
-          {choices.length > 1 && <CohortSwitcher rows={choices} selected={current.cohort.id} onSelect={chooseCohort} />}
+          {choices.length > 1 && <CohortSwitcher rows={choices} selected={current.cohort.id} waiting={waiting} onSelect={chooseCohort} />}
           {current && <BadgesCard streak={streak} current={current} />}
-          <Folds items={homeItems} initialOpen={params.get("open")} />
+          {/* key: switching cohort starts its tiles afresh (no answers carried over) */}
+          <Folds key={current?.cohort.id} items={homeItems} initialOpen={params.get("open")} />
           {current ? (
             <>
               <StreakCard streak={streak} current={current} checkins={checkinsFor(data.checkins, current.cohort)} onCorrect={correctCheckin} />
@@ -361,19 +371,22 @@ export default function Dashboard() {
         <JoinCohort uid={user.uid} cohorts={data.cohorts} memberships={data.memberships} onJoined={load} />
       )}
 
-      {sheet === "intention" && (
+      {/* The chosen cohort's intention and evening review */}
+      {sheet === "intention" && current && (
         <Sheet label="Your intention for today" onClose={() => setSheet(null)}>
-          <IntentionScreen uid={user.uid} date={today} existing={data.intention} firstName={firstName}
-            onSaved={(intention) => setData((d) => ({ ...d, intention }))} />
+          <IntentionScreen uid={user.uid} date={today} cohortId={current.cohort.id} group={habitInfo(current.cohort.habitType).tab}
+            existing={data.reflections[`${today}_intention_${current.cohort.id}`]} firstName={firstName}
+            onSaved={(entry) => onSavedReflection(`${today}_intention_${current.cohort.id}`, entry)} />
         </Sheet>
       )}
-      {sheet === "evening" && (
+      {sheet === "evening" && current && (
         <Sheet label="Evening review" onClose={() => setSheet(null)}>
-          <EveningReview uid={user.uid} date={today} existing={data.evening} habits={eveningHabits} firstName={firstName}
-            onSaved={async (evening, skipped) => {
-              setData((d) => ({ ...d, evening }));
+          <EveningReview uid={user.uid} date={today} existing={data.reflections[`${today}_evening_${current.cohort.id}`]}
+            habit={{ ...habitInfo(current.cohort.habitType), cohortId: current.cohort.id }} firstName={firstName}
+            onSaved={async (entry, skipped) => {
+              onSavedReflection(`${today}_evening_${current.cohort.id}`, entry);
               if (skipped) return setSheet(null);
-              await saveEveningCheckins(evening);
+              await saveEveningCheckin(current, entry);
             }} />
         </Sheet>
       )}

@@ -1,9 +1,10 @@
 // The buttons at the top of Home for a member in more than one cohort, e.g.
-// "Smoke-free · Alcohol-free · Fitness". Badges, streak, journey, leaderboard and the
-// WhatsApp group below follow the chosen cohort.
+// "Smoke-free · Alcohol-free · Fitness". Everything below follows the chosen cohort: its
+// morning, intention and evening tiles, badges, streak, journey, leaderboard and WhatsApp
+// group. A small number shows how many of a cohort's tiles are waiting today.
 import { habitInfo } from "../../lib/cohorts.js";
 
-export default function CohortSwitcher({ rows, selected, onSelect }) {
+export default function CohortSwitcher({ rows, selected, waiting = {}, onSelect }) {
   const names = rows.map((r) => habitInfo(r.cohort.habitType).tab);
   return (
     <div className="cohort-switcher" role="tablist" aria-label="Your cohorts">
@@ -13,6 +14,7 @@ export default function CohortSwitcher({ rows, selected, onSelect }) {
           {/* Two cohorts on the same habit are told apart by name. */}
           {names.indexOf(names[i]) !== names.lastIndexOf(names[i]) ? r.cohort.name : names[i]}
           {r.progress.state === "upcoming" && <small> · soon</small>}
+          {waiting[r.cohort.id] > 0 && <span className="switcher-count" aria-label={`${waiting[r.cohort.id]} waiting`}>{waiting[r.cohort.id]}</span>}
         </button>
       ))}
     </div>

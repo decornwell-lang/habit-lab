@@ -29,16 +29,16 @@ export default function ReflectionsTab({ data }) {
     const today = rows.filter((a) => a.date === date);
     return {
       date,
-      intentions: today.filter((a) => a.intention).length,
-      reviews: today.filter((a) => a.evening === "done").length,
-      skipped: today.filter((a) => a.evening === "skipped").length,
+      intentions: today.filter((a) => a.intention?.[cohortId]).length,
+      reviews: today.filter((a) => a.evening?.[cohortId] === "done").length,
+      skipped: today.filter((a) => a.evening?.[cohortId] === "skipped").length,
     };
   });
   const totals = (uid) => {
     const mine = rows.filter((a) => a.uid === uid);
     return {
-      intentions: mine.filter((a) => a.intention).length,
-      reviews: mine.filter((a) => a.evening === "done").length,
+      intentions: mine.filter((a) => a.intention?.[cohortId]).length,
+      reviews: mine.filter((a) => a.evening?.[cohortId] === "done").length,
     };
   };
 
@@ -97,7 +97,7 @@ export default function ReflectionsTab({ data }) {
                     <span className="tag">Counts only</span>
                   )}
                 </div>
-                {openUid === m.id && <MemberEntries entries={entries[m.id]} cohorts={data.cohorts} />}
+                {openUid === m.id && <MemberEntries entries={entries[m.id]?.filter((e) => e.cohortId === cohortId)} habit={habitInfo(cohort?.habitType)} />}
               </li>
             );
           })}
@@ -108,12 +108,8 @@ export default function ReflectionsTab({ data }) {
 }
 
 // A consenting member's own words, newest first.
-function MemberEntries({ entries, cohorts }) {
-  // An evening answer in words, e.g. "Smoke-free" or "Drank".
-  const answerText = (cohortId, answer) => {
-    const habit = habitInfo(cohorts.find((c) => c.id === cohortId)?.habitType);
-    return answer === habit.keptWhen ? habit.kept : habit.missed;
-  };
+// habit: the cohort's habit, for the evening answer in words, e.g. "Smoke-free" or "Drank".
+function MemberEntries({ entries, habit }) {
   if (!entries) return <p className="muted small">Loading…</p>;
   if (!entries.length) return <p className="muted small">Nothing written yet.</p>;
   return (
@@ -124,7 +120,7 @@ function MemberEntries({ entries, cohorts }) {
           {e.type === "intention" && <p>{e.question}{e.text && <><br /><em>“{e.text}”</em></>}</p>}
           {e.type === "evening" && (e.skipped ? <p className="muted">Skipped</p> : (
             <p>
-              {Object.entries(e.answers || {}).map(([id, a]) => answerText(id, a)).join(" · ")}
+              {e.answer && (e.answer === habit.keptWhen ? habit.kept : habit.missed)}
               {e.intensity != null && ` · cravings ${e.intensity}/5`}
               {e.strongestAt && ` · strongest at ${e.strongestAt}`}
               {e.helped && <><br />Helped: <em>“{e.helped}”</em></>}

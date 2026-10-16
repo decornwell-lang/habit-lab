@@ -26,12 +26,12 @@ Copy `.env.example` to `.env.local` and fill in the Firebase (and later Stripe) 
 - `src/styles/theme.css`: colours, fonts, spacing (change the look here)
 
 ## Daily notifications
-Members get three notifications a day, each at their own local time (their phone's time zone is saved when they open the app; Europe/Madrid is used until then):
+Members get three notifications a day **for each cohort they're in**, each at their own local time (their phone's time zone is saved when they open the app; Europe/Madrid is used until then):
 - **06:00** How do you feel today? (Morning tile)
 - **08:00** Your intention for today (Intention tile: a minute with "What is my intention, in one sentence?")
-- **21:00** Evening review, the day's final check-in. One question per active cohort (e.g. "Did you smoke today? No" keeps the smoking streak).
+- **21:00** Evening review, the day's final check-in (e.g. "Did you smoke today? No" keeps the smoking streak).
 
-A member can be in several cohorts at once (e.g. alcohol for years, plus a fitness cohort). Each cohort has its own streak, badges, journey and leaderboard; buttons at the top of Home switch between them. The habits, their evening questions and streak wording are in `src/lib/cohorts.js` (`HABIT_TYPES`).
+A member can be in several cohorts at once (e.g. alcohol for years, plus a fitness cohort). Each cohort has its own morning check-in, intention and evening review (shared in that cohort's WhatsApp group), notifications, streak, badges, journey and leaderboard; buttons at the top of Home switch between them. Someone in two cohorts gets two notifications at 06:00, one for each. The habits, their evening questions and streak wording are in `src/lib/cohorts.js` (`HABIT_TYPES`).
 
 This week's meditation (Practices tab) doesn't send a notification. Times and wording: `src/content/dailyPrompts.js`.
 

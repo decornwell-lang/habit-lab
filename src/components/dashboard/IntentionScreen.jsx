@@ -1,7 +1,8 @@
 // Morning intention (opens at 08:00): one screen, no scrolling. A short reminder to
 // reconnect with the intention, the question, a one-minute invitation and an optional
 // sentence or two. Once saved, the writing appears on the page (no longer in a box) and
-// the button becomes "Share to WhatsApp". Saved to users/{uid}/reflections/{date}_intention.
+// the button becomes "Share to WhatsApp". One per cohort, saved to
+// users/{uid}/reflections/{date}_intention_{cohortId}.
 // Wording: src/content/intention.js.
 import { useState } from "react";
 import { saveReflection } from "../../lib/data.js";
@@ -10,7 +11,7 @@ import SaveShareButton from "../SaveShareButton.jsx";
 import ShareOptions from "../ShareOptions.jsx";
 import { shareMessage } from "../../lib/shareMessage.js";
 
-export default function IntentionScreen({ uid, date, existing, firstName, onSaved }) {
+export default function IntentionScreen({ uid, date, cohortId, group, existing, firstName, onSaved }) {
   const [text, setText] = useState(existing?.text || "");
   const [saved, setSaved] = useState(Boolean(existing));
   const [share, setShare] = useState({ includeText: true, includeScore: false });
@@ -21,8 +22,8 @@ export default function IntentionScreen({ uid, date, existing, firstName, onSave
     setBusy(true);
     setError("");
     try {
-      const entry = { type: "intention", date, question: INTENTION.question, text: text.trim() };
-      await saveReflection(uid, `${date}_intention`, entry, { intention: true });
+      const entry = { type: "intention", date, cohortId, question: INTENTION.question, text: text.trim() };
+      await saveReflection(uid, `${date}_intention_${cohortId}`, entry, { intention: { [cohortId]: true } });
       onSaved(entry);
       setText(entry.text);
       setSaved(true);
@@ -59,7 +60,7 @@ export default function IntentionScreen({ uid, date, existing, firstName, onSave
 
       {error && <p className="form-error">{error}</p>}
       {saved && text && <ShareOptions {...share} hasScore={false} onChange={(c) => setShare((s) => ({ ...s, ...c }))} />}
-      <SaveShareButton saved={saved} busy={busy} onSave={save}
+      <SaveShareButton saved={saved} busy={busy} onSave={save} group={group}
         shareText={shareMessage({ firstName, label: "morning intention", text, ...share })} />
     </div>
   );

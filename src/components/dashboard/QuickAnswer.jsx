@@ -9,7 +9,7 @@ import SavedAnswers from "./SavedAnswers.jsx";
 // questions: [{ key, label, choices }]   text: label for the free text (optional)
 // shareText(answer) builds the WhatsApp message. onSave(answer) stores it (returns a promise).
 // summary(answer) lists the answers ([{ label, value }]) shown on the page once saved.
-export default function QuickAnswer({ questions = [], text, existing, shareText, onSave, summary }) {
+export default function QuickAnswer({ questions = [], text, existing, shareText, onSave, summary, group }) {
   const [answer, setAnswer] = useState(existing || {});
   const [saved, setSaved] = useState(Boolean(existing));
   const [busy, setBusy] = useState(false);
@@ -37,7 +37,7 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
     return (
       <div className="quick-answer">
         <SavedAnswers items={summary(answer)} onEdit={() => setSaved(false)} />
-        <SaveShareButton saved shareText={shareText(answer)} />
+        <SaveShareButton saved shareText={shareText(answer)} group={group} />
       </div>
     );
   }
@@ -60,7 +60,7 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
           onChange={(e) => set("note", e.target.value)} placeholder={numbered ? "A few words…" : "A few words is enough"} />
       </QuestionStep>
       {error && <p className="form-error" role="alert">{error}</p>}
-      <SaveShareButton saved={saved} canSave={complete} busy={busy} onSave={save} shareText={complete ? shareText(answer) : ""} />
+      <SaveShareButton saved={saved} canSave={complete} busy={busy} onSave={save} shareText={complete ? shareText(answer) : ""} group={group} />
       {saved && <p className="muted small center">✓ Saved</p>}
     </div>
   );

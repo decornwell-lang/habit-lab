@@ -1,6 +1,7 @@
 // The three daily notifications, and the morning check-in's questions.
 // Members are notified at 06:00 (morning), 08:00 (intention) and 21:00 (evening review,
-// the day's final check-in), each in their own time zone. Edit wording and times here;
+// the day's final check-in), each in their own time zone, once for each of their cohorts
+// (the title gets the cohort's name, e.g. "Good morning ☀️ · Smoke-free"). Edit wording and times here;
 // `hour` (and optional `minute`) is the member's local time.
 // The server sends them (api/daily-prompts.js); tapping one opens its tile on Home.
 // On Home, each tile stays locked until its time and locks again at midnight.

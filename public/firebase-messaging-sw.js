@@ -10,14 +10,14 @@ const messaging = firebase.messaging();
 
 // Show the notification when a message arrives in the background.
 messaging.onBackgroundMessage((payload) => {
-  const { title = "David Ernest Cornwell", body = "", link = "/dashboard", kind = "message", badge } = payload.data || {};
+  const { title = "David Ernest Cornwell", body = "", link = "/dashboard", kind = "message", badge, tag } = payload.data || {};
   // The red number on the app icon: today's tiles waiting to be done (sent by api/daily-prompts.js).
   if (badge && "setAppBadge" in self.navigator) self.navigator.setAppBadge(Number(badge)).catch(() => {});
   return self.registration.showNotification(title, {
     body,
     icon: "/icons/icon-192.png",
     badge: "/icons/icon-192.png",
-    tag: kind === "message" ? "david-message" : "daily-prompt", // a new one replaces the previous one of its kind
+    tag: tag || (kind === "message" ? "david-message" : "daily-prompt"), // a new one replaces the previous one with its tag
     renotify: true,
     data: { link },
   });
