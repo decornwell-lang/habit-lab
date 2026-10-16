@@ -9,7 +9,7 @@ import { todayKey, formatDate } from "../../lib/dates.js";
 
 // Prices are in euros, VAT included.
 // capacity: the number of places (empty = no limit).
-const EMPTY = { name: "", habitType: "smoking", startDate: "", durationDays: 33, price: 99, capacity: "", status: "upcoming", whatsappGroupLink: "" };
+const EMPTY = { name: "", habitType: "smoking", startDate: "", durationDays: 33, price: 99, capacity: 30, status: "upcoming", whatsappGroupLink: "" };
 
 // Two ready-made cohorts: the real first cohort, and a free one starting
 // today so you can try every feature straight away.

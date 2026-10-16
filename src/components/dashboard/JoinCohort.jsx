@@ -1,4 +1,4 @@
-// Upcoming tab: cohorts that haven't started yet, with a "Join" button.
+// Upcoming tab: cohorts that haven't started yet, each in its own tile with a "Join" button.
 // Free cohorts are joined straight away. For paid ones, "Join" opens the payment pop-up
 // (PaymentPopup.jsx).
 // Alcohol-free cohorts start with a short screening (AlcoholScreening.jsx); only whether
@@ -6,7 +6,7 @@
 import { useState } from "react";
 import { joinCohortDirectly } from "../../lib/data.js";
 import { formatDate, todayKey } from "../../lib/dates.js";
-import { formatPrice, startsIn } from "../../lib/cohorts.js";
+import { formatPrice, startsIn, habitInfo } from "../../lib/cohorts.js";
 import AlcoholScreening from "./AlcoholScreening.jsx";
 import PaymentPopup from "../PaymentPopup.jsx";
 
@@ -41,49 +41,44 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
     setBusyId(null);
   }
 
+  // One tile per cohort, in its habit's colour.
   return (
-    <section className="card">
-      <p className="card-label">Upcoming cohorts</p>
-      {open.length === 0 ? (
-        <p className="muted">None yet.</p>
-      ) : (
-        <ul className="cohort-list">
-          {open.map((c) => (
-            <li key={c.id}>
-              <div>
-                <h3>{c.name}</h3>
-                <p className="muted small">
-                  <strong className="cohort-countdown">{startsIn(c.startDate, todayKey())}</strong>
-                  <br />
-                  {formatDate(c.startDate, { weekday: "short" })} · {c.durationDays} days · {formatPrice(c)}{Number(c.price) > 0 && " incl. VAT"}{c.capacity ? ` · ${c.capacity} places` : ""}
-                </p>
-              </div>
-              {joinedIds.has(c.id) ? (
-                <span className="joined">✓ Joined</span>
-              ) : (
-                <button className="btn btn-primary btn-small" disabled={busyId !== null || Boolean(paying)}
-                  onClick={() => (needsScreening(c) ? setConfirming(confirming === c.id ? null : c.id) : handleJoin(c))}>
-                  {busyId === c.id ? "Please wait…" : "Join"}
-                </button>
-              )}
-              {paying?.cohort.id === c.id && (
-                <PaymentPopup cohort={c} screening={paying.screening}
-                  onPaid={async () => { setPaying(null); await onJoined(); }}
-                  onClose={() => setPaying(null)} />
-              )}
-              {confirming === c.id && needsScreening(c) && (
-                <div className="join-terms">
-                  <AlcoholScreening busy={busyId !== null} onDone={(result) => {
-                    setScreened((s) => ({ ...s, [c.id]: result }));
-                    if (!Number(c.price)) handleJoin(c, result);
-                  }} />
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+    <>
+      <p className="card-label upcoming-title">Upcoming cohorts</p>
+      {open.length === 0 && <section className="card"><p className="muted">None yet.</p></section>}
+      {open.map((c) => (
+        <section key={c.id} className="card cohort-tile" style={{ "--cohort": habitInfo(c.habitType).accent }}>
+          <p className="card-label">{habitInfo(c.habitType).tab}</p>
+          <h2>{c.name}</h2>
+          <p className="cohort-countdown">{startsIn(c.startDate, todayKey())}</p>
+          <p className="muted small">
+            {formatDate(c.startDate, { weekday: "long" })} · {c.durationDays} days · {formatPrice(c)}{Number(c.price) > 0 && " incl. VAT"}
+            {c.capacity ? ` · ${c.capacity} places` : ""}
+          </p>
+          {joinedIds.has(c.id) ? (
+            <p className="joined">✓ Joined</p>
+          ) : (
+            <button className="btn btn-primary" disabled={busyId !== null || Boolean(paying)}
+              onClick={() => (needsScreening(c) ? setConfirming(confirming === c.id ? null : c.id) : handleJoin(c))}>
+              {busyId === c.id ? "Please wait…" : "Join"}
+            </button>
+          )}
+          {paying?.cohort.id === c.id && (
+            <PaymentPopup inline cohort={c} screening={paying.screening}
+              onPaid={async () => { setPaying(null); await onJoined(); }}
+              onClose={() => setPaying(null)} />
+          )}
+          {confirming === c.id && needsScreening(c) && (
+            <div className="join-terms">
+              <AlcoholScreening busy={busyId !== null} onDone={(result) => {
+                setScreened((s) => ({ ...s, [c.id]: result }));
+                if (!Number(c.price)) handleJoin(c, result);
+              }} />
+            </div>
+          )}
+        </section>
+      ))}
       {error && <p className="form-error" role="alert">{error}</p>}
-    </section>
+    </>
   );
 }

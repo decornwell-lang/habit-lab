@@ -3,6 +3,7 @@
 // Weekly assignments (settings.assignments). Until this week's is set, the cohort week's
 // reflection PDF is shown. Download only; nothing to submit.
 import { weekOfYear } from "../../lib/dates.js";
+import PdfButton from "../PdfButton.jsx";
 
 export default function WeeklyAssignment({ content, settings = {} }) {
   const set = settings.assignments?.[weekOfYear()];
@@ -13,7 +14,7 @@ export default function WeeklyAssignment({ content, settings = {} }) {
     <section className="card">
       <p className="card-label">Weekly assignment</p>
       <h2>{title}</h2>
-      <a className="btn btn-primary" href={pdf} target="_blank" rel="noreferrer">Download (PDF)</a>
+      <PdfButton url={pdf} label="Open (PDF)" />
       <p className="small muted center">Bring it to Monday's session.</p>
     </section>
   );

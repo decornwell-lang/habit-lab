@@ -3,13 +3,14 @@
 // payment form (EmbeddedPayment.jsx), with the cohort at the top and ✕ to close.
 // If the in-app form isn't set up (no VITE_STRIPE_PUBLISHABLE_KEY), "Continue to payment"
 // goes to Stripe's own page instead, and Stripe brings them back to the join steps.
+// `inline`: shown inside the cohort's tile (Upcoming) instead of over the page.
 import { useState } from "react";
 import { apiPost } from "../lib/api.js";
 import { formatPrice } from "../lib/cohorts.js";
 import pricing from "../../config/pricing.json";
 import EmbeddedPayment, { canEmbed } from "./EmbeddedPayment.jsx";
 
-export default function PaymentPopup({ cohort, screening, onPaid, onClose }) {
+export default function PaymentPopup({ cohort, screening, onPaid, onClose, inline = false }) {
   const [plan, setPlan] = useState("cohort");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -29,11 +30,10 @@ export default function PaymentPopup({ cohort, screening, onPaid, onClose }) {
     }
   }
 
-  return (
-    <div className="payment-popup" role="dialog" aria-label={`Pay for ${cohort.name}`} onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="payment-popup-panel">
+  const panel = (
+      <div className={inline ? "payment-inline" : "payment-popup-panel"}>
         <div className="payment-popup-head">
-          <strong>{cohort.name}</strong>
+          <strong>{inline ? "Choose and pay" : cohort.name}</strong>
           <button className="icon-btn" onClick={onClose} aria-label="Close">
             <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -62,6 +62,11 @@ export default function PaymentPopup({ cohort, screening, onPaid, onClose }) {
           <button className="btn btn-primary" disabled={busy} onClick={goToStripe}>{busy ? "Opening Stripe…" : "Continue to payment"}</button>
         )}
       </div>
+  );
+  if (inline) return panel;
+  return (
+    <div className="payment-popup" role="dialog" aria-label={`Pay for ${cohort.name}`} onClick={(e) => e.target === e.currentTarget && onClose()}>
+      {panel}
     </div>
   );
 }

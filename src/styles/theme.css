@@ -1255,3 +1255,28 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .whatsapp-card .btn-whatsapp:disabled { opacity: 0.55; border-style: dashed; cursor: default; }
 .payment-popup .muted { color: var(--text-muted); } /* the pop-up is white, even over dark screens */
 .live-next { margin: 0 0 14px; }
+
+/* PDF viewer (PdfButton.jsx): full screen, with Close and Download on top */
+.pdf-viewer { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; background: #3a3f55; }
+.pdf-bar {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: calc(10px + env(safe-area-inset-top)) 14px 10px; background: var(--dark-blue);
+}
+.pdf-bar .btn { width: auto; margin: 0; }
+.pdf-bar .btn-ghost { color: #fff; }
+.pdf-bar .btn-primary { color: var(--aqua); }
+.pdf-frame { flex: 1; width: 100%; border: 0; background: #fff; }
+
+/* Upcoming: one tile per cohort (JoinCohort.jsx), in the habit's colour */
+.upcoming-title { margin: 0 0 10px; }
+.cohort-tile h2 { margin: 0 0 4px; }
+.cohort-tile .cohort-countdown { margin: 0 0 4px; color: var(--cohort); font-weight: 600; }
+.cohort-tile .card-label { color: var(--cohort); }
+.cohort-tile .btn { margin-top: 14px; }
+.cohort-tile .joined { margin: 12px 0 0; }
+/* Payment inside the cohort's tile (Upcoming): a white panel, as Stripe's form is white */
+.payment-inline { margin-top: 14px; padding: 14px; border-radius: 16px; background: #fff; color: var(--text); }
+.payment-inline .muted { color: var(--text-muted); }
+.payment-inline .icon-btn, .payment-popup .icon-btn { color: var(--text); }
+.dashboard.dark .cohort-tile .cohort-countdown { color: var(--cohort); }
+.dashboard .payment-inline .muted, .dashboard .payment-popup .muted { color: var(--text-muted); } /* white panels over dark screens */
