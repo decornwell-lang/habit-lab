@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { updateUserProfile, savePublicProfile, getPublicProfile } from "../lib/data.js";
-import { badgeInfo, sortBadges } from "../lib/streaks.js";
+import { badgeInfo, sortBadges, profileStreaks } from "../lib/streaks.js";
 import { habitStreakLabel } from "../lib/cohorts.js";
 import { AVATARS } from "../content/avatars.js";
 import Avatar from "../components/Avatar.jsx";
@@ -28,17 +28,17 @@ export default function Account() {
   const [phone, setPhone] = useState(profile?.phone || "");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
-  const [badges, setBadges] = useState([]);
-  const [habitType, setHabitType] = useState(null);
+  const [badges, setBadges] = useState([]); // [{ id, key, label }] from every cohort
   const [sharingId, setSharingId] = useState(null);
   const firstName = profile?.firstName || user.displayName || "";
 
   useEffect(() => {
     getPublicProfile(user.uid)
-      .then((p) => {
-        setBadges(sortBadges(p?.badges || []));
-        setHabitType(p?.habitType || null);
-      })
+      .then((p) =>
+        setBadges(profileStreaks(p).flatMap((s) =>
+          sortBadges(s.badges || []).map((id) => ({ id, key: `${s.cohortId}-${id}`, label: s.habitType ? habitStreakLabel(s.habitType) : undefined }))
+        ))
+      )
       .catch(() => setBadges([]));
   }, [user.uid]);
 
@@ -75,18 +75,18 @@ export default function Account() {
           <p className="muted small">None yet.</p>
         ) : (
           <ul className="badge-list">
-            {badges.map((id) => {
+            {badges.map(({ id, key, label }) => {
               const b = badgeInfo(id);
               return (
-                <li key={id}>
+                <li key={key}>
                   <div className="badge-row">
                     <Badge badge={b} size={44} />
-                    <span className="person-name">{b.name}</span>
-                    <button type="button" className="link-btn" onClick={() => setSharingId(sharingId === id ? null : id)}>
-                      {sharingId === id ? "Close" : "Share"}
+                    <span className="person-name">{b.name}{label && <span className="muted small"> · {label}</span>}</span>
+                    <button type="button" className="link-btn" onClick={() => setSharingId(sharingId === key ? null : key)}>
+                      {sharingId === key ? "Close" : "Share"}
                     </button>
                   </div>
-                  {sharingId === id && <ShareBadge badgeId={id} label={habitType ? habitStreakLabel(habitType) : undefined} />}
+                  {sharingId === key && <ShareBadge badgeId={id} label={label} />}
                 </li>
               );
             })}

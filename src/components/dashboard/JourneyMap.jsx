@@ -1,16 +1,20 @@
 // "Your journey": one dot per cohort day (from the evening review, the day's check-in).
-//   filled aqua  = a smoke-free day ("Did you smoke today? No")
-//   gold ring    = a hard day, and you came back (answered "Yes")
+//   filled aqua  = practice kept (e.g. "Did you smoke today? No")
+//   gold ring    = a hard day, and you came back (e.g. answered "Yes")
 //   pale         = no check-in
 //   outlined     = today, and days still to come are faint
-// Tap today or a past day to correct it (e.g. a smoke-free day logged by mistake as smoking).
+// Long cohorts (which may run for years) show five weeks at a time: the last four and the next.
+// Tap today or a past day to correct it (e.g. a smoke-free day logged by mistake as smoked).
 import { useState } from "react";
 import { addDays, todayKey, daysBetween, formatDate } from "../../lib/dates.js";
-import { habitStreakLabel } from "../../lib/cohorts.js";
+import { habitInfo, habitStreakLabel } from "../../lib/cohorts.js";
 
 // onCorrect(date, day, maintained) saves the change (returns a promise).
+const WINDOW = 35; // dots shown at once
+
 export default function JourneyMap({ current, checkins, onCorrect }) {
   const { cohort, progress } = current;
+  const habit = habitInfo(cohort.habitType); // e.g. kept "Smoke-free", missed "Smoked"
   const [editing, setEditing] = useState(null); // the day being corrected
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -43,6 +47,9 @@ export default function JourneyMap({ current, checkins, onCorrect }) {
 
   const kept = days.filter((d) => d.state === "kept").length;
   const returned = days.filter((d) => d.state === "returned").length;
+  const todayIndex = Math.max(0, Math.min(daysBetween(progress.start, today), days.length - 1));
+  const from = Math.max(0, Math.min(todayIndex - 4 * 7 + 1, days.length - WINDOW));
+  const visible = days.slice(from, from + WINDOW);
 
   return (
     <section className="card">
@@ -54,7 +61,7 @@ export default function JourneyMap({ current, checkins, onCorrect }) {
         </p>
       )}
       <ol className="journey" aria-label={`Day by day, ${kept} days kept`}>
-        {days.map((d) => (
+        {visible.map((d) => (
           <li key={d.date} className={`dot ${d.state}${editing?.date === d.date ? " editing" : ""}`} title={`Day ${d.day}`}>
             {onCorrect && d.state !== "future" ? (
               <button type="button" className="dot-button" aria-label={`Day ${d.day}: ${d.state}. Change`}
@@ -65,15 +72,16 @@ export default function JourneyMap({ current, checkins, onCorrect }) {
           </li>
         ))}
       </ol>
+      {days.length > WINDOW && <p className="muted small">Days {visible[0].day}–{visible.at(-1).day} of {days.length}</p>}
       {editing && (
         <div className="journey-edit">
           <p><strong>Day {editing.day}</strong> · {formatDate(editing.date)}</p>
           <div className="segmented">
             <button type="button" className={editing.state === "kept" ? "selected" : ""} disabled={busy} onClick={() => correct(true)}>
-              {cohort.habitType === "smoking" ? "Smoke-free" : "Kept"}
+              {habit.kept}
             </button>
             <button type="button" className={editing.state === "returned" ? "selected no" : ""} disabled={busy} onClick={() => correct(false)}>
-              {cohort.habitType === "smoking" ? "Smoked" : "Not kept"}
+              {habit.missed}
             </button>
           </div>
           {error && <p className="form-error" role="alert">{error}</p>}
@@ -81,7 +89,7 @@ export default function JourneyMap({ current, checkins, onCorrect }) {
       )}
       {onCorrect && !editing && <p className="muted small">Made a mistake? Tap a day to change it.</p>}
       <ul className="journey-legend">
-        <li><span className="dot kept" /> {cohort.habitType === "smoking" ? "Smoke-free" : "Kept"}</li>
+        <li><span className="dot kept" /> {habit.kept}</li>
         <li><span className="dot returned" /> Returned</li>
         <li><span className="dot today" /> Today</li>
       </ul>

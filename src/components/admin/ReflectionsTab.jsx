@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getAllActivity, getMemberReflections } from "../../lib/data.js";
 import { addDays, todayKey, formatDate } from "../../lib/dates.js";
+import { habitInfo } from "../../lib/cohorts.js";
 
 const DAYS = 14;
 
@@ -114,7 +115,7 @@ export default function ReflectionsTab({ data }) {
                     <span className="tag">Counts only</span>
                   )}
                 </div>
-                {openUid === m.id && <MemberEntries entries={entries[m.id]} />}
+                {openUid === m.id && <MemberEntries entries={entries[m.id]} cohorts={data.cohorts} />}
               </li>
             );
           })}
@@ -125,7 +126,12 @@ export default function ReflectionsTab({ data }) {
 }
 
 // A consenting member's own words, newest first.
-function MemberEntries({ entries }) {
+function MemberEntries({ entries, cohorts }) {
+  // An evening answer in words, e.g. "Smoke-free" or "Drank".
+  const answerText = (cohortId, answer) => {
+    const habit = habitInfo(cohorts.find((c) => c.id === cohortId)?.habitType);
+    return answer === habit.keptWhen ? habit.kept : habit.missed;
+  };
   if (!entries) return <p className="muted small">Loading…</p>;
   if (!entries.length) return <p className="muted small">Nothing written yet.</p>;
   return (
@@ -136,11 +142,9 @@ function MemberEntries({ entries }) {
           {e.type === "intention" && <p>{e.question}{e.text && <><br /><em>“{e.text}”</em></>}</p>}
           {e.type === "evening" && (e.skipped ? <p className="muted">Skipped</p> : (
             <p>
-              {e.smoked === true ? "Smoked" : e.smoked === false ? "Didn't smoke" : ""}
+              {Object.entries(e.answers || {}).map(([id, a]) => answerText(id, a)).join(" · ")}
               {e.intensity != null && ` · cravings ${e.intensity}/5`}
-              {e.cravings != null && ` · ${e.cravings} cravings`}
               {e.strongestAt && ` · strongest at ${e.strongestAt}`}
-              {e.noticed && <><br />Noticed: <em>“{e.noticed}”</em></>}
               {e.helped && <><br />Helped: <em>“{e.helped}”</em></>}
               {e.tomorrow && <><br />Tomorrow: <em>“{e.tomorrow}”</em></>}
             </p>

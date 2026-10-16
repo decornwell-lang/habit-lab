@@ -4,10 +4,10 @@
 // Collections:
 //   users/{uid}                       private profile (surname, email, role)
 //   users/{uid}/memberships/{cohortId} which cohorts they joined, payment
-//   users/{uid}/checkins/{date}       daily check-ins
+//   users/{uid}/checkins/{date_cohortId}  daily check-ins, one per cohort
 //   users/{uid}/practice/{date}       that day's meditation, morning and reflection answers
 //   users/{uid}/practiceChecks/{id}   badge check-ins ("Still in your practice?")
-//   publicProfiles/{uid}              first name, avatar, streak, badges (shown to others only if opted in)
+//   publicProfiles/{uid}              first name, avatar, and per cohort: streak, badges (shown to others only if opted in)
 //   cohorts/{cohortId}                cohort details and member list
 //   settings/content                  Zoom link, session date, weekly media links
 //   notices/{id}                      messages from the owner (also sent as push notifications)
@@ -67,14 +67,17 @@ export async function updateMembership(uid, cohortId, data) {
 }
 
 // ---------- Check-ins and practice ----------
-// Returns all of a member's check-ins as { "YYYY-MM-DD": {...} }
+// All of a member's check-ins, one per cohort per day: [{ id, date, cohortId, maintained, ... }].
+// Ids are "2026-10-12_<cohortId>" (early ones are just the date). See checkinsFor() in cohorts.js.
 export async function getCheckins(uid) {
   const snap = await getDocs(collection(db, "users", uid, "checkins"));
-  return Object.fromEntries(snap.docs.map((d) => [d.id, d.data()]));
+  return snap.docs.map((d) => ({ id: d.id, date: d.id.slice(0, 10), ...d.data() }));
 }
 
-export async function saveCheckin(uid, date, data) {
-  await setDoc(doc(db, "users", uid, "checkins", date), { ...data, date, updatedAt: serverTimestamp() }, { merge: true });
+// Saves a check-in; `id` is the existing check-in's id when correcting one.
+export async function saveCheckin(uid, data, id = `${data.date}_${data.cohortId}`) {
+  await setDoc(doc(db, "users", uid, "checkins", id), { ...data, updatedAt: serverTimestamp() }, { merge: true });
+  return id;
 }
 
 // ---------- Morning intention, evening review and cravings ----------

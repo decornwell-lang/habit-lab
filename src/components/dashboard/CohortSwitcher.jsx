@@ -1,0 +1,20 @@
+// The buttons at the top of Home for a member in more than one cohort, e.g.
+// "Smoke-free · Alcohol-free · Fitness". Badges, streak, journey, leaderboard and the
+// WhatsApp group below follow the chosen cohort.
+import { habitInfo } from "../../lib/cohorts.js";
+
+export default function CohortSwitcher({ rows, selected, onSelect }) {
+  const names = rows.map((r) => habitInfo(r.cohort.habitType).tab);
+  return (
+    <div className="cohort-switcher" role="tablist" aria-label="Your cohorts">
+      {rows.map((r, i) => (
+        <button type="button" role="tab" key={r.cohort.id} aria-selected={r.cohort.id === selected}
+          className={r.cohort.id === selected ? "selected" : ""} onClick={() => onSelect(r.cohort.id)}>
+          {/* Two cohorts on the same habit are told apart by name. */}
+          {names.indexOf(names[i]) !== names.lastIndexOf(names[i]) ? r.cohort.name : names[i]}
+          {r.progress.state === "upcoming" && <small> · soon</small>}
+        </button>
+      ))}
+    </div>
+  );
+}

@@ -29,7 +29,9 @@ Copy `.env.example` to `.env.local` and fill in the Firebase (and later Stripe) 
 Members get three notifications a day, each at their own local time (their phone's time zone is saved when they open the app; Europe/Madrid is used until then):
 - **06:00** How do you feel today? (Morning tile)
 - **08:00** Your intention for today (Intention tile: a minute with "What is my intention, in one sentence?")
-- **21:00** Evening review, the day's final check-in. "Did you smoke today? No" keeps the streak.
+- **21:00** Evening review, the day's final check-in. One question per active cohort (e.g. "Did you smoke today? No" keeps the smoking streak).
+
+A member can be in several cohorts at once (e.g. alcohol for years, plus a fitness cohort). Each cohort has its own streak, badges, journey and leaderboard; buttons at the top of Home switch between them. The habits, their evening questions and streak wording are in `src/lib/cohorts.js` (`HABIT_TYPES`).
 
 This week's meditation (Practices tab) doesn't send a notification. "I'm craving right now" is on demand and never notifies. Times and wording: `src/content/dailyPrompts.js`.
 

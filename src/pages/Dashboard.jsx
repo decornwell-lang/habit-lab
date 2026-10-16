@@ -11,10 +11,10 @@ import {
 } from "../lib/data.js";
 import { apiPost } from "../lib/api.js";
 import { todayKey, checkinDayKey, addDays, timeZoneName } from "../lib/dates.js";
-import { pickCurrentCohort, habitStreakLabel } from "../lib/cohorts.js";
+import { memberCohorts, checkinsFor, habitInfo, habitStreakLabel } from "../lib/cohorts.js";
 import { weekContent } from "../lib/content.js";
 import { aphorismFor } from "../lib/aphorisms.js";
-import { computeStreak, badgesForStreak } from "../lib/streaks.js";
+import { computeStreak, badgesForStreak, profileStreakFor } from "../lib/streaks.js";
 
 import PreCohort from "../components/dashboard/PreCohort.jsx";
 import WeeklyAssignment from "../components/dashboard/WeeklyAssignment.jsx";
@@ -27,6 +27,7 @@ import NotificationSettings from "../components/NotificationSettings.jsx";
 import InstallApp from "../components/InstallApp.jsx";
 import DashboardTabs, { TABS, DEFAULT_TAB } from "../components/dashboard/DashboardTabs.jsx";
 import StreakCard from "../components/dashboard/StreakCard.jsx";
+import CohortSwitcher from "../components/dashboard/CohortSwitcher.jsx";
 import BadgesCard from "../components/dashboard/BadgesCard.jsx";
 import Folds from "../components/dashboard/Folds.jsx";
 import BreatheTab from "../components/dashboard/BreatheTab.jsx";
@@ -44,13 +45,24 @@ import { LockIcon, PencilIcon } from "../components/TileIcons.jsx";
 // Tabs shown on the dark blue background, like the Breathe screen.
 const DARK_TABS = ["home", "practices", "breathe", "upcoming"];
 
+// The cohort last chosen on Home (for members in more than one), remembered on this device.
+const COHORT_KEY = "habitlab:cohort";
+function readCohortChoice() {
+  try {
+    return localStorage.getItem(COHORT_KEY);
+  } catch {
+    return null;
+  }
+}
+
 export default function Dashboard() {
   const { user, profile } = useAuth();
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const [celebrate, setCelebrate] = useState(null); // badge id to celebrate
-  const [startAgain, setStartAgain] = useState(false);
+  const [celebrate, setCelebrate] = useState(null); // { badgeId, row }: a new badge to celebrate
+  const [cohortChoice, setCohortChoice] = useState(readCohortChoice); // which cohort Home shows
+  const [startAgain, setStartAgain] = useState(null); // the cohort row, after "Not right now"
   const [sheet, setSheet] = useState(null); // full-screen panel: "intention", "evening" or "craving"
   const [params, setParams] = useSearchParams();
   const [tabTaps, setTabTaps] = useState(0); // tapping a tab again starts it afresh (e.g. Breathe → choose a practice)
@@ -144,63 +156,93 @@ export default function Dashboard() {
   if (error && !data) return <main className="page"><p className="form-error">{error}</p></main>;
   if (!data) return <main className="page"><p className="muted">Loading your dashboard…</p></main>;
 
-  const current = pickCurrentCohort(data.cohorts, data.memberships, today);
-  const active = current?.progress.state === "active";
-  // "This week": the member's cohort week, or the week the admin has set.
-  const week = active ? current.progress.week : Number(data.settings.currentWeek) || 1;
+  // The member's cohorts. Home shows one at a time (badges, streak, journey, leaderboard,
+  // WhatsApp group); with more than one, buttons at the top switch between them.
+  // The morning check-in, intention and evening review cover all active cohorts.
+  const rows = memberCohorts(data.cohorts, data.memberships, today);
+  const shown = rows.filter((r) => r.progress.state !== "finished");
+  const choices = shown.length ? shown : rows.slice(0, 1); // or the latest finished cohort
+  const current = choices.find((r) => r.cohort.id === cohortChoice) || choices[0] || null;
+  const activeRows = rows.filter((r) => r.progress.state === "active");
+  const active = activeRows.length > 0;
+  function chooseCohort(id) {
+    setCohortChoice(id);
+    try {
+      localStorage.setItem(COHORT_KEY, id);
+    } catch {
+      // Not remembered; fine.
+    }
+  }
+  const week = current?.progress.state === "active" ? current.progress.week : Number(data.settings.currentWeek) || 1;
   const habitType = current?.cohort.habitType || "smoking";
   const content = weekContent(habitType, week, data.settings);
   const firstName = profile?.firstName || user.displayName || "friend";
 
-  // The evening review is the day's check-in: "Did you smoke today? No" keeps the streak.
-  // If the smoking question was left blank, there's no check-in for the day.
-  async function saveEveningCheckin(evening) {
-    if (evening.smoked !== true && evening.smoked !== false) return;
-    const checkin = {
-      cohortId: current.cohort.id,
-      day: current.progress.day,
-      week: current.progress.week,
-      maintained: evening.smoked === false,
-      craving: evening.intensity, // 0 to 5
-    };
-    await saveCheckin(user.uid, today, checkin);
-    await handleCheckinSaved(today, checkin);
+  // The evening review is the day's check-in for each active cohort, e.g.
+  // "Did you smoke today? No" keeps the smoking streak. Unanswered questions save nothing.
+  async function saveEveningCheckins(evening) {
+    const saves = activeRows
+      .filter((r) => evening.answers?.[r.cohort.id])
+      .map((r) => ({
+        row: r,
+        date: today,
+        checkin: {
+          maintained: evening.answers[r.cohort.id] === habitInfo(r.cohort.habitType).keptWhen,
+          craving: habitInfo(r.cohort.habitType).cravings ? evening.intensity : null, // 0 to 5
+        },
+      }));
+    await saveCheckins(saves);
   }
 
-  // A correction from the journey: mark a past day (or today) smoke-free or not.
+  // A correction from the journey: mark a past day (or today) kept or not.
   async function correctCheckin(date, day, maintained) {
-    const checkin = { ...data.checkins[date], cohortId: current.cohort.id, day, week: Math.ceil(day / 7), maintained, corrected: true };
-    await saveCheckin(user.uid, date, checkin);
-    await handleCheckinSaved(date, checkin);
+    await saveCheckins([{ row: current, date, checkin: { day, week: Math.ceil(day / 7), maintained, corrected: true } }]);
   }
 
-  // Called after a check-in is saved: update streak, badges and the public profile.
-  async function handleCheckinSaved(date, checkin) {
-    const checkins = { ...data.checkins, [date]: checkin };
-    const streak = computeStreak(checkins, checkinDay);
-    const lastYesDate = streak === 0 ? null : checkins[checkinDay]?.maintained ? checkinDay : addDays(checkinDay, -1);
-    const earned = new Set(data.publicProfile?.badges || []);
-    const newBadges = badgesForStreak(streak).filter((b) => !earned.has(b));
-    const badges = [...earned, ...newBadges];
+  // Saves check-ins ([{ row, date, checkin }]), then updates each cohort's streak and
+  // badges on the public profile (the leaderboard).
+  async function saveCheckins(saves) {
+    let checkins = data.checkins;
+    for (const { row, date, checkin } of saves) {
+      const existing = checkinsFor(checkins, row.cohort)[date];
+      const full = { cohortId: row.cohort.id, day: row.progress.day, week: row.progress.week, ...checkin, date };
+      const id = await saveCheckin(user.uid, full, existing?.id);
+      checkins = [...checkins.filter((c) => c.id !== id), { ...existing, ...full, id }];
+    }
+    if (!saves.length) return;
 
-    await savePublicProfile(user.uid, {
+    let celebrateNext = null;
+    const streaks = {};
+    for (const { row, checkin } of saves) {
+      const before = profileStreakFor(data.publicProfile, row.cohort);
+      const streak = computeStreak(checkinsFor(checkins, row.cohort), checkinDay);
+      const lastYesDate = streak === 0 ? null : checkinsFor(checkins, row.cohort)[checkinDay]?.maintained ? checkinDay : addDays(checkinDay, -1);
+      const earned = new Set(before?.badges || []);
+      const newBadges = badgesForStreak(streak).filter((b) => !earned.has(b));
+      streaks[row.cohort.id] = { habitType: row.cohort.habitType, streak, lastYesDate, badges: [...earned, ...newBadges] };
+      if (checkin.maintained && newBadges.length) celebrateNext = { badgeId: newBadges.at(-1), row };
+    }
+
+    const publicProfile = {
       firstName,
       avatar: profile?.avatar || null,
       leaderboardOptIn: Boolean(profile?.leaderboardOptIn),
       showHabit: profile?.showHabit !== false, // shown unless the member turned it off
-      habitType: current?.cohort.habitType || null, // which streak this is, e.g. "alcohol"
-      streak,
-      lastYesDate,
-      badges,
-    });
-    setData((d) => ({ ...d, checkins, publicProfile: { ...d.publicProfile, streak, lastYesDate, badges } }));
-
-    if (checkin.maintained && newBadges.length) setCelebrate(newBadges.at(-1));
+      cohorts: streaks, // merged with the other cohorts already stored
+    };
+    await savePublicProfile(user.uid, publicProfile);
+    setData((d) => ({
+      ...d,
+      checkins,
+      publicProfile: { ...d.publicProfile, ...publicProfile, cohorts: { ...d.publicProfile?.cohorts, ...streaks } },
+    }));
+    if (celebrateNext) setCelebrate(celebrateNext);
   }
 
-  const streak = computeStreak(data.checkins, checkinDay);
+  const streak = current ? computeStreak(checkinsFor(data.checkins, current.cohort), checkinDay) : 0;
+  const eveningHabits = activeRows.map((r) => ({ ...habitInfo(r.cohort.habitType), cohortId: r.cohort.id, habitType: r.cohort.habitType }));
 
-  const dayLabel = active ? `Day ${current.progress.day} ` : "";
+  const dayLabel = current?.progress.state === "active" ? `Day ${current.progress.day} ` : "";
   // Saves a daytime answer into Home's state, so the row shows it straight away.
   const onSaved = (key, answer) => setData((d) => ({ ...d, day: { ...d.day, [key]: answer } }));
   const prompt = { uid: user.uid, today, dayLabel, onSaved };
@@ -232,7 +274,7 @@ export default function Dashboard() {
         isDone: Boolean(data.evening), doneText: data.evening?.skipped ? "Skipped" : "✓ Done" }),
       onOpen: () => setSheet("evening"),
     },
-    current && {
+    activeRows.some((r) => habitInfo(r.cohort.habitType).cravings) && {
       id: "craving",
       icon: "🌊",
       tone: "calm",
@@ -263,34 +305,36 @@ export default function Dashboard() {
       {celebrate && (
         <Celebration
           uid={user.uid}
-          badgeId={celebrate}
-          label={habitStreakLabel(habitType)}
+          badgeId={celebrate.badgeId}
+          label={habitStreakLabel(celebrate.row.cohort.habitType)}
           onDone={() => setCelebrate(null)}
           onNotRightNow={() => {
             setCelebrate(null);
-            setStartAgain(true);
+            setStartAgain(celebrate.row);
           }}
         />
       )}
 
       {startAgain && (
-        <StartAgain uid={user.uid} current={current} onDone={async (restarted) => {
-          setStartAgain(false);
+        <StartAgain uid={user.uid} current={startAgain} onDone={async (restarted) => {
+          setStartAgain(null);
           if (restarted) await load();
         }} />
       )}
 
-      {/* Home: badges, the day's tiles (locked until their time), my streak (with journey), then the leaderboard tile */}
+      {/* Home: the cohort buttons (if more than one), badges, the day's tiles (locked until
+          their time), my streak (with journey), then the leaderboard tile */}
       {tab === "home" && (
         <>
+          {choices.length > 1 && <CohortSwitcher rows={choices} selected={current.cohort.id} onSelect={chooseCohort} />}
           {current && <BadgesCard streak={streak} current={current} />}
           <Folds items={homeItems} initialOpen={params.get("open")} />
           {current ? (
             <>
-              <StreakCard streak={streak} current={current} checkins={data.checkins} onCorrect={correctCheckin} />
+              <StreakCard streak={streak} current={current} checkins={checkinsFor(data.checkins, current.cohort)} onCorrect={correctCheckin} />
               <Folds items={[{
                 id: "leaderboard", icon: "🏆", tone: "gold", title: "Leaderboard", subtitle: "Your cohort's streaks",
-                content: <Leaderboard uid={user.uid} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} />,
+                content: <Leaderboard uid={user.uid} cohort={current.cohort} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} />,
               }]} />
               <LeaderboardInvite uid={user.uid} profile={profile} />
               {current.progress.state === "upcoming" && <PreCohort current={current} />}
@@ -337,11 +381,11 @@ export default function Dashboard() {
       )}
       {sheet === "evening" && (
         <Sheet label="Evening review" onClose={() => setSheet(null)}>
-          <EveningReview uid={user.uid} date={today} existing={data.evening} firstName={firstName}
+          <EveningReview uid={user.uid} date={today} existing={data.evening} habits={eveningHabits} firstName={firstName}
             onSaved={async (evening, skipped) => {
               setData((d) => ({ ...d, evening }));
               if (skipped) return setSheet(null);
-              await saveEveningCheckin(evening);
+              await saveEveningCheckins(evening);
             }} />
         </Sheet>
       )}

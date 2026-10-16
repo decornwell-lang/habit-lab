@@ -1,8 +1,11 @@
-// Evening review (opens at 21:00), the day's final check-in. Every question is optional;
-// "Skip today" is always there. If the member says they smoked, one neutral line
+// Evening review (opens at 21:00), the day's final check-in. One yes/no question for
+// each of the member's active cohorts (e.g. "Did you smoke today?", "Did you exercise
+// today?"), then the craving questions if any cohort is about cravings. Every question is
+// optional; "Skip today" is always there. If a practice wasn't kept, one neutral line
 // appears, nothing else. Saved to users/{uid}/reflections/{date}_evening.
 // After Save, the answers show on the page and the button becomes "Share to WhatsApp"
-// (their words; the craving intensity only if ticked). Wording: src/content/intention.js.
+// (their words; the craving intensity only if ticked). Wording: src/content/intention.js
+// and the habit questions in src/lib/cohorts.js.
 import { useState } from "react";
 import { saveReflection } from "../../lib/data.js";
 import { EVENING, MAX_TEXT } from "../../content/intention.js";
@@ -13,10 +16,12 @@ import ShareOptions from "../ShareOptions.jsx";
 import { shareMessage } from "../../lib/shareMessage.js";
 
 const INTENSITY = [0, 1, 2, 3, 4, 5];
+const yesNo = (answer) => (answer === "yes" ? "Yes" : answer === "no" ? "No" : "");
 
-export default function EveningReview({ uid, date, existing, firstName, onSaved }) {
+// habits: [{ cohortId, habitType, question, keptWhen, cravings }], one per active cohort.
+export default function EveningReview({ uid, date, existing, habits, firstName, onSaved }) {
   const [form, setForm] = useState({
-    smoked: existing?.smoked ?? null,
+    answers: existing?.answers || {},
     intensity: existing?.intensity ?? null,
     strongestAt: existing?.strongestAt || "",
     helped: existing?.helped || "",
@@ -27,19 +32,24 @@ export default function EveningReview({ uid, date, existing, firstName, onSaved 
   const [saved, setSaved] = useState(Boolean(existing) && !existing?.skipped);
   const [share, setShare] = useState({ includeText: true, includeScore: false });
   const set = (key, value) => setForm((f) => ({ ...f, [key]: value }));
-  const written = [form.helped, form.smoked ? form.tomorrow : ""].map((t) => t.trim()).filter(Boolean).join(" ");
+  const answer = (cohortId, value) => setForm((f) => ({ ...f, answers: { ...f.answers, [cohortId]: f.answers[cohortId] === value ? null : value } }));
+
+  const cravings = habits.some((h) => h.cravings);
+  const slipped = habits.some((h) => form.answers[h.cohortId] && form.answers[h.cohortId] !== h.keptWhen);
+  const written = [form.helped, slipped ? form.tomorrow : ""].map((t) => t.trim()).filter(Boolean).join(" ");
   const score = form.intensity === null ? "" : `cravings ${form.intensity}/5`;
 
   async function save(skipped) {
     setBusy(true);
     setError("");
     try {
+      const answers = Object.fromEntries(Object.entries(form.answers).filter(([, v]) => v));
       const entry = skipped
         ? { type: "evening", date, skipped: true }
-        : { type: "evening", date, skipped: false, smoked: form.smoked, intensity: form.intensity,
-            strongestAt: form.strongestAt.trim(), helped: form.helped.trim(), tomorrow: form.smoked ? form.tomorrow.trim() : "" };
+        : { type: "evening", date, skipped: false, answers, intensity: cravings ? form.intensity : null,
+            strongestAt: cravings ? form.strongestAt.trim() : "", helped: form.helped.trim(), tomorrow: slipped ? form.tomorrow.trim() : "" };
       await saveReflection(uid, `${date}_evening`, entry, { evening: skipped ? "skipped" : "done" });
-      await onSaved(entry, skipped); // also saves the day's check-in (streak)
+      await onSaved(entry, skipped); // also saves each cohort's check-in (streaks)
       if (!skipped) setSaved(true);
     } catch (err) {
       console.error(err);
@@ -49,6 +59,7 @@ export default function EveningReview({ uid, date, existing, firstName, onSaved 
     }
   }
 
+  let n = 0; // question numbers
   return (
     <div className="evening">
       <h2>Evening review</h2>
@@ -56,45 +67,55 @@ export default function EveningReview({ uid, date, existing, firstName, onSaved 
 
       {saved ? (
         <SavedAnswers onEdit={() => setSaved(false)} items={[
-          { label: EVENING.smoked, value: form.smoked === true ? "Yes" : form.smoked === false ? "No" : "" },
-          { label: EVENING.honest, value: form.smoked ? form.tomorrow : "", quote: true },
-          { label: EVENING.intensity, value: form.intensity === null ? "" : `${form.intensity} / 5` },
-          { label: EVENING.strongest, value: form.strongestAt },
+          ...habits.map((h) => ({ label: h.question, value: yesNo(form.answers[h.cohortId]) })),
+          { label: EVENING.honest, value: slipped ? form.tomorrow : "", quote: true },
+          { label: EVENING.intensity, value: cravings && form.intensity !== null ? `${form.intensity} / 5` : "" },
+          { label: EVENING.strongest, value: cravings ? form.strongestAt : "" },
           { label: EVENING.helped, value: form.helped, quote: true },
         ]} />
       ) : (
         <>
-          <QuestionStep n={1} title={EVENING.smoked}>
-            <div className="segmented">
-              <button type="button" className={form.smoked === true ? "selected no" : ""} aria-pressed={form.smoked === true} onClick={() => set("smoked", form.smoked === true ? null : true)}>Yes</button>
-              <button type="button" className={form.smoked === false ? "selected" : ""} aria-pressed={form.smoked === false} onClick={() => set("smoked", form.smoked === false ? null : false)}>No</button>
-            </div>
-            {form.smoked === true && (
-              <div className="evening-honest">
-                <p>{EVENING.honest}</p>
-                <textarea className="q-textarea" rows={2} maxLength={MAX_TEXT} value={form.tomorrow} onChange={(e) => set("tomorrow", e.target.value)}
-                  aria-label={EVENING.honest} />
+          {habits.map((h) => (
+            <QuestionStep key={h.cohortId} n={++n} title={h.question}>
+              <div className="segmented">
+                {["yes", "no"].map((v) => (
+                  <button type="button" key={v} aria-pressed={form.answers[h.cohortId] === v} onClick={() => answer(h.cohortId, v)}
+                    className={form.answers[h.cohortId] === v ? (v === h.keptWhen ? "selected" : "selected no") : ""}>
+                    {yesNo(v)}
+                  </button>
+                ))}
               </div>
-            )}
-          </QuestionStep>
-
-          <QuestionStep n={2} title={EVENING.intensity}>
-            <div className="scale-row" role="group" aria-label={EVENING.intensity}>
-              {INTENSITY.map((n) => (
-                <button type="button" key={n} className={form.intensity === n ? "selected" : ""} aria-pressed={form.intensity === n}
-                  onClick={() => set("intensity", form.intensity === n ? null : n)}>
-                  {n}
-                </button>
-              ))}
+            </QuestionStep>
+          ))}
+          {slipped && (
+            <div className="evening-honest">
+              <p>{EVENING.honest}</p>
+              <textarea className="q-textarea" rows={2} maxLength={MAX_TEXT} value={form.tomorrow} onChange={(e) => set("tomorrow", e.target.value)}
+                aria-label={EVENING.honest} />
             </div>
-            <div className="scale-labels"><span>{EVENING.intensityLow}</span><span>{EVENING.intensityHigh}</span></div>
-          </QuestionStep>
+          )}
 
-          <QuestionStep n={3} title={EVENING.strongest} hint="Optional">
-            <input className="q-input" type="time" value={form.strongestAt} onChange={(e) => set("strongestAt", e.target.value)} aria-label={EVENING.strongest} />
-          </QuestionStep>
+          {cravings && (
+            <>
+              <QuestionStep n={++n} title={EVENING.intensity}>
+                <div className="scale-row" role="group" aria-label={EVENING.intensity}>
+                  {INTENSITY.map((i) => (
+                    <button type="button" key={i} className={form.intensity === i ? "selected" : ""} aria-pressed={form.intensity === i}
+                      onClick={() => set("intensity", form.intensity === i ? null : i)}>
+                      {i}
+                    </button>
+                  ))}
+                </div>
+                <div className="scale-labels"><span>{EVENING.intensityLow}</span><span>{EVENING.intensityHigh}</span></div>
+              </QuestionStep>
 
-          <QuestionStep n={4} title={EVENING.helped} hint="Optional">
+              <QuestionStep n={++n} title={EVENING.strongest} hint="Optional">
+                <input className="q-input" type="time" value={form.strongestAt} onChange={(e) => set("strongestAt", e.target.value)} aria-label={EVENING.strongest} />
+              </QuestionStep>
+            </>
+          )}
+
+          <QuestionStep n={++n} title={EVENING.helped} hint="Optional">
             <textarea className="q-textarea" rows={2} maxLength={MAX_TEXT} value={form.helped} onChange={(e) => set("helped", e.target.value)}
               aria-label={EVENING.helped} />
             <p className="char-count">{form.helped.length} / {MAX_TEXT}</p>

@@ -2,14 +2,14 @@
 // with how many days to go. Sharing sends a picture of the gold medal with
 // "I earned a 7-day smoke-free badge" below it.
 import { currentBadge, nextBadge } from "../../lib/streaks.js";
-import { habitStreakLabel } from "../../lib/cohorts.js";
+import { habitStreakLabel, firstDayPhrase } from "../../lib/cohorts.js";
 import Badge from "../Badge.jsx";
 import ShareImageButton from "../ShareImageButton.jsx";
 import { badgeHeadline } from "../../lib/shareImage.js";
 
 export default function BadgesCard({ streak, current }) {
   const label = habitStreakLabel(current.cohort.habitType); // e.g. "smoke-free"
-  const badge = currentBadge(streak); // null until the first smoke-free day
+  const badge = currentBadge(streak); // null until the first day kept
   const next = nextBadge(streak);
   const toGo = next.days - streak;
 
@@ -27,7 +27,7 @@ export default function BadgesCard({ streak, current }) {
         <div className="badges-current">
           <Badge badge={badge || next} locked={!badge} size={92} />
           <p className="badges-name">{badge ? badge.name : "Your first badge"}</p>
-          <p className="badges-caption">{badge ? "Current" : "Earned with your first smoke-free day"}</p>
+          <p className="badges-caption">{badge ? "Current" : `Earned with ${firstDayPhrase(current.cohort.habitType)}`}</p>
         </div>
         {badge && (
           <div className="badges-next">

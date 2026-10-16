@@ -1107,3 +1107,16 @@ td.actions { white-space: nowrap; }
   background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff;
 }
 .scale-row button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
+
+/* ---------- Cohort buttons (Home, for members in more than one cohort) ---------- */
+.cohort-switcher {
+  display: flex; gap: 8px; overflow-x: auto; margin: 0 -16px 14px; padding: 2px 16px;
+  scrollbar-width: none;
+}
+.cohort-switcher::-webkit-scrollbar { display: none; }
+.cohort-switcher button {
+  flex: none; padding: 9px 16px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06); color: #dfe3f0; font: inherit; font-weight: 600; font-size: 0.92rem; cursor: pointer;
+}
+.cohort-switcher button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
+.cohort-switcher small { font-weight: 500; opacity: 0.8; }

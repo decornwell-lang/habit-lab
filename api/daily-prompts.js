@@ -43,7 +43,7 @@ export default handle(async (req, res) => {
     // promptsSent remembers the last date each prompt went out, so it's sent once a day.
     if (!prompt || user.promptsSent?.[prompt.id] === local.date) continue;
 
-    // Find an active cohort for today.
+    // In at least one active cohort today? (One set of prompts covers all of them.)
     const memberships = (await userDoc.ref.collection("memberships").get()).docs;
     let cohortDay = null;
     for (const m of memberships) {
@@ -55,8 +55,8 @@ export default handle(async (req, res) => {
     }
     if (!cohortDay) continue;
 
-    // Already did today's evening review (final check-in)? Then no reminder.
-    if (prompt.id === "evening" && (await userDoc.ref.collection("checkins").doc(local.date).get()).exists) continue;
+    // Already did (or skipped) today's evening review, the day's check-in? Then no reminder.
+    if (prompt.id === "evening" && (await userDoc.ref.collection("reflections").doc(`${local.date}_evening`).get()).exists) continue;
 
     const response = await getMessaging().sendEachForMulticast({
       tokens: user.fcmTokens,

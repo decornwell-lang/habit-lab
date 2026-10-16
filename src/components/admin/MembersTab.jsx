@@ -1,8 +1,9 @@
 // Admin → Members: table of all users, add someone to a cohort, CSV export.
 import { useState } from "react";
 import { joinCohortDirectly, getAllCheckins } from "../../lib/data.js";
+import { habitLabel, habitStreakLabel } from "../../lib/cohorts.js";
 import { downloadCsv } from "../../lib/csv.js";
-import { effectiveStreak, badgeInfo, sortBadges } from "../../lib/streaks.js";
+import { effectiveStreak, badgeInfo, sortBadges, profileStreaks } from "../../lib/streaks.js";
 import { todayKey, checkinDayKey, toKey } from "../../lib/dates.js";
 
 // Joins the data for one table row.
@@ -20,9 +21,10 @@ function buildRows({ users, profiles, memberships, cohorts }) {
         signedUp: u.createdAt?.toDate ? toKey(u.createdAt.toDate()) : "",
         cohorts: ms.map((m) => cohorts.find((c) => c.id === m.cohortId)?.name || m.cohortId).join("; "),
         payment: ms.map((m) => (m.paid ? `Paid${m.amount ? ` ${m.amount}` : ""}` : m.method === "admin" ? "Added by admin" : "Free")).join("; "),
-        streak: effectiveStreak(p, today),
-        badges: sortBadges(p.badges).map((b) => badgeInfo(b).label).join(", "),
-        topBadge: p.badges?.length ? `${badgeInfo(sortBadges(p.badges).at(-1)).name}` : "",
+        // One streak and set of badges per cohort, e.g. "12 smoke-free; 3 alcohol-free".
+        streak: profileStreaks(p).map((s) => `${effectiveStreak(s, today)} ${habitStreakLabel(s.habitType)}`).join("; "),
+        badges: profileStreaks(p).map((s) => sortBadges(s.badges).map((b) => badgeInfo(b).label).join(", ")).filter(Boolean).join("; "),
+        topBadge: profileStreaks(p).filter((s) => s.badges?.length).map((s) => badgeInfo(sortBadges(s.badges).at(-1)).name).join("; "),
         cohortIds: ms.map((m) => m.cohortId),
       };
     })
@@ -71,7 +73,8 @@ export default function MembersTab({ data, reload, onViewCheckins }) {
       { label: "Cohort", value: (c) => data.cohorts.find((x) => x.id === c.cohortId)?.name },
       { label: "Day", value: (c) => c.day },
       { label: "Week", value: (c) => c.week },
-      { label: "Smoke-free", value: (c) => (c.maintained ? "Yes" : "No") },
+      { label: "Habit", value: (c) => habitLabel(data.cohorts.find((x) => x.id === c.cohortId)?.habitType || "smoking") },
+      { label: "Kept", value: (c) => (c.maintained ? "Yes" : "No") },
       { label: "Cravings (0-5)", value: (c) => c.craving },
       { label: "Question", value: (c) => c.question },
     ]);

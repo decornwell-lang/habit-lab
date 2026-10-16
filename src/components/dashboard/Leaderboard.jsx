@@ -1,13 +1,14 @@
-// Leaderboard (Home tile): members who opted in, ranked by streak. Each row: rank,
-// avatar, first name, the challenge (unless they hid it), their current badge and streak.
+// Leaderboard (Home tile): members of this cohort who opted in, ranked by their streak
+// in it. Each row: rank, avatar, first name, the challenge (unless they hid it), their
+// current badge and streak.
 import { useEffect, useState } from "react";
 import { getLeaderboard } from "../../lib/data.js";
-import { effectiveStreak, sortBadges } from "../../lib/streaks.js";
+import { effectiveStreak, sortBadges, profileStreakFor } from "../../lib/streaks.js";
 import { habitStreakLabel } from "../../lib/cohorts.js";
 import Badge from "../Badge.jsx";
 import Avatar from "../Avatar.jsx";
 
-export default function Leaderboard({ uid, optedIn, today }) {
+export default function Leaderboard({ uid, cohort, optedIn, today }) {
   const [rows, setRows] = useState(null);
 
   useEffect(() => {
@@ -15,12 +16,14 @@ export default function Leaderboard({ uid, optedIn, today }) {
       .then((profiles) =>
         setRows(
           profiles
-            .map((p) => ({ ...p, current: effectiveStreak(p, today) }))
+            .map((p) => ({ ...p, entry: profileStreakFor(p, cohort) }))
+            .filter((p) => p.entry)
+            .map((p) => ({ ...p, badges: p.entry.badges || [], current: effectiveStreak(p.entry, today) }))
             .sort((a, b) => b.current - a.current || (b.badges?.length || 0) - (a.badges?.length || 0))
         )
       )
       .catch(() => setRows([]));
-  }, [today, optedIn]);
+  }, [today, optedIn, cohort]);
 
   return (
     <section className="card">
@@ -33,7 +36,7 @@ export default function Leaderboard({ uid, optedIn, today }) {
         <ol className="people leaderboard">
           {rows.map((p, i) => {
             const top = p.badges?.length ? sortBadges(p.badges).at(-1) : null;
-            const habit = p.habitType && p.showHabit !== false ? habitStreakLabel(p.habitType) : "";
+            const habit = p.showHabit !== false ? habitStreakLabel(cohort.habitType) : "";
             return (
               <li key={p.id} className={p.id === uid ? "me" : ""}>
                 <span className="lb-rank">{i + 1}</span>

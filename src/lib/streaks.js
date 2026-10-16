@@ -1,6 +1,7 @@
 // Streaks and badges.
-// A streak is the number of days in a row with a smoke-free check-in (the evening
-// review: "Did you smoke today? No"), stored as `maintained: true`.
+// A streak is the number of days in a row a cohort's practice was kept (the evening
+// review, e.g. "Did you smoke today? No"), stored as `maintained: true`.
+// Each cohort has its own streak and badges.
 // A "No" or a missed day pauses it; history is never deleted.
 import { addDays, daysBetween } from "./dates.js";
 
@@ -22,6 +23,24 @@ export function computeStreak(checkins, today) {
 export function effectiveStreak(profile, today) {
   if (!profile?.lastYesDate || !profile.streak) return 0;
   return daysBetween(profile.lastYesDate, today) <= 1 ? profile.streak : 0;
+}
+
+// The member's streak and badges for each cohort, from their public profile:
+// [{ cohortId, habitType, streak, lastYesDate, badges }]. Stored in profile.cohorts;
+// older profiles kept a single streak at the top level.
+export function profileStreaks(profile) {
+  if (profile?.cohorts) return Object.entries(profile.cohorts).map(([cohortId, s]) => ({ cohortId, ...s }));
+  if (profile?.streak || profile?.badges?.length) {
+    const { habitType, streak, lastYesDate, badges } = profile;
+    return [{ cohortId: null, habitType, streak, lastYesDate, badges }];
+  }
+  return [];
+}
+
+// One cohort's entry from profileStreaks() (an older single streak counts for a cohort of the same habit).
+export function profileStreakFor(profile, cohort) {
+  const all = profileStreaks(profile);
+  return all.find((s) => s.cohortId === cohort.id) || all.find((s) => !s.cohortId && s.habitType === cohort.habitType) || null;
 }
 
 // Badge milestones, in days. After one year, a badge is earned every year.

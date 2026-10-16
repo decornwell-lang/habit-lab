@@ -12,14 +12,14 @@ export const INTENTION = {
 
 export const MAX_TEXT = 280; // characters, for every free-text answer
 
+// The first questions (one per cohort, e.g. "Did you smoke today?") are in src/lib/cohorts.js.
 export const EVENING = {
-  smoked: "Did you smoke today?",
   intensity: "How intense were the cravings today?",
   intensityLow: "None",
   intensityHigh: "Very strong",
   strongest: "When did the strongest craving arrive?",
   helped: "What helped, even a little?",
-  // Shown only if the member answers "Yes" to smoking. Neutral, nothing else.
+  // Shown only if a practice wasn't kept today (e.g. "Yes" to smoking). Neutral, nothing else.
   honest: "Thank you for being honest. What do you want to carry into tomorrow?",
 };
 
