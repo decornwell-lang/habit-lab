@@ -38,6 +38,12 @@ This week's meditation (Practices tab) doesn't send a notification. Times and wo
 
 How they're sent: `.github/workflows/daily-prompts.yml` runs every hour and calls `api/daily-prompts.js`. This uses GitHub's free scheduler, so the Firebase Blaze plan is **not** needed. Needs `CRON_SECRET` in both Vercel and GitHub (Settings → Secrets and variables → Actions). Members without notifications switched on still see every prompt as a tile on Home.
 
+## Joining
+Visitors who aren't signed in see the open cohorts on the home page (from `publicCohorts`, a copy with only name, habit, dates and price, kept up to date by Admin → Cohorts). "Join" opens the join steps (`src/pages/Join.jsx`): details → screening (alcohol-free) → payment (Stripe brings them back) → leaderboard name and picture → Add to Home Screen → notifications → dashboard. Archived cohorts aren't listed.
+
+## Explainer videos
+Admin → Content → Explainer videos: a link for a screen (Home, Morning, Intention, Evening review, Breathe, the two practices, Practices, Upcoming) adds a small video icon there.
+
 ## Payments
 Each cohort is €99, VAT (IVA 21%) included; prices are in `config/pricing.json`. Joining a paid cohort opens Stripe Checkout (test mode until launch). Stripe Tax works out the VAT inside the price when `STRIPE_TAX=on` is set in Vercel. Joining an alcohol-free cohort first shows a short screening (`src/content/screening.js`). Terms and conditions: Menu → Terms and conditions (text in `src/content/pages.js`; have it checked before launch). Members can remove a cohort, or delete their membership, in My account.
 
