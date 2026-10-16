@@ -27,7 +27,7 @@ export const site = {
 export const REFLECTION_CONSENT = "I agree that my reflections can be seen by David for support purposes.";
 
 // Shown before paying for a cohort (Upcoming → Join). Cancellation and refunds are
-// covered in the terms (content/terms.md), linked from the pricing block.
+// covered in the Terms and conditions page (/terms, text in content/pages.js).
 export const JOIN_TERMS = {
   price: "VAT included",
 };

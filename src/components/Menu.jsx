@@ -11,6 +11,7 @@ const links = [
   { to: "/contact", label: "Contact" },
   { to: "/habit-lab", label: "The Habit Lab" },
   { to: "/offerings", label: "Offerings / Retreats" },
+  { to: "/terms", label: "Terms and conditions" },
 ];
 
 export default function Menu({ open, onClose }) {

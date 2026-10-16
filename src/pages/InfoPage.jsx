@@ -30,10 +30,12 @@ export default function InfoPage({ name }) {
           )}
         </section>
       ))}
-      <div className="card center">
-        <p>Ready to begin?</p>
-        <Link to="/" className="btn btn-primary">Join The Habit Lab</Link>
-      </div>
+      {!page.noJoinCard && (
+        <div className="card center">
+          <p>Ready to begin?</p>
+          <Link to="/" className="btn btn-primary">Join The Habit Lab</Link>
+        </div>
+      )}
     </main>
   );
 }

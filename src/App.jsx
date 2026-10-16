@@ -24,6 +24,7 @@ export default function App() {
           <Route path="/contact" element={<InfoPage name="contact" />} />
           <Route path="/habit-lab" element={<InfoPage name="habitLab" />} />
           <Route path="/offerings" element={<InfoPage name="offerings" />} />
+          <Route path="/terms" element={<InfoPage name="terms" />} />
 
           {/* Members-only pages */}
           <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />

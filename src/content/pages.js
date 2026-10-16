@@ -135,4 +135,75 @@ export const pages = {
       },
     ],
   },
+
+  // DRAFT: have this checked by a Spanish legal adviser before launch. Prices come from
+  // config/pricing.json; update the wording here if they change.
+  terms: {
+    eyebrow: "Terms",
+    title: "Terms and conditions",
+    intro: "The Habit Lab is run by David Ernest Cornwell, Palma, Mallorca, Spain. By joining a cohort you agree to these terms. Last updated: October 2026.",
+    noJoinCard: true,
+    sections: [
+      {
+        heading: "What The Habit Lab is",
+        body:
+          "A wellbeing and habit-change programme: a 33-day group cohort with daily check-ins in the app, weekly meditation and assignments, a live Zoom session each Monday and a WhatsApp group. It is a supportive community, not medical care, psychotherapy or a treatment programme, and it does not replace advice from your doctor.",
+      },
+      {
+        heading: "Prices and payment",
+        list: [
+          "One cohort: €99 for 33 days of access, from the cohort's start date.",
+          "Extend to one year: €99, for access until one year after the date you first joined. Available while your access is current.",
+          "Another cohort: €99 for that cohort.",
+          "All prices are in euros and include VAT (IVA at 21%), shown separately on your receipt.",
+          "Payments are one-off, taken securely by Stripe. There are no subscriptions and nothing renews automatically.",
+        ],
+      },
+      {
+        heading: "Cancellation and refunds",
+        body:
+          "You can cancel within 14 days of paying and receive a full refund. If you'd like a refund, just send David a message. After a refund, your access for that purchase ends.",
+      },
+      {
+        heading: "Your access",
+        body:
+          "While your access is current you can use the daily check-ins, meditations, assignments and live sessions for the cohorts you've joined. When it ends, you can still see your own history: your badges, streaks and past check-ins. Nothing is deleted. Members whose access has ended don't appear on the leaderboard.",
+      },
+      {
+        heading: "Your health and safety",
+        list: [
+          "If you drink alcohol heavily or daily, stopping suddenly can be unsafe. Please speak to a doctor before you stop, and before an alcohol-free cohort begins.",
+          "If you have a medical or mental health condition, check with your doctor before making changes.",
+          "In an emergency, call 112 (Europe) or 999 (UK).",
+        ],
+      },
+      {
+        heading: "The group",
+        list: [
+          "Be kind and respectful to other members.",
+          "What others share in the group and in sessions stays in the group.",
+          "David may remove anyone who puts others at risk or ignores these terms.",
+        ],
+      },
+      {
+        heading: "Your data",
+        list: [
+          "Your account details are private. Other members see only your first name, avatar, streak and challenge (which you can hide), and only if you choose to appear on the leaderboard.",
+          "Your written reflections are private. David can read them only if you agree to it, and you can change this in My account at any time.",
+          "Payments are handled by Stripe; card details never reach The Habit Lab.",
+          "To see or delete your data, send David a message.",
+        ],
+      },
+      {
+        heading: "Changes and law",
+        body:
+          "These terms may be updated; the date above shows the latest version. They are governed by Spanish law, without affecting any rights you have as a consumer where you live.",
+      },
+      {
+        heading: "Contact",
+        body: "WhatsApp +34 603 450 095",
+        links: [{ label: "Message on WhatsApp", href: "https://wa.me/34603450095" }],
+      },
+    ],
+  },
 };
