@@ -23,6 +23,7 @@ export default handle(async (req, res) => {
 
   if (user && (cohort.memberIds || []).includes(user.uid)) return res.json({ joined: true });
   if (cohort.archived || !Number(cohort.price)) throw new HttpError(400, "This cohort isn't open for payment.");
+  if (cohort.capacity && (cohort.memberIds || []).length >= cohort.capacity) throw new HttpError(409, "Sorry, this cohort is full.");
   if (cohort.status === "finished") throw new HttpError(400, "This cohort has finished.");
 
   const origin = siteOrigin(req);

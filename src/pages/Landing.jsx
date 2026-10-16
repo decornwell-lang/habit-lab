@@ -74,7 +74,7 @@ function OpenCohorts() {
             <div>
               <h3>{c.name}</h3>
               <p className="muted small">
-                {habitInfo(c.habitType).tab} · Starts {formatDate(c.startDate, { weekday: "short" })} · {c.durationDays} days · {formatPrice(c)}
+                {habitInfo(c.habitType).tab} · Starts {formatDate(c.startDate, { weekday: "short" })} · {c.durationDays} days · {formatPrice(c)}{c.capacity ? ` · ${c.capacity} places` : ""}
               </p>
             </div>
             {payHere(c) ? (

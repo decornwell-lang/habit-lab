@@ -73,7 +73,7 @@ export async function getCohorts() {
 
 // Saving a cohort also updates its public copy (publicCohorts), which visitors who aren't
 // signed in can read on the home page: only these fields, never members or the group link.
-const PUBLIC_COHORT_FIELDS = ["name", "habitType", "startDate", "durationDays", "price", "status", "archived"];
+const PUBLIC_COHORT_FIELDS = ["name", "habitType", "startDate", "durationDays", "price", "status", "archived", "capacity"];
 const publicFields = (data) => Object.fromEntries(PUBLIC_COHORT_FIELDS.filter((k) => k in data).map((k) => [k, data[k]]));
 
 export async function saveCohort(id, data) {

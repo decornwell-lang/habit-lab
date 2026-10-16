@@ -1235,3 +1235,4 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .explainer-row.left { justify-content: flex-start; }
 .cohort-switcher .explainer-btn { align-self: center; }
 .video-placeholder { display: grid; place-items: center; aspect-ratio: 16 / 9; border-radius: var(--radius); border: 1.5px dashed rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.04); color: #9aa2bf; }
+.group-pods { margin: 12px 0 0; }

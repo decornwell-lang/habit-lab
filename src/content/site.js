@@ -41,3 +41,7 @@ export const EXPLAINERS = [
   { id: "practices", label: "Practices" },
   { id: "upcoming", label: "Upcoming" },
 ];
+
+// Under "Open the group" (Home → Cohort group), once the cohort has begun.
+export const GROUP_PODS =
+  "We recommend finding two or three others in the group to form a small pod of 3–4 people, to support one another day to day. Pods form themselves: just reach out.";

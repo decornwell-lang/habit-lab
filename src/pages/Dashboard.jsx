@@ -10,7 +10,7 @@ import {
   getContentSettings, getDay, getReflectionsForDay, saveCheckin, updateUserProfile, clearOldStreak,
 } from "../lib/data.js";
 import { apiPost } from "../lib/api.js";
-import { todayKey, checkinDayKey, timeZoneName } from "../lib/dates.js";
+import { todayKey, checkinDayKey, timeZoneName, formatDate } from "../lib/dates.js";
 import { memberCohorts, checkinsFor, habitInfo, habitStreakLabel } from "../lib/cohorts.js";
 import { weekContent } from "../lib/content.js";
 import { aphorismFor } from "../lib/aphorisms.js";
@@ -38,6 +38,7 @@ import { promptTime } from "../content/dailyPrompts.js";
 import AppBadge from "../components/AppBadge.jsx";
 import { publicIdentity } from "../lib/identity.js";
 import { useDark } from "../lib/theme.js";
+import { GROUP_PODS } from "../content/site.js";
 import Sheet from "../components/dashboard/Sheet.jsx";
 import IntentionScreen from "../components/dashboard/IntentionScreen.jsx";
 import EveningReview from "../components/dashboard/EveningReview.jsx";
@@ -317,13 +318,22 @@ export default function Dashboard() {
   // e.g. /dashboard?open=morning&cohort=abc.
   const homeItems = [
     ...(current?.progress.state === "active" ? dayTiles(current) : []),
-    current && groupLink && {
+    // The cohort's WhatsApp group: the link only appears from the day the cohort starts.
+    current && current.progress.state !== "finished" && {
       id: "group",
       icon: "💬",
       title: "Cohort group",
       subtitle: "WhatsApp",
-      content: (
-        <a className="btn btn-whatsapp" href={groupLink} target="_blank" rel="noreferrer"><WhatsAppIcon /> Open the group</a>
+      status: current.progress.state === "upcoming" ? `Opens ${formatDate(current.progress.start, { weekday: undefined, year: undefined })}` : undefined,
+      content: current.progress.state === "upcoming" ? (
+        <p className="muted">The group link will be here on {formatDate(current.progress.start, { year: undefined })}, the day your cohort begins.</p>
+      ) : groupLink ? (
+        <>
+          <a className="btn btn-whatsapp" href={groupLink} target="_blank" rel="noreferrer"><WhatsAppIcon /> Open the group</a>
+          <p className="muted small group-pods">{GROUP_PODS}</p>
+        </>
+      ) : (
+        <p className="muted">The group link will be here soon.</p>
       ),
     },
   ].filter(Boolean);

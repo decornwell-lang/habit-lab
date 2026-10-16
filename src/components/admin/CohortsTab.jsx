@@ -8,7 +8,8 @@ import { cleanGroupLink } from "../../lib/phone.js";
 import { todayKey, formatDate } from "../../lib/dates.js";
 
 // Prices are in euros, VAT included.
-const EMPTY = { name: "", habitType: "smoking", startDate: "", durationDays: 33, price: 99, status: "upcoming", whatsappGroupLink: "" };
+// capacity: the number of places (empty = no limit).
+const EMPTY = { name: "", habitType: "smoking", startDate: "", durationDays: 33, price: 99, capacity: "", status: "upcoming", whatsappGroupLink: "" };
 
 // Two ready-made cohorts: the real first cohort, and a free one starting
 // today so you can try every feature straight away.
@@ -52,6 +53,7 @@ export default function CohortsTab({ cohorts, reload }) {
       startDate: form.startDate,
       durationDays: Number(form.durationDays),
       price: Number(form.price),
+      capacity: Number(form.capacity) > 0 ? Number(form.capacity) : null,
       currency: "eur",
       status: form.status,
       whatsappGroupLink: cleanGroupLink(form.whatsappGroupLink || "") || null,
@@ -112,6 +114,7 @@ export default function CohortsTab({ cohorts, reload }) {
           </div>
           <div className="field-row">
             <div className="field"><label>Price in € incl. VAT (0 = free)</label><input type="number" min="0" step="0.01" name="price" value={form.price} onChange={update} /></div>
+            <div className="field"><label>Places (empty = no limit)</label><input type="number" min="1" name="capacity" value={form.capacity ?? ""} onChange={update} /></div>
           </div>
           <div className="field">
             <label>WhatsApp group invite link</label>
@@ -137,7 +140,7 @@ export default function CohortsTab({ cohorts, reload }) {
                 <td>{c.durationDays}</td>
                 <td>{formatPrice(c)}</td>
                 <td><span className={`tag tag-${c.status}`}>{c.status}</span></td>
-                <td>{c.memberIds?.length || 0}</td>
+                <td>{c.memberIds?.length || 0}{c.capacity ? ` / ${c.capacity}` : ""}</td>
                 <td className="actions">
                   <button className="link-btn" onClick={() => edit(c)}>Edit</button>
                   <button className="link-btn" onClick={() => setArchived(c, !c.archived)}>{c.archived ? "Unarchive" : "Archive"}</button>

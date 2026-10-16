@@ -53,7 +53,7 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
               <div>
                 <h3>{c.name}</h3>
                 <p className="muted small">
-                  Starts {formatDate(c.startDate, { weekday: "short" })} · {c.durationDays} days · {formatPrice(c)}{Number(c.price) > 0 && " incl. VAT"}
+                  Starts {formatDate(c.startDate, { weekday: "short" })} · {c.durationDays} days · {formatPrice(c)}{Number(c.price) > 0 && " incl. VAT"}{c.capacity ? ` · ${c.capacity} places` : ""}
                 </p>
               </div>
               {joinedIds.has(c.id) ? (
