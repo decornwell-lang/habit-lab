@@ -7,7 +7,7 @@ import { handle, requireUser, db, stripe, siteOrigin, HttpError } from "./_lib/s
 
 export default handle(async (req, res) => {
   const user = await requireUser(req);
-  const { cohortId, acceptedTerms } = req.body || {};
+  const { cohortId, acceptedTerms, screening } = req.body || {};
   if (!cohortId) throw new HttpError(400, "Missing cohort.");
   if (acceptedTerms !== true) throw new HttpError(400, "Please read and tick the cancellation terms first.");
 
@@ -34,7 +34,12 @@ export default handle(async (req, res) => {
         },
       },
     ],
-    metadata: { uid: user.uid, cohortId, acceptedTermsAt: new Date().toISOString() }, // the 14-day cancellation terms
+    metadata: {
+      uid: user.uid,
+      cohortId,
+      acceptedTermsAt: new Date().toISOString(), // the 14-day cancellation terms
+      ...(screening ? { screeningAdvised: String(Boolean(screening.advised)) } : {}), // alcohol-free screening: was the advice shown?
+    },
     success_url: `${origin}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/dashboard?checkout=cancelled`,
   });

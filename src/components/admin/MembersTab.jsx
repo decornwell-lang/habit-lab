@@ -26,6 +26,8 @@ function buildRows({ users, profiles, memberships, cohorts }) {
         badges: profileStreaks(p).map((s) => sortBadges(s.badges).map((b) => badgeInfo(b).label).join(", ")).filter(Boolean).join("; "),
         topBadge: profileStreaks(p).filter((s) => s.badges?.length).map((s) => badgeInfo(sortBadges(s.badges).at(-1)).name).join("; "),
         cohortIds: ms.map((m) => m.cohortId),
+        // Alcohol-free screening: the "speak to a doctor first" advice was shown when they joined.
+        screeningAdvised: ms.some((m) => m.screening?.advised),
       };
     })
     .sort((a, b) => b.signedUp.localeCompare(a.signedUp));
@@ -59,6 +61,7 @@ export default function MembersTab({ data, reload, onViewCheckins }) {
       { label: "Payment", value: (r) => r.payment },
       { label: "Current streak", value: (r) => r.streak },
       { label: "Badges", value: (r) => r.badges },
+      { label: "Alcohol screening advice shown", value: (r) => (r.screeningAdvised ? "Yes" : "") },
     ]);
   }
 
@@ -99,7 +102,10 @@ export default function MembersTab({ data, reload, onViewCheckins }) {
           <tbody>
             {rows.map((r) => (
               <tr key={r.uid}>
-                <td>{r.name}{r.role === "admin" && <span className="tag">admin</span>}</td>
+                <td>
+                  {r.name}{r.role === "admin" && <span className="tag">admin</span>}
+                  {r.screeningAdvised && <span className="tag tag-advice" title="Alcohol screening: advised to speak to a doctor before stopping">⚠︎ doctor advice</span>}
+                </td>
                 <td>{r.email}</td>
                 <td>{r.signedUp}</td>
                 <td>{r.cohorts || "—"}</td>

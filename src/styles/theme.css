@@ -438,6 +438,14 @@ a { color: var(--primary); }
 .join-terms p { margin: 0 0 10px; }
 .join-terms .checkbox { margin: 0 0 12px; }
 .dashboard.dark .join-terms { border-color: rgba(255, 255, 255, 0.1); }
+.dashboard.dark .join-terms .checkbox { color: #e9eaf2; }
+/* Alcohol-free screening (AlcoholScreening.jsx) */
+.screening-q { border: 0; padding: 0; margin: 0 0 16px; }
+.screening-q legend { font-weight: 600; margin-bottom: 8px; padding: 0; }
+.screening-q .choices { margin: 0; }
+.screening-advice { margin: 0 0 14px; padding: 14px; border-radius: 14px; border: 1.5px solid var(--gold); background: color-mix(in srgb, var(--gold) 10%, transparent); }
+.screening-advice h3 { margin: 0 0 8px; }
+.screening-advice p { margin: 0 0 10px; }
 .joined { color: var(--primary); font-weight: 600; white-space: nowrap; }
 
 /* ---------- Dashboard tabs (fixed to the bottom) ---------- */
@@ -680,6 +688,7 @@ td.actions { white-space: nowrap; }
 .tag { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--primary); font-size: 0.75rem; font-weight: 600; }
 .tag-upcoming { background: var(--gold-soft); color: var(--gold-text); }
 .tag-finished { background: #eceef3; color: var(--text-muted); }
+.tag-advice { background: var(--gold-soft); color: var(--gold-text); margin-left: 6px; }
 .week-box { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px 4px; margin: 0 0 16px; }
 .week-box legend { padding: 0 6px; font-weight: 600; }
 .plain-list { padding-left: 0; list-style: none; margin: 0; }

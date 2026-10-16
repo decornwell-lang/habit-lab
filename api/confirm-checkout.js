@@ -20,6 +20,9 @@ export default handle(async (req, res) => {
     currency: session.currency,
     stripeSessionId: session.id,
     acceptedTermsAt: session.metadata.acceptedTermsAt || null,
+    ...(session.metadata.screeningAdvised
+      ? { screening: { advised: session.metadata.screeningAdvised === "true", at: new Date().toISOString() } }
+      : {}),
   });
 
   res.json({ joined: true, cohortId: session.metadata.cohortId });

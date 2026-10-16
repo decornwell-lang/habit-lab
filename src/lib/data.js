@@ -60,9 +60,10 @@ export async function getMemberships(uid) {
 
 // Free cohorts can be joined straight from the app. Paid cohorts go through
 // Stripe (see /api/create-checkout.js), which adds the member after payment.
-export async function joinCohortDirectly(uid, cohortId, method = "free") {
+// extra: more fields for the membership, e.g. { screening: { advised: false } } (alcohol-free cohorts).
+export async function joinCohortDirectly(uid, cohortId, method = "free", extra = {}) {
   const batch = writeBatch(db);
-  batch.set(doc(db, "users", uid, "memberships", cohortId), { paid: false, method, joinedAt: serverTimestamp() });
+  batch.set(doc(db, "users", uid, "memberships", cohortId), { paid: false, method, joinedAt: serverTimestamp(), ...extra });
   batch.update(doc(db, "cohorts", cohortId), { memberIds: arrayUnion(uid) });
   await batch.commit();
 }
