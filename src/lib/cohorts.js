@@ -61,6 +61,19 @@ export function memberCohorts(cohorts, memberships, today) {
     );
 }
 
+// The member's check-ins for one habit across all its cohorts (phase 1, phase 2…), keyed by
+// date, so the streak carries on from one cohort to the next. A day counts as kept if it was
+// kept in any of them.
+export function habitCheckinsFor(checkins, cohorts, habitType) {
+  const habitOf = Object.fromEntries(cohorts.map((c) => [c.id, c.habitType]));
+  const map = {};
+  for (const c of checkins) {
+    if ((c.cohortId ? habitOf[c.cohortId] : "smoking") !== habitType) continue;
+    if (!map[c.date] || c.maintained) map[c.date] = c;
+  }
+  return map;
+}
+
 // The member's check-ins for one cohort, keyed by date: { "2026-10-12": {...} }.
 // `checkins` is the list from getCheckins(). Early check-ins have no cohortId; they
 // were all from smoking cohorts.

@@ -4,7 +4,7 @@
 // Each cohort has its own streak and badges.
 // A "No" or a missed day pauses it; history is never deleted.
 import { addDays, daysBetween } from "./dates.js";
-import { checkinsFor } from "./cohorts.js";
+import { habitCheckinsFor } from "./cohorts.js";
 
 // `checkins` is an object keyed by date: { "2026-11-16": { maintained: true }, ... }
 // If today has no check-in yet, we count back from yesterday, so the streak
@@ -45,17 +45,39 @@ export function profileStreakFor(profile, cohort) {
   return all.find((s) => s.cohortId === cohort.id) || all.find((s) => !s.cohortId && s.habitType === cohort.habitType) || null;
 }
 
-// A cohort's entry for the public profile: { habitType, streak, lastYesDate, badges }.
+// The longest run of kept days ever, for "Longest streak" (a slip never takes this away).
+export function longestStreak(checkins) {
+  let best = 0;
+  let run = 0;
+  let previous = null;
+  for (const date of Object.keys(checkins).sort()) {
+    run = checkins[date].maintained ? (previous && addDays(previous, 1) === date ? run + 1 : 1) : 0;
+    previous = checkins[date].maintained ? date : null;
+    best = Math.max(best, run);
+  }
+  return best;
+}
+
+// A cohort's entry for the public profile: { habitType, streak, best, lastYesDate, badges }.
+// The streak belongs to the habit: it counts kept days across all the member's cohorts for
+// that habit (`cohorts` is every cohort), so phase 2 carries on from phase 1. Badges for
+// the habit are shared too, and are never taken away.
 // Counts back from today once today's evening review is done (from 21:00), otherwise from
 // the check-in day (see checkinDayKey in dates.js), so a day and its badge only count after
 // that evening's check-in. Badges once earned are kept.
-export function cohortStreakEntry(cohort, checkins, profile, today, checkinDay) {
-  const map = checkinsFor(checkins, cohort);
+export function cohortStreakEntry(cohort, cohorts, checkins, profile, today, checkinDay) {
+  const map = habitCheckinsFor(checkins, cohorts, cohort.habitType);
   const from = map[today] ? today : checkinDay;
   const streak = computeStreak(map, from);
   const lastYesDate = streak === 0 ? null : map[from]?.maintained ? from : addDays(from, -1);
-  const earned = profileStreakFor(profile, cohort)?.badges || [];
-  return { habitType: cohort.habitType, streak, lastYesDate, badges: [...new Set([...earned, ...badgesForStreak(streak)])] };
+  const earned = profileStreaks(profile).filter((s) => s.habitType === cohort.habitType).flatMap((s) => s.badges || []);
+  return {
+    habitType: cohort.habitType,
+    streak,
+    best: longestStreak(map),
+    lastYesDate,
+    badges: sortBadges([...new Set([...earned, ...badgesForStreak(streak)])]),
+  };
 }
 
 // Badge milestones, in days. After one year, a badge is earned every year.

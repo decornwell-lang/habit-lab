@@ -1,12 +1,13 @@
-// "My streak" on Home: the number of smoke-free days in a row, where the member is in
-// their cohort, and their journey (one dot per cohort day). Sharing sends a picture
+// "My streak" on Home: the number of smoke-free days in a row (across all the member's
+// cohorts for this habit, so phase 2 carries on from phase 1), their longest streak if a
+// slip broke a longer one, where they are in this cohort, and their journey (one dot per cohort day). Sharing sends a picture
 // of the number of days, e.g. "20 days · Smoke-free", whether or not there's a badge for it.
 import { formatDate } from "../../lib/dates.js";
 import { habitStreakLabel } from "../../lib/cohorts.js";
 import JourneyMap from "./JourneyMap.jsx";
 import ShareImageButton from "../ShareImageButton.jsx";
 
-export default function StreakCard({ streak, current, checkins, onCorrect }) {
+export default function StreakCard({ streak, best = 0, current, checkins, onCorrect }) {
   const { cohort, progress } = current;
   const label = habitStreakLabel(cohort.habitType); // e.g. "smoke-free"
 
@@ -23,6 +24,7 @@ export default function StreakCard({ streak, current, checkins, onCorrect }) {
         <p className="my-streak-number">
           <strong>{streak}</strong>
           <span>{streak === 1 ? "day" : "days"} {label}</span>
+          {best > streak && <small className="my-streak-best">Longest: {best} {best === 1 ? "day" : "days"}</small>}
         </p>
         <div className="my-streak-cohort">
           <p className="muted small">{cohort.name}</p>

@@ -14,7 +14,7 @@ import { todayKey, checkinDayKey, timeZoneName } from "../lib/dates.js";
 import { memberCohorts, checkinsFor, habitInfo, habitStreakLabel } from "../lib/cohorts.js";
 import { weekContent } from "../lib/content.js";
 import { aphorismFor } from "../lib/aphorisms.js";
-import { profileStreakFor, cohortStreakEntry } from "../lib/streaks.js";
+import { profileStreaks, cohortStreakEntry } from "../lib/streaks.js";
 
 import PreCohort from "../components/dashboard/PreCohort.jsx";
 import WeeklyAssignment from "../components/dashboard/WeeklyAssignment.jsx";
@@ -135,9 +135,9 @@ export default function Dashboard() {
     const changed = {};
     for (const r of memberCohorts(data.cohorts, data.memberships, today)) {
       if (r.progress.state === "upcoming") continue;
-      const entry = cohortStreakEntry(r.cohort, data.checkins, data.publicProfile, today, checkinDay);
+      const entry = cohortStreakEntry(r.cohort, data.cohorts, data.checkins, data.publicProfile, today, checkinDay);
       const s = stored[r.cohort.id];
-      if (!s || s.streak !== entry.streak || s.lastYesDate !== entry.lastYesDate || (s.badges || []).length !== entry.badges.length) {
+      if (!s || s.streak !== entry.streak || s.best !== entry.best || s.lastYesDate !== entry.lastYesDate || (s.badges || []).length !== entry.badges.length) {
         changed[r.cohort.id] = entry;
       }
     }
@@ -239,8 +239,9 @@ export default function Dashboard() {
     let celebrateNext = null;
     const streaks = {};
     for (const { row, checkin } of saves) {
-      const before = profileStreakFor(data.publicProfile, row.cohort)?.badges || [];
-      const entry = cohortStreakEntry(row.cohort, checkins, data.publicProfile, today, checkinDay);
+      // Badges already earned for this habit, in any cohort (only new ones are celebrated).
+      const before = profileStreaks(data.publicProfile).filter((s) => s.habitType === row.cohort.habitType).flatMap((s) => s.badges || []);
+      const entry = cohortStreakEntry(row.cohort, data.cohorts, checkins, data.publicProfile, today, checkinDay);
       streaks[row.cohort.id] = entry;
       const newBadges = entry.badges.filter((b) => !before.includes(b));
       if (checkin.maintained && newBadges.length) celebrateNext = { badgeId: newBadges.at(-1), row };
@@ -262,7 +263,8 @@ export default function Dashboard() {
     if (celebrateNext) setCelebrate(celebrateNext);
   }
 
-  const streak = current ? cohortStreakEntry(current.cohort, data.checkins, data.publicProfile, today, checkinDay).streak : 0;
+  // The chosen cohort's habit streak (it carries across cohorts of the same habit) and personal best.
+  const { streak, best } = current ? cohortStreakEntry(current.cohort, data.cohorts, data.checkins, data.publicProfile, today, checkinDay) : { streak: 0, best: 0 };
 
   // Saves a reflection or morning answer into Home's state, so its tile updates straight away.
   const onSavedDay = (key, answer) => setData((d) => ({ ...d, day: { ...d.day, [key]: answer } }));
@@ -364,7 +366,7 @@ export default function Dashboard() {
           <Folds key={current?.cohort.id} items={homeItems} initialOpen={params.get("open")} />
           {current ? (
             <>
-              <StreakCard streak={streak} current={current} checkins={checkinsFor(data.checkins, current.cohort)} onCorrect={correctCheckin} />
+              <StreakCard streak={streak} best={best} current={current} checkins={checkinsFor(data.checkins, current.cohort)} onCorrect={correctCheckin} />
               <Folds items={[{
                 id: "leaderboard", icon: "🏆", tone: "gold", title: "Leaderboard", subtitle: "Your cohort's streaks",
                 content: <Leaderboard uid={user.uid} cohort={current.cohort} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} />,

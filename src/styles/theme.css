@@ -1062,6 +1062,7 @@ td.actions { white-space: nowrap; }
 .my-streak-number strong { font-family: var(--font-heading); font-size: 3.4rem; line-height: 1; color: var(--cohort); }
 .my-streak-number span { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #c4c9dc; }
 .my-streak-cohort { flex: 1; min-width: 0; }
+.my-streak-best { margin-top: 4px; font-size: 0.8rem; color: var(--gold); }
 .my-streak-cohort .muted { margin: 0 0 2px; }
 .my-streak-day { margin: 0; color: #fff; font-weight: 600; }
 .my-streak .journey-wrap { margin-top: 6px; padding-top: 4px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
