@@ -34,6 +34,7 @@ import BreatheTab from "../components/dashboard/BreatheTab.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
 import MorningCheckin from "../components/dashboard/MorningCheckin.jsx";
 import { promptTime } from "../content/dailyPrompts.js";
+import AppBadge from "../components/AppBadge.jsx";
 import Sheet from "../components/dashboard/Sheet.jsx";
 import IntentionScreen from "../components/dashboard/IntentionScreen.jsx";
 import EveningReview from "../components/dashboard/EveningReview.jsx";
@@ -289,6 +290,8 @@ export default function Dashboard() {
     <main className={`page dashboard ${DARK_TABS.includes(tab) ? "dark" : ""}`}>
       {tab === DEFAULT_TAB && aphorism && <p className="aphorism">“{aphorism.text}”</p>}
 
+      {/* The red number on the app icon: tiles ready but not done */}
+      <AppBadge count={homeItems.filter((i) => i.highlight).length} />
       {notice && <p className="notice notice-good" role="status">{notice}</p>}
       {error && <p className="form-error" role="alert">{error}</p>}
 

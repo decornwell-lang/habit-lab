@@ -19,6 +19,13 @@ function localNow(timeZone) {
   return { hour: Number(parts.hour), date: `${parts.year}-${parts.month}-${parts.day}` };
 }
 
+// Has the member already done this prompt today? Morning: users/{uid}/practice/{date}.morning;
+// intention and evening review: users/{uid}/reflections/{date}_{id}.
+async function isDone(userRef, id, date) {
+  if (id === "morning") return Boolean((await userRef.collection("practice").doc(date).get()).data()?.morning);
+  return (await userRef.collection("reflections").doc(`${date}_${id}`).get()).exists;
+}
+
 const daysBetween = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 86400000);
 
 export default handle(async (req, res) => {
@@ -58,6 +65,11 @@ export default handle(async (req, res) => {
     // Already did (or skipped) today's evening review, the day's check-in? Then no reminder.
     if (prompt.id === "evening" && (await userDoc.ref.collection("reflections").doc(`${local.date}_evening`).get()).exists) continue;
 
+    // The red number on the app icon: today's prompts so far (this one included) not yet done.
+    const due = DAILY_PROMPTS.filter((p) => p.hour <= local.hour);
+    const done = await Promise.all(due.map((p) => isDone(userDoc.ref, p.id, local.date)));
+    const waiting = done.filter((d) => !d).length;
+
     const response = await getMessaging().sendEachForMulticast({
       tokens: user.fcmTokens,
       data: {
@@ -65,6 +77,7 @@ export default handle(async (req, res) => {
         title: prompt.title,
         body: prompt.body.replace("{day}", cohortDay),
         link: `/dashboard?open=${prompt.id}`,
+        badge: String(waiting),
       },
       webpush: { headers: { Urgency: "high" } },
     });
