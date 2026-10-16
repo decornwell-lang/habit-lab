@@ -23,6 +23,10 @@ export const HABIT_TYPES = [
 const OTHER_HABIT = { label: "Practice", tab: "Practice", streak: "of practice", question: "Did you keep your practice today?", keptWhen: "yes", kept: "Kept", missed: "Not kept", accent: "#57bda2" };
 export const habitInfo = (id) => HABIT_TYPES.find((h) => h.id === id) || { ...OTHER_HABIT, id };
 export const habitLabel = (id) => habitInfo(id).label;
+const habitOrder = (id) => {
+  const i = HABIT_TYPES.findIndex((h) => h.id === id);
+  return i === -1 ? HABIT_TYPES.length : i; // unknown habits last
+};
 export const habitStreakLabel = (id) => habitInfo(id).streak;
 
 // Where the member is today in a cohort.
@@ -41,7 +45,7 @@ function cohortProgress(cohort, membership, today, weeksInProgramme = 5) {
 
 // All of the member's cohorts, each as { cohort, membership, progress }, in the order
 // they're shown on Home: active ones (earliest start first), then upcoming, then finished
-// (latest first).
+// (latest first). Cohorts starting the same day follow the order of HABIT_TYPES.
 export function memberCohorts(cohorts, memberships, today) {
   const order = { active: 0, upcoming: 1, finished: 2 };
   return memberships
@@ -52,7 +56,8 @@ export function memberCohorts(cohorts, memberships, today) {
     .filter(Boolean)
     .sort((a, b) =>
       order[a.progress.state] - order[b.progress.state] ||
-      (a.progress.state === "finished" ? -1 : 1) * a.progress.start.localeCompare(b.progress.start)
+      (a.progress.state === "finished" ? -1 : 1) * a.progress.start.localeCompare(b.progress.start) ||
+      habitOrder(a.cohort.habitType) - habitOrder(b.cohort.habitType)
     );
 }
 
