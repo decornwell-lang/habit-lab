@@ -1284,3 +1284,4 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .fold-body .intention-invite { color: var(--text-muted); }
 .dashboard.dark .fold-body .intention-invite { color: #c4c9dc; }
 .dashboard:not(.dark) .fold-body .intention-intro { color: var(--gold-text); }
+.regulation-caption { align-self: start; margin-top: 14px; }
