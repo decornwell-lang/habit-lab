@@ -322,9 +322,10 @@ export default function Dashboard() {
   const aphorism = aphorismFor(today); // approved or owner-written lines only (src/lib/aphorisms.js)
 
   return (
-    // --cohort: the chosen cohort's colour, so Home feels different in each cohort.
+    // --cohort: the chosen cohort's colour, on Home only (and its full-screen panels), so
+    // Home feels different in each cohort. Breathe, Practices and Upcoming keep the main colours.
     <main className={`page dashboard ${DARK_TABS.includes(tab) ? "dark" : ""}`}
-      style={current ? { "--cohort": habitInfo(current.cohort.habitType).accent } : undefined}>
+      style={current && tab === "home" ? { "--cohort": habitInfo(current.cohort.habitType).accent } : undefined}>
       {tab === DEFAULT_TAB && aphorism && <p className="aphorism">“{aphorism.text}”</p>}
 
       {/* The red number on the app icon: tiles ready but not done, in all cohorts */}

@@ -6,11 +6,9 @@ export function videoSource(url) {
     const u = new URL(url, window.location.origin);
     const host = u.hostname.replace(/^www\./, "");
 
-    if (host === "youtube.com" || host === "m.youtube.com") {
-      const id = u.searchParams.get("v") || u.pathname.split("/").pop();
-      return { type: "iframe", src: `https://www.youtube-nocookie.com/embed/${id}` };
-    }
-    if (host === "youtu.be") return { type: "iframe", src: `https://www.youtube-nocookie.com/embed/${u.pathname.slice(1)}` };
+    // YouTube (watch, shorts, embed and youtu.be links): played with our own clean player.
+    if (host === "youtube.com" || host === "m.youtube.com") return { type: "youtube", id: u.searchParams.get("v") || u.pathname.split("/").pop() };
+    if (host === "youtu.be") return { type: "youtube", id: u.pathname.slice(1) };
     if (host === "vimeo.com") return { type: "iframe", src: `https://player.vimeo.com/video/${u.pathname.split("/")[1]}` };
     if (host === "player.vimeo.com") return { type: "iframe", src: url };
     if (host === "drive.google.com") {
