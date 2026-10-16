@@ -1,8 +1,8 @@
 // Admin → Cohorts: create and edit cohorts. Two views: current (upcoming, active and
 // finished) and Archived. Archiving only tidies this list and hides the cohort from
 // members' Upcoming tab; members keep everything (their days, streaks and access).
-import { useState } from "react";
-import { saveCohort } from "../../lib/data.js";
+import { useEffect, useState } from "react";
+import { saveCohort, syncPublicCohorts } from "../../lib/data.js";
 import { HABIT_TYPES, habitLabel, formatPrice } from "../../lib/cohorts.js";
 import { cleanGroupLink } from "../../lib/phone.js";
 import { todayKey, formatDate } from "../../lib/dates.js";
@@ -22,6 +22,10 @@ export default function CohortsTab({ cohorts, reload }) {
   const [form, setForm] = useState(EMPTY);
   const [message, setMessage] = useState("");
   const [view, setView] = useState("current"); // "current" or "archived"
+  // Keep the public copies (the home page's list) in step with the cohorts.
+  useEffect(() => {
+    syncPublicCohorts(cohorts).catch(console.error);
+  }, [cohorts]);
   const archived = cohorts.filter((c) => c.archived);
   const current = cohorts.filter((c) => !c.archived);
   const shown = view === "archived" ? archived : current;

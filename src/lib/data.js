@@ -11,6 +11,7 @@
 //   users/{uid}/practiceChecks/{id}   badge check-ins ("Still in your practice?")
 //   publicProfiles/{uid}              the name and picture they chose, and per cohort: streak, badges (shown to others only if opted in)
 //   cohorts/{cohortId}                cohort details and member list
+//   publicCohorts/{cohortId}          name, habit, dates and price only: readable by visitors (home page)
 //   members/{uid}, cohortEntitlements/{id}, payments/{id}  access and payments, written only by the server (src/lib/access.js)
 //   settings/content                  Zoom link, session date, weekly media links
 //   notices/{id}                      messages from the owner (also sent as push notifications)
@@ -69,9 +70,38 @@ export async function getCohorts() {
   return cohorts.sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
 }
 
+// Saving a cohort also updates its public copy (publicCohorts), which visitors who aren't
+// signed in can read on the home page: only these fields, never members or the group link.
+const PUBLIC_COHORT_FIELDS = ["name", "habitType", "startDate", "durationDays", "price", "status", "archived"];
+const publicFields = (data) => Object.fromEntries(PUBLIC_COHORT_FIELDS.filter((k) => k in data).map((k) => [k, data[k]]));
+
 export async function saveCohort(id, data) {
-  if (id) return updateDoc(doc(db, "cohorts", id), data);
-  return addDoc(collection(db, "cohorts"), { ...data, memberIds: [], createdAt: serverTimestamp() });
+  if (id) {
+    await updateDoc(doc(db, "cohorts", id), data);
+    await setDoc(doc(db, "publicCohorts", id), publicFields(data), { merge: true });
+    return { id };
+  }
+  const ref = await addDoc(collection(db, "cohorts"), { ...data, memberIds: [], createdAt: serverTimestamp() });
+  await setDoc(doc(db, "publicCohorts", ref.id), publicFields(data));
+  return ref;
+}
+
+// Owner only: rewrites the public copies from the cohorts (Admin → Cohorts does this on opening).
+export async function syncPublicCohorts(cohorts) {
+  const batch = writeBatch(db);
+  cohorts.forEach((c) => batch.set(doc(db, "publicCohorts", c.id), publicFields(c)));
+  await batch.commit();
+}
+
+// Cohorts open to join, readable without signing in (the home page).
+export async function getPublicCohorts() {
+  const cohorts = list(await getDocs(collection(db, "publicCohorts")));
+  return cohorts.sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
+}
+
+export async function getPublicCohort(id) {
+  const snap = await getDoc(doc(db, "publicCohorts", id));
+  return snap.exists() ? { id, ...snap.data() } : null;
 }
 
 export async function getMemberships(uid) {

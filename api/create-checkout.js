@@ -1,4 +1,6 @@
-// POST /api/create-checkout  { cohortId, screening }
+// POST /api/create-checkout  { cohortId, screening, returnPath }
+// returnPath: where Stripe sends them back to (only the join steps, "/join/<cohortId>";
+// otherwise the dashboard).
 // Starts a Stripe Checkout payment for a paid cohort and returns its URL.
 // Prices are in euros and include VAT: the member pays exactly the price shown. With
 // STRIPE_TAX=on (after Stripe Tax is set up in the Stripe dashboard), Stripe works out
@@ -7,7 +9,7 @@ import { handle, requireUser, db, stripe, siteOrigin, HttpError } from "./_lib/s
 
 export default handle(async (req, res) => {
   const user = await requireUser(req);
-  const { cohortId, screening } = req.body || {};
+  const { cohortId, screening, returnPath } = req.body || {};
   if (!cohortId) throw new HttpError(400, "Missing cohort.");
 
   const snap = await db().doc(`cohorts/${cohortId}`).get();
@@ -18,6 +20,7 @@ export default handle(async (req, res) => {
   if (cohort.status === "finished") throw new HttpError(400, "This cohort has finished.");
 
   const origin = siteOrigin(req);
+  const back = returnPath === `/join/${cohortId}` ? returnPath : "/dashboard";
   const session = await stripe().checkout.sessions.create({
     mode: "payment",
     customer_email: user.email,
@@ -38,8 +41,8 @@ export default handle(async (req, res) => {
       cohortId,
       ...(screening ? { screeningAdvised: String(Boolean(screening.advised)) } : {}), // alcohol-free screening: was the advice shown?
     },
-    success_url: `${origin}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}/dashboard?checkout=cancelled`,
+    success_url: `${origin}${back}?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}${back}?checkout=cancelled`,
   });
 
   res.json({ url: session.url });

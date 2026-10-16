@@ -1,13 +1,14 @@
-// Landing page: photo, name, intro and the sign-up box.
-// Wording and photo are set in src/content/site.js.
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth, friendlyAuthError } from "../auth/AuthContext.jsx";
-import { isFirebaseConfigured } from "../firebase.js";
+// Landing page: photo, name and intro, then the cohorts open to join. Joining one starts
+// the join steps (Join.jsx): details, payment, picture and name, Home Screen, notifications.
+// Signed-in members see a link to their dashboard instead. Wording: src/content/site.js.
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext.jsx";
 import { site } from "../content/site.js";
-import { isValidPhone } from "../lib/phone.js";
-import PhoneInput from "../components/PhoneInput.jsx";
-import { REFLECTION_CONSENT } from "../content/site.js";
+import { getPublicCohorts } from "../lib/data.js";
+import { formatPrice, habitInfo } from "../lib/cohorts.js";
+import { formatDate, todayKey } from "../lib/dates.js";
+import SignUpForm from "../components/SignUpForm.jsx";
 
 export default function Landing() {
   const { user } = useAuth();
@@ -37,108 +38,45 @@ export default function Landing() {
             <Link to="/dashboard" className="btn btn-primary">Open dashboard</Link>
           </div>
         ) : (
-          <SignUpForm />
+          <OpenCohorts />
         )}
       </div>
     </main>
   );
 }
 
-function SignUpForm() {
-  const { signUp } = useAuth();
-  const navigate = useNavigate();
-  const [form, setForm] = useState({
-    firstName: "",
-    surname: "",
-    email: "",
-    password: "",
-    phone: "", // full international number from PhoneInput, e.g. "+447700900123"
-    reflectionConsent: false, // off by default
-  });
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
+// Cohorts open to join (from publicCohorts, readable without signing in).
+function OpenCohorts() {
+  const [cohorts, setCohorts] = useState(null);
 
-  const update = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
-  };
+  useEffect(() => {
+    getPublicCohorts()
+      .then((all) => setCohorts(all.filter((c) => !c.archived && c.status !== "finished" && c.startDate >= todayKey())))
+      .catch(() => setCohorts([]));
+  }, []);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setError("");
-
-    // Simple checks before contacting Firebase
-    if (!form.firstName.trim() || !form.surname.trim()) return setError("Enter your name.");
-    if (form.password.length < 8) return setError("Password needs 8+ characters.");
-    if (form.phone && !isValidPhone(form.phone)) return setError("Check your mobile number.");
-
-    setBusy(true);
-    try {
-      await signUp({
-        ...form,
-        firstName: form.firstName.trim(),
-        surname: form.surname.trim(),
-        email: form.email.trim(),
-        phone: form.phone || null,
-      });
-      navigate("/dashboard");
-    } catch (err) {
-      setError(friendlyAuthError(err));
-    } finally {
-      setBusy(false);
-    }
-  }
+  if (!cohorts) return <p className="muted">Loading cohorts…</p>;
+  if (cohorts.length === 0) return <SignUpForm />; // none open yet: sign up now, join one later
 
   return (
-    <form className="card" onSubmit={handleSubmit} noValidate>
-      <h2>{site.signUpTitle}</h2>
-      {site.signUpSubtitle && <p className="muted small">{site.signUpSubtitle}</p>}
-
-      {!isFirebaseConfigured && (
-        <p className="notice">Preview mode: accounts will work once Firebase is connected.</p>
-      )}
-
-      <div className="field-row">
-        <div className="field">
-          <label htmlFor="firstName">First name</label>
-          <input id="firstName" name="firstName" autoComplete="given-name" value={form.firstName} onChange={update} required />
-        </div>
-        <div className="field">
-          <label htmlFor="surname">Surname</label>
-          <input id="surname" name="surname" autoComplete="family-name" value={form.surname} onChange={update} required />
-        </div>
-      </div>
-
-      <div className="field">
-        <label htmlFor="email">Email</label>
-        <input id="email" name="email" type="email" autoComplete="email" value={form.email} onChange={update} required />
-      </div>
-
-      <div className="field">
-        <label htmlFor="password">Password</label>
-        <input id="password" name="password" type="password" autoComplete="new-password" minLength={8} value={form.password} onChange={update} required />
-        <p className="hint">8+ characters</p>
-      </div>
-
-      <div className="field">
-        <label htmlFor="phone">Mobile number <span className="muted">(optional)</span></label>
-        <PhoneInput value={form.phone} onChange={(phone) => setForm((f) => ({ ...f, phone }))} />
-      </div>
-
-      <label className="checkbox">
-        <input type="checkbox" name="reflectionConsent" checked={form.reflectionConsent} onChange={update} />
-        <span>{REFLECTION_CONSENT}</span>
-      </label>
-
-      {error && <p className="form-error" role="alert">{error}</p>}
-
-      <button type="submit" className="btn btn-primary" disabled={busy}>
-        {busy ? "Creating your account…" : "Create my account"}
-      </button>
-
+    <section className="card">
+      <h2>Join a cohort</h2>
+      <ul className="cohort-list">
+        {cohorts.map((c) => (
+          <li key={c.id}>
+            <div>
+              <h3>{c.name}</h3>
+              <p className="muted small">
+                {habitInfo(c.habitType).tab} · Starts {formatDate(c.startDate, { weekday: "short" })} · {c.durationDays} days · {formatPrice(c)}
+              </p>
+            </div>
+            <Link to={`/join/${c.id}`} className="btn btn-primary btn-small">Join</Link>
+          </li>
+        ))}
+      </ul>
       <p className="form-foot">
         Already a member? <Link to="/login">Log in</Link>
       </p>
-    </form>
+    </section>
   );
 }

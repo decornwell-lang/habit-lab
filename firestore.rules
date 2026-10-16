@@ -78,6 +78,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // The public copy of each cohort (name, habit, dates, price): anyone can read it, so the
+    // home page can list cohorts before signing in. Only the owner writes it.
+    match /publicCohorts/{cohortId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Cohorts: everyone logged in can see them; only the owner edits them.
     // A member may add only themselves to a free cohort's member list.
     match /cohorts/{cohortId} {

@@ -4,6 +4,7 @@ import { AuthProvider } from "./auth/AuthContext.jsx";
 import RequireAuth from "./auth/RequireAuth.jsx";
 import Layout from "./components/Layout.jsx";
 import Landing from "./pages/Landing.jsx";
+import Join from "./pages/Join.jsx";
 import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Account from "./pages/Account.jsx";
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/habit-lab" element={<InfoPage name="habitLab" />} />
           <Route path="/offerings" element={<InfoPage name="offerings" />} />
           <Route path="/terms" element={<InfoPage name="terms" />} />
+          <Route path="/join/:cohortId" element={<Join />} />
 
           {/* Members-only pages */}
           <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />

@@ -1198,3 +1198,8 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .video-modal-player { width: 100%; max-width: 720px; }
 .video-modal-close { position: absolute; top: calc(10px + env(safe-area-inset-top)); right: 10px; color: #fff; }
 .sheet-explainer { position: absolute; top: calc(14px + env(safe-area-inset-top)); left: 16px; }
+
+/* Join steps (Join.jsx) */
+.join-steps .btn-text { display: block; margin: 8px auto 0; }
+.join-steps > .btn-primary { margin-top: 4px; }
+.join-done { margin: 8px 0 14px; font-weight: 600; color: var(--teal); }
