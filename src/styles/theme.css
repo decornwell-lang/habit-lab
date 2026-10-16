@@ -1278,10 +1278,4 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .breathe-stop { width: auto; min-width: 200px; color: #fff; border-color: rgba(255, 255, 255, 0.45); margin-bottom: 4px; }
 .breathe-stop-clock { font-variant-numeric: tabular-nums; }
 
-/* Upcoming: book a psychotherapy session (TherapyTile.jsx) */
-.therapy-tile { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 16px; border-color: color-mix(in srgb, var(--gold) 50%, transparent) !important; }
-.therapy-photo { width: 170px; aspect-ratio: 5 / 3; object-fit: cover; object-position: center 15%; border-radius: 14px; margin-bottom: 12px; }
-.therapy-tile h2 { margin: 0 0 4px; }
-.therapy-tile .muted { margin: 0 0 12px; }
-.therapy-tile .btn { width: auto; min-width: 170px; min-height: 42px; justify-content: center; }
 .cohort-tile { scroll-margin-top: calc(72px + env(safe-area-inset-top)); } /* clears the header when scrolled to */
