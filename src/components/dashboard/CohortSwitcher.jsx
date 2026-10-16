@@ -5,7 +5,8 @@
 import { useEffect, useRef } from "react";
 import { habitInfo } from "../../lib/cohorts.js";
 
-export default function CohortSwitcher({ rows, selected, waiting = {}, onSelect }) {
+// `leading`: shown first in the row (the camera icon), so it scrolls with the buttons.
+export default function CohortSwitcher({ rows, selected, waiting = {}, onSelect, leading }) {
   const names = rows.map((r) => habitInfo(r.cohort.habitType).tab);
   const list = useRef(null);
   // Keep the chosen cohort's button in view when there are more than fit across.
@@ -17,6 +18,7 @@ export default function CohortSwitcher({ rows, selected, waiting = {}, onSelect 
   }, [selected]);
   return (
     <div className="cohort-switcher" role="tablist" aria-label="Your cohorts" ref={list}>
+      {leading}
       {rows.map((r, i) => (
         <button type="button" role="tab" key={r.cohort.id} aria-selected={r.cohort.id === selected}
           className={r.cohort.id === selected ? "selected" : ""} onClick={() => onSelect(r.cohort.id)}

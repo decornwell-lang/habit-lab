@@ -366,8 +366,13 @@ export default function Dashboard() {
           their time), my streak (with journey), then the leaderboard tile */}
       {tab === "home" && (
         <>
-          {explainerRow("home", "About Home")}
-          {choices.length > 1 && <CohortSwitcher rows={choices} selected={current.cohort.id} waiting={waiting} onSelect={chooseCohort} />}
+          {/* The Home camera icon sits on the left of the cohort buttons (and scrolls with them). */}
+          {choices.length > 1 ? (
+            <CohortSwitcher rows={choices} selected={current.cohort.id} waiting={waiting} onSelect={chooseCohort}
+              leading={<Explainer url={explainers.home} label="About Home" />} />
+          ) : (
+            <div className="explainer-row left"><Explainer url={explainers.home} label="About Home" /></div>
+          )}
           {current?.progress.state === "upcoming" && <CohortCountdown current={current} />}
           {current && <BadgesCard streak={streak} current={current} />}
           {/* key: switching cohort starts its tiles afresh (no answers carried over) */}

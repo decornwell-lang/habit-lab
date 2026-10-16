@@ -1,5 +1,5 @@
-// A full-screen dark panel over Home (intention, evening review), closed with ✕.
-// `explainer`: a link to an explainer video, shown as a video icon at the top left.
+// A full-screen dark panel over Home (intention, evening review), closed with ✕ (top left).
+// `explainer`: a link to an explainer video, shown as a camera icon at the top right.
 import Explainer from "../Explainer.jsx";
 
 export default function Sheet({ label, onClose, explainer, children }) {

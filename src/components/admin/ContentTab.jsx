@@ -50,8 +50,8 @@ export default function ContentTab({ settings, reload }) {
           <input value={form.breathingSpaceUrl} onChange={(e) => setForm({ ...form, breathingSpaceUrl: e.target.value })} placeholder="Leave empty to use David's recording in the app" />
         </div>
         <div className="field">
-          <label>Nervous system regulation recording (Breathe tab)</label>
-          <input value={form.regulationUrl} onChange={(e) => setForm({ ...form, regulationUrl: e.target.value })} placeholder="An audio file (.m4a, .mp3) or a YouTube link" />
+          <label>Nervous system regulation video (Breathe tab)</label>
+          <input value={form.regulationUrl} onChange={(e) => setForm({ ...form, regulationUrl: e.target.value })} placeholder="A YouTube link (or a video file)" />
         </div>
       </section>
 
