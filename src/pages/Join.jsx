@@ -18,6 +18,7 @@ import AlcoholScreening from "../components/dashboard/AlcoholScreening.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
 import InstallApp from "../components/InstallApp.jsx";
 import NotificationSettings from "../components/NotificationSettings.jsx";
+import EmbeddedPayment, { canEmbed } from "../components/EmbeddedPayment.jsx";
 
 const AFTER = ["leaderboard", "install", "notifications", "done"]; // the steps after joining, in order
 
@@ -127,9 +128,16 @@ export default function Join() {
         <section className="card">
           <h2>{paid ? "Payment" : "Join"}</h2>
           {paid && <p>{formatPrice(cohort)} <span className="muted small">{JOIN_TERMS.price}</span></p>}
-          <button className="btn btn-primary" disabled={busy} onClick={join}>
-            {busy ? "Please wait…" : paid ? "Continue to payment" : "Join this cohort"}
-          </button>
+          {paid && canEmbed ? (
+            // Stripe's payment form, right here
+            <EmbeddedPayment cohortId={cohortId}
+              screening={screening ? { advised: screening.advised, at: new Date().toISOString() } : null}
+              onPaid={() => setJoined(true)} />
+          ) : (
+            <button className="btn btn-primary" disabled={busy} onClick={join}>
+              {busy ? "Please wait…" : paid ? "Continue to payment" : "Join this cohort"}
+            </button>
+          )}
         </section>
       ) : step === "leaderboard" ? (
         <>

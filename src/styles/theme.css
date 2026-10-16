@@ -128,8 +128,8 @@ a { color: var(--primary); }
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 64px;
-  padding: 0 8px;
+  height: calc(64px + env(safe-area-inset-top)); /* clear of the notch and clock */
+  padding: env(safe-area-inset-top) 8px 0;
   background: var(--header-bg);
   color: var(--header-text);
 }
@@ -193,7 +193,7 @@ a { color: var(--primary); }
   left: 0;
   z-index: 30;
   width: min(300px, 82vw);
-  padding: 8px 12px 24px;
+  padding: calc(8px + env(safe-area-inset-top)) 12px 24px; /* clear of the notch */
   background: var(--bg);
   box-shadow: 4px 0 24px rgba(10, 14, 40, 0.12);
   overflow-y: auto;
@@ -558,7 +558,7 @@ a { color: var(--primary); }
 @media (prefers-reduced-motion: reduce) { .notice-banner, .notice-banner.leaving { animation: none; } }
 .update-banner {
   position: sticky;
-  top: 64px;
+  top: calc(64px + env(safe-area-inset-top));
   z-index: 9;
   display: flex;
   align-items: center;
@@ -787,7 +787,7 @@ td.actions { white-space: nowrap; }
 /* Breathe tab (BreatheTab.jsx): the whole tab is a dark blue screen between the
    header and the tab bar, with a ball that grows on the in-breath and shrinks on the out-breath */
 .breathe-screen {
-  position: fixed; top: 64px; left: 0; right: 0; bottom: 0; z-index: 9;
+  position: fixed; top: calc(64px + env(safe-area-inset-top)); left: 0; right: 0; bottom: 0; z-index: 9;
   display: flex; flex-direction: column; align-items: center;
   padding: 16px 20px calc(80px + env(safe-area-inset-bottom)); text-align: center; color: #fff; overflow-y: auto;
   background: radial-gradient(120% 90% at 50% 40%, var(--navy-blue) 0%, var(--dark-blue) 70%);
@@ -1180,9 +1180,6 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 /* Admin → Cohorts: "Upcoming & active" / "Archived" */
 .view-switch { margin: 0 0 14px; }
 .cohort-list li { flex-wrap: wrap; }
-.join-button { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; text-align: right; }
-.join-button.ready { flex: 1 1 100%; align-items: stretch; text-align: center; } /* "Continue to payment": full width, under the cohort */
-.join-button.ready .btn { width: 100%; }
 
 /* Explainer video icon and its full-screen player (Explainer.jsx) */
 .explainer-btn {
@@ -1202,3 +1199,7 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .join-steps .btn-text { display: block; margin: 8px auto 0; }
 .join-steps > .btn-primary { margin-top: 4px; }
 .join-done { margin: 8px 0 14px; font-weight: 600; color: var(--teal); }
+
+/* Stripe's payment form inside the app (EmbeddedPayment.jsx): on white, as Stripe draws it */
+.embedded-payment { flex: 1 1 100%; margin-top: 12px; }
+.embedded-payment > div:not(:empty) { border-radius: 14px; overflow: hidden; background: #fff; }

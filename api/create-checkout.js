@@ -1,4 +1,6 @@
-// POST /api/create-checkout  { cohortId, screening, returnPath }
+// POST /api/create-checkout  { cohortId, screening, returnPath, embedded }
+// embedded: true → Stripe's payment form shown inside the app (EmbeddedPayment.jsx); returns
+// { clientSecret, sessionId } and doesn't leave the page. Otherwise returns Stripe's page { url }.
 // returnPath: where Stripe sends them back to (only the join steps, "/join/<cohortId>";
 // otherwise the dashboard).
 // Starts a Stripe Checkout payment for a paid cohort and returns its URL.
@@ -9,7 +11,7 @@ import { handle, requireUser, db, stripe, siteOrigin, HttpError } from "./_lib/s
 
 export default handle(async (req, res) => {
   const user = await requireUser(req);
-  const { cohortId, screening, returnPath } = req.body || {};
+  const { cohortId, screening, returnPath, embedded } = req.body || {};
   if (!cohortId) throw new HttpError(400, "Missing cohort.");
 
   const snap = await db().doc(`cohorts/${cohortId}`).get();
@@ -41,9 +43,10 @@ export default handle(async (req, res) => {
       cohortId,
       ...(screening ? { screeningAdvised: String(Boolean(screening.advised)) } : {}), // alcohol-free screening: was the advice shown?
     },
-    success_url: `${origin}${back}?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}${back}?checkout=cancelled`,
+    ...(embedded
+      ? { ui_mode: "embedded", redirect_on_completion: "if_required", return_url: `${origin}${back}?checkout=success&session_id={CHECKOUT_SESSION_ID}` }
+      : { success_url: `${origin}${back}?checkout=success&session_id={CHECKOUT_SESSION_ID}`, cancel_url: `${origin}${back}?checkout=cancelled` }),
   });
 
-  res.json({ url: session.url });
+  res.json(embedded ? { clientSecret: session.client_secret, sessionId: session.id } : { url: session.url });
 });

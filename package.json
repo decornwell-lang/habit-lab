@@ -10,6 +10,7 @@
     "draft-aphorisms": "node --env-file-if-exists=.env.local scripts/draft-aphorisms.js"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^4.10.0",
     "firebase": "^11.10.0",
     "firebase-admin": "^13.10.0",
     "react": "^18.3.1",
