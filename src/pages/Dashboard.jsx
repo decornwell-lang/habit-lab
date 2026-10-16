@@ -1,5 +1,5 @@
 // Dashboard: the members' home page, with four tabs (see DashboardTabs.jsx):
-//   Home · Practices (meditation, weekly assignment, live session) · Breathe · Upcoming
+//   Home · Breathe · Practices (meditation, weekly assignment, live session) · Upcoming
 // The open tab is part of the address (e.g. /dashboard?tab=practices), so links
 // and notifications can open a specific tab.
 import { useCallback, useEffect, useState } from "react";
