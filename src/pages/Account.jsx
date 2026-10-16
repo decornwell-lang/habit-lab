@@ -7,7 +7,6 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import { updateUserProfile, savePublicProfile, getPublicProfile } from "../lib/data.js";
 import { badgeInfo, sortBadges, profileStreaks } from "../lib/streaks.js";
 import { habitStreakLabel } from "../lib/cohorts.js";
-import Avatar from "../components/Avatar.jsx";
 import ShareBadge from "../components/ShareBadge.jsx";
 import Badge from "../components/Badge.jsx";
 import NotificationSettings from "../components/NotificationSettings.jsx";
@@ -16,7 +15,7 @@ import { isValidPhone } from "../lib/phone.js";
 import PhoneInput from "../components/PhoneInput.jsx";
 import MyCohorts from "../components/MyCohorts.jsx";
 import AppearanceFields from "../components/AppearanceFields.jsx";
-import { publicIdentity } from "../lib/identity.js";
+import { publicIdentity, lookFrom } from "../lib/identity.js";
 import DeleteAccount from "../components/DeleteAccount.jsx";
 import { REFLECTION_CONSENT } from "../content/site.js";
 
@@ -26,12 +25,7 @@ export default function Account() {
   const [params] = useSearchParams();
   const afterLink = params.get("newPassword") === "1"; // just logged in with an emailed link
   // Picture and leaderboard name (AppearanceFields.jsx).
-  const [look, setLook] = useState({
-    avatar: profile?.avatar || null,
-    photo: profile?.photo || null,
-    nameChoice: profile?.nameChoice || "first",
-    nickname: profile?.nickname || "",
-  });
+  const [look, setLook] = useState(() => lookFrom(profile));
   const [optIn, setOptIn] = useState(Boolean(profile?.leaderboardOptIn));
   const [showHabit, setShowHabit] = useState(profile?.showHabit !== false);
   const [reflectionConsent, setReflectionConsent] = useState(Boolean(profile?.reflectionConsent));

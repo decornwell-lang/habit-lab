@@ -2,13 +2,16 @@
 // app never talks to the database directly.
 //
 // Collections:
-//   users/{uid}                       private profile (surname, email, role)
-//   users/{uid}/memberships/{cohortId} which cohorts they joined, payment
-//   users/{uid}/checkins/{date_cohortId}  daily check-ins, one per cohort
-//   users/{uid}/practice/{date}       that day's meditation, morning and reflection answers
+//   users/{uid}                       private profile (name, surname, email, phone, role, picture and name choice)
+//   users/{uid}/memberships/{cohortId} which cohorts they joined, payment, alcohol screening result
+//   users/{uid}/checkins/{date_cohortId}  daily check-ins (the evening review), one per cohort
+//   users/{uid}/practice/{date}       that day's morning check-ins ("morning_<cohortId>")
+//   users/{uid}/reflections/{id}      intentions and evening reviews (see below)
+//   users/{uid}/activity/{date}       counts only, for the owner (see below)
 //   users/{uid}/practiceChecks/{id}   badge check-ins ("Still in your practice?")
-//   publicProfiles/{uid}              first name, avatar, and per cohort: streak, badges (shown to others only if opted in)
+//   publicProfiles/{uid}              the name and picture they chose, and per cohort: streak, badges (shown to others only if opted in)
 //   cohorts/{cohortId}                cohort details and member list
+//   members/{uid}, cohortEntitlements/{id}, payments/{id}  access and payments, written only by the server (src/lib/access.js)
 //   settings/content                  Zoom link, session date, weekly media links
 //   notices/{id}                      messages from the owner (also sent as push notifications)
 import {

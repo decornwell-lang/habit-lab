@@ -15,6 +15,14 @@ export function publicName(profile) {
   return first;
 }
 
+// The member's current choices, as AppearanceFields.jsx edits them.
+export const lookFrom = (profile) => ({
+  avatar: profile?.avatar || null,
+  photo: profile?.photo || null,
+  nameChoice: profile?.nameChoice || "first",
+  nickname: profile?.nickname || "",
+});
+
 // The fields copied to the public profile (publicProfiles/{uid}).
 export const publicIdentity = (profile) => ({ name: publicName(profile), avatar: profile?.avatar || null, photo: profile?.photo || null });
 

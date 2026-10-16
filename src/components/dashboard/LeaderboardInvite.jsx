@@ -4,18 +4,13 @@
 // They can change all of this any time in My account.
 import { useState } from "react";
 import { updateUserProfile, savePublicProfile } from "../../lib/data.js";
-import { publicIdentity } from "../../lib/identity.js";
+import { publicIdentity, lookFrom } from "../../lib/identity.js";
 import AppearanceFields from "../AppearanceFields.jsx";
 
 export default function LeaderboardInvite({ uid, profile }) {
   const [busy, setBusy] = useState(false);
   const [choosing, setChoosing] = useState(false);
-  const [look, setLook] = useState({
-    avatar: profile?.avatar || null,
-    photo: profile?.photo || null,
-    nameChoice: profile?.nameChoice || "first",
-    nickname: profile?.nickname || "",
-  });
+  const [look, setLook] = useState(() => lookFrom(profile));
   if (!profile || (profile.leaderboardOptIn !== null && profile.leaderboardOptIn !== undefined)) return null;
 
   async function save(optIn) {

@@ -12,7 +12,7 @@ npm run dev
 Then open http://localhost:5173.
 
 ## Secret keys
-Copy `.env.example` to `.env.local` and fill in the Firebase (and later Stripe) values. `.env.local` is never uploaded to GitHub. On Vercel, add the same names under **Settings → Environment Variables**.
+Copy `.env.example` to `.env.local` and fill in the Firebase and Stripe values. `.env.local` is never uploaded to GitHub. On Vercel, add the same names under **Settings → Environment Variables**.
 
 ## Where things live
 - `src/App.jsx`: list of pages (routes)
@@ -21,7 +21,8 @@ Copy `.env.example` to `.env.local` and fill in the Firebase (and later Stripe) 
 - `src/components/admin/`: the Admin tabs
 - `src/lib/`: helpers (Firestore data, dates, streaks and badges, push notifications…)
 - `src/content/`: wording you can edit: site text, info pages, weekly themes, daily notifications (`dailyPrompts.js`), intention / evening review wording (`intention.js`), country codes
-- `api/`: server functions on Vercel (Stripe, sending messages, the hourly daily prompts)
+- `api/`: server functions on Vercel (Stripe checkout, sending messages, the hourly daily prompts, leaving a cohort, deleting an account)
+- `config/pricing.json`: prices (€, VAT included) and access periods
 - `firestore.rules`: database security rules (paste into Firebase console → Firestore → Rules)
 - `src/styles/theme.css`: colours, fonts, spacing (change the look here)
 
@@ -36,6 +37,9 @@ A member can be in several cohorts at once (e.g. alcohol for years, plus a fitne
 This week's meditation (Practices tab) doesn't send a notification. Times and wording: `src/content/dailyPrompts.js`.
 
 How they're sent: `.github/workflows/daily-prompts.yml` runs every hour and calls `api/daily-prompts.js`. This uses GitHub's free scheduler, so the Firebase Blaze plan is **not** needed. Needs `CRON_SECRET` in both Vercel and GitHub (Settings → Secrets and variables → Actions). Members without notifications switched on still see every prompt as a tile on Home.
+
+## Payments
+Each cohort is €99, VAT (IVA 21%) included; prices are in `config/pricing.json`. Joining a paid cohort opens Stripe Checkout (test mode until launch). Stripe Tax works out the VAT inside the price when `STRIPE_TAX=on` is set in Vercel. Joining an alcohol-free cohort first shows a short screening (`src/content/screening.js`). Terms and conditions: Menu → Terms and conditions (text in `src/content/pages.js`; have it checked before launch). Members can remove a cohort, or delete their membership, in My account.
 
 ## Reflections and privacy
 Morning intentions and evening reviews are stored per member in `users/{uid}/reflections`, with counts only in `users/{uid}/activity`. David can read a member's words only if they ticked "I agree that my reflections can be seen by David…" (sign-up or My account); otherwise he sees counts only. This is enforced by `firestore.rules`, which must be published in the Firebase console.
