@@ -53,8 +53,7 @@ export const GROUP_PODS =
 // connected to a calendar, "Book a session" opens WhatsApp with a message ready.
 export const THERAPY = {
   title: "Psychotherapy with David",
-  details: "One-to-one session · 60 minutes · €120",
   text: "Body-centred psychotherapy, online by Zoom or in person in Mallorca. Confidential and personal.",
-  button: "Book a session",
-  link: "https://wa.me/34603450095?text=" + encodeURIComponent("Hello David, I'd like to book a psychotherapy session."),
+  button: "Contact David",
+  link: "mailto:info@davidernestcornwell.com?subject=" + encodeURIComponent("Psychotherapy session"),
 };

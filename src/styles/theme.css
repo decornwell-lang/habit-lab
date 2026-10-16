@@ -1292,12 +1292,11 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .breathe-stop-clock { font-variant-numeric: tabular-nums; }
 
 /* Upcoming: book a psychotherapy session (TherapyTile.jsx) */
-.therapy-tile { display: grid; grid-template-columns: 96px 1fr; gap: 16px; align-items: start; border-color: color-mix(in srgb, var(--gold) 50%, transparent) !important; }
-.therapy-photo { width: 96px; height: 120px; object-fit: cover; border-radius: 14px; }
-.therapy-body h2 { margin: 0 0 4px; }
-.therapy-body .card-label { color: var(--gold); }
-.therapy-details { margin: 0 0 6px; font-weight: 600; color: var(--gold); }
-.therapy-body .muted { margin: 0 0 12px; }
-.therapy-body .btn { width: 100%; }
-@media (max-width: 380px) { .therapy-tile { grid-template-columns: 78px 1fr; } .therapy-photo { width: 78px; height: 100px; } }
+.therapy-tile { display: flow-root; padding: 14px; border-color: color-mix(in srgb, var(--gold) 50%, transparent) !important; }
+.therapy-photo { float: left; width: 140px; aspect-ratio: 5 / 3; object-fit: cover; object-position: center 15%; border-radius: 12px; margin: 2px 14px 6px 0; }
+.therapy-tile .card-label { color: var(--gold); margin-bottom: 2px; }
+.therapy-tile h2 { margin: 0 0 4px; font-size: 1.15rem; }
+.therapy-tile .muted { margin: 0 0 12px; }
+.therapy-tile .btn { clear: both; display: flex; justify-content: center; width: fit-content; min-width: 180px; margin: 0 auto; }
+@media (max-width: 380px) { .therapy-photo { width: 120px; } }
 .cohort-tile { scroll-margin-top: calc(72px + env(safe-area-inset-top)); } /* clears the header when scrolled to */
