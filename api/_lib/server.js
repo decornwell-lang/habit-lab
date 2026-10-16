@@ -7,7 +7,7 @@
 //   STRIPE_TAX                "on" once Stripe Tax is set up (works out the VAT inside each price)
 import { initializeApp, cert, getApps } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
-import { getFirestore, FieldValue } from "firebase-admin/firestore";
+import { getFirestore, FieldValue, FieldPath } from "firebase-admin/firestore";
 import Stripe from "stripe";
 
 export class HttpError extends Error {
@@ -55,6 +55,8 @@ function firebase() {
 }
 
 export const db = () => firebase().db;
+export const adminAuth = () => firebase().auth;
+export { FieldValue, FieldPath };
 
 export function stripe() {
   const key = process.env.STRIPE_SECRET_KEY;

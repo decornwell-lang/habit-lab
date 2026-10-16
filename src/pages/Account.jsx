@@ -1,5 +1,6 @@
-// My account (from the menu): badges (with sharing), avatar, mobile number, privacy,
-// notifications, password and log out.
+// My account (from the menu): each member's own page. Their details, the cohorts they're
+// in (each can be removed, with its data), badges (with sharing), avatar, mobile number,
+// privacy, notifications, password, log out, and deleting their membership.
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
@@ -14,6 +15,8 @@ import NotificationSettings from "../components/NotificationSettings.jsx";
 import ChangePassword from "../components/ChangePassword.jsx";
 import { isValidPhone } from "../lib/phone.js";
 import PhoneInput from "../components/PhoneInput.jsx";
+import MyCohorts from "../components/MyCohorts.jsx";
+import DeleteAccount from "../components/DeleteAccount.jsx";
 import { REFLECTION_CONSENT } from "../content/site.js";
 
 export default function Account() {
@@ -68,6 +71,17 @@ export default function Account() {
       <p className="muted">{profile?.email || user.email}</p>
 
       {afterLink && <ChangePassword highlight />}
+
+      <section className="card">
+        <h2>My details</h2>
+        <dl className="details-list">
+          <dt>Name</dt><dd>{[profile?.firstName, profile?.surname].filter(Boolean).join(" ") || firstName}</dd>
+          <dt>Email</dt><dd>{profile?.email || user.email}</dd>
+          <dt>Mobile</dt><dd>{profile?.phone || "Not added"}</dd>
+        </dl>
+      </section>
+
+      <MyCohorts uid={user.uid} />
 
       <section className="card">
         <h2>My badges</h2>
@@ -151,6 +165,8 @@ export default function Account() {
       >
         Log out
       </button>
+
+      <DeleteAccount />
     </main>
   );
 }

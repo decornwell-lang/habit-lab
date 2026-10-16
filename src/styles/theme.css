@@ -1153,3 +1153,16 @@ td.actions { white-space: nowrap; }
 /* Under "Share to WhatsApp": which cohort's group to pick */
 .share-hint { margin: 6px 0 0; text-align: center; font-size: 0.82rem; color: var(--text-muted); }
 .dashboard.dark .share-hint, .sheet .share-hint { color: #9aa2bf; }
+
+/* My account: details, my cohorts, and deleting (MyCohorts.jsx, DeleteAccount.jsx) */
+.details-list { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0; }
+.details-list dt { color: var(--text-muted); }
+.details-list dd { margin: 0; overflow-wrap: anywhere; }
+.my-cohorts { list-style: none; padding: 0; margin: 0; }
+.my-cohorts > li { padding: 12px 0; border-bottom: 1px solid var(--border); }
+.my-cohorts > li:last-child { border-bottom: none; }
+.my-cohort-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.danger-confirm { margin-top: 10px; }
+.danger-confirm p { margin: 0 0 10px; }
+.btn-danger { color: #c2353a; }
+.danger-card { margin-top: 28px; border-color: #f0c9ca; }
