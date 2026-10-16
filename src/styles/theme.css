@@ -436,7 +436,8 @@ a { color: var(--primary); }
 .joined { color: var(--primary); font-weight: 600; white-space: nowrap; }
 
 /* ---------- Dashboard tabs (fixed to the bottom) ---------- */
-.dashboard { padding-bottom: 120px; }
+/* --cohort: the chosen cohort's colour (accent in HABIT_TYPES, set by Dashboard.jsx). */
+.dashboard { padding-bottom: 120px; --cohort: var(--aqua); }
 .tabbar {
   position: fixed;
   left: 0;
@@ -486,13 +487,13 @@ a { color: var(--primary); }
 .next-bar { height: 6px; border-radius: 99px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
 .next-bar span { display: block; height: 100%; border-radius: inherit; background: var(--gold); }
 .streak-card .cohort-bar { height: 5px; margin: 8px 0 0; border-radius: 99px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
-.streak-card .cohort-bar span { display: block; height: 100%; border-radius: inherit; background: var(--aqua); }
+.streak-card .cohort-bar span { display: block; height: 100%; border-radius: inherit; background: var(--cohort); }
 .journey-wrap > .card { background: none; border: none; box-shadow: none; padding: 0; margin: 14px 0 0; }
 .journey-wrap .card-label { display: none; }
 .journey-wrap h2 { font-size: 1rem; }
 .journey-wrap .dot { background: rgba(255, 255, 255, 0.08); }
 .journey-wrap .dot.future { background: rgba(255, 255, 255, 0.04); }
-.journey-wrap .dot.kept { background: var(--aqua); }
+.journey-wrap .dot.kept { background: var(--cohort); }
 .journey-wrap .dot.returned { background: transparent; }
 .journey-wrap .dot.today { background: transparent; box-shadow: inset 0 0 0 2px #fff; }
 .journey-wrap .journey-legend { color: #c4c9dc; }
@@ -500,7 +501,7 @@ a { color: var(--primary); }
 .streak-card .share-panel .muted { color: #c4c9dc; }
 .streak-card .btn-ghost { color: #dfe3f0; }
 .streak-card h2 { color: #fff; font-size: 1.15rem; margin-bottom: 2px; }
-.streak-card .card-label { color: var(--aqua); }
+.streak-card .card-label { color: var(--cohort); }
 .streak-card .muted { color: #c4c9dc; }
 
 
@@ -702,7 +703,7 @@ td.actions { white-space: nowrap; }
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
   box-shadow: var(--shadow); overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s;
 }
-.fold.open { border-color: var(--aqua); box-shadow: 0 8px 28px rgba(10, 14, 40, 0.1); }
+.fold.open { border-color: var(--cohort); box-shadow: 0 8px 28px rgba(10, 14, 40, 0.1); }
 .fold-row {
   display: grid; align-items: center; gap: 10px; width: 100%; height: 100%;
   padding: 11px 10px; border: none; background: none; font: inherit; color: var(--text); text-align: left; cursor: pointer;
@@ -818,6 +819,11 @@ td.actions { white-space: nowrap; }
 
 /* Breathe tab: choosing a practice, and the 3-Step Breathing Space */
 .breathe-choices { display: grid; gap: 12px; width: 100%; max-width: 360px; margin-top: 8px; }
+/* Practice chooser: three rows (title, practices, empty), so the practices are centred on the screen */
+.breathe-chooser { flex: 1; width: 100%; max-width: 360px; display: grid; grid-template-rows: 1fr auto 1fr; justify-items: center; }
+.breathe-chooser-head { align-self: end; }
+.breathe-inner:has(.breathe-chooser) { flex: 1; margin: 0; } /* the chooser fills the screen's height */
+.breathe-chooser .breathe-choices { margin-top: 0; }
 .breathe-choice {
   display: flex; flex-direction: column; gap: 4px; padding: 18px; text-align: left; cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 16px; background: rgba(255, 255, 255, 0.06); color: #fff; font: inherit;
@@ -862,17 +868,19 @@ td.actions { white-space: nowrap; }
 /* Dark blue tabs (Practices, Breathe, Upcoming): same background as the Breathe screen */
 .dashboard.dark::before {
   content: ""; position: fixed; inset: 0; z-index: -1;
-  background: radial-gradient(120% 90% at 50% 40%, var(--navy-blue) 0%, var(--dark-blue) 70%);
+  background:
+    radial-gradient(90% 45% at 50% 0%, color-mix(in srgb, var(--cohort) 12%, transparent) 0%, transparent 70%), /* a faint glow in the cohort's colour */
+    radial-gradient(120% 90% at 50% 40%, var(--navy-blue) 0%, var(--dark-blue) 70%);
 }
 .dashboard.dark { color: #fff; }
 .dashboard.dark .card { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.1); box-shadow: none; color: #fff; }
 .dashboard.dark h2, .dashboard.dark h3 { color: #fff; }
-.dashboard.dark .card-label { color: var(--aqua); }
+.dashboard.dark .card-label { color: var(--cohort); }
 .dashboard.dark .muted { color: #c4c9dc; }
-.dashboard.dark .btn-primary { color: var(--aqua); }
+.dashboard.dark .btn-primary { color: var(--cohort); }
 .dashboard.dark .btn-ghost { color: #dfe3f0; }
 .dashboard.dark .btn-whatsapp, .sheet .btn-whatsapp { color: #3ddc84; }
-.dashboard.dark .joined { color: var(--aqua); }
+.dashboard.dark .joined { color: var(--cohort); }
 .dashboard.dark .cohort-list li { border-color: rgba(255, 255, 255, 0.1); }
 .meditation { margin: 16px 0 8px; }
 .meditation .video { margin: 0; border-radius: var(--radius); }
@@ -884,11 +892,11 @@ td.actions { white-space: nowrap; }
 .fold.locked .fold-title, .fold.locked .fold-summary { color: var(--text-muted); }
 /* Bright icons: gold lock until the tile opens, pulsing aqua pencil when it's ready */
 .fold-icon.locked { background: var(--gold); color: #fff; box-shadow: 0 3px 10px rgba(220, 177, 60, 0.45); }
-.fold-icon.ready { background: var(--aqua); color: #fff; box-shadow: 0 0 0 0 rgba(87, 189, 162, 0.6); animation: ready-pulse 2s ease-out infinite; }
+.fold-icon.ready { background: var(--cohort); color: #fff; box-shadow: 0 0 0 0 color-mix(in srgb, var(--cohort) 60%, transparent); animation: ready-pulse 2s ease-out infinite; }
 @keyframes ready-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(87, 189, 162, 0.6); }
-  70% { box-shadow: 0 0 0 10px rgba(87, 189, 162, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(87, 189, 162, 0); }
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--cohort) 60%, transparent); }
+  70% { box-shadow: 0 0 0 10px color-mix(in srgb, var(--cohort) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--cohort) 0%, transparent); }
 }
 @media (prefers-reduced-motion: reduce) { .fold-icon.ready { animation: none; } }
 
@@ -897,7 +905,7 @@ td.actions { white-space: nowrap; }
 .q-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
 .q-num {
   display: grid; place-items: center; flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
-  background: var(--aqua); color: var(--dark-blue); font-size: 0.85rem; font-weight: 700;
+  background: var(--cohort); color: var(--dark-blue); font-size: 0.85rem; font-weight: 700;
 }
 .q-title { font-weight: 600; font-size: 1rem; line-height: 1.35; padding-top: 2px; }
 .q-hint { margin: -8px 0 10px 36px; font-size: 0.8rem; color: var(--text-muted); }
@@ -916,25 +924,25 @@ td.actions { white-space: nowrap; }
   padding: 5px 11px; border-radius: 99px; font-size: 0.78rem; font-weight: 700; white-space: nowrap;
   background: var(--bg); color: var(--text-muted);
 }
-.fold-chip.highlight { background: var(--aqua); color: var(--dark-blue); }
+.fold-chip.highlight { background: var(--cohort); color: var(--dark-blue); }
 .fold-chip.locked { background: transparent; color: var(--gold-text, #9a7a1c); border: 1px solid var(--gold); }
 .fold-chip.done { color: var(--teal); }
 
 /* ---------- Home on the dark blue background ---------- */
 .dashboard.dark .fold { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.1); box-shadow: none; }
-.dashboard.dark .fold.open { background: rgba(255, 255, 255, 0.08); border-color: rgba(87, 189, 162, 0.55); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); }
+.dashboard.dark .fold.open { background: rgba(255, 255, 255, 0.08); border-color: color-mix(in srgb, var(--cohort) 55%, transparent); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); }
 .dashboard.dark .fold-row { color: #fff; }
 .dashboard.dark .fold-summary { color: #9aa2bf; }
 .dashboard.dark .fold.locked .fold-title { color: #b4bad0; }
 .dashboard.dark .fold-row > svg { color: #8f96b3; }
 .dashboard.dark .fold-icon { background: rgba(255, 255, 255, 0.08); }
-.dashboard.dark .fold-icon.done { background: rgba(87, 189, 162, 0.16); }
+.dashboard.dark .fold-icon.done { background: color-mix(in srgb, var(--cohort) 16%, transparent); }
 .dashboard.dark .fold-icon.locked { background: var(--gold); }
-.dashboard.dark .fold-icon.ready { background: var(--aqua); }
+.dashboard.dark .fold-icon.ready { background: var(--cohort); }
 .dashboard.dark .fold-chip { background: rgba(255, 255, 255, 0.08); color: #c4c9dc; }
-.dashboard.dark .fold-chip.highlight { background: var(--aqua); color: var(--dark-blue); }
+.dashboard.dark .fold-chip.highlight { background: var(--cohort); color: var(--dark-blue); }
 .dashboard.dark .fold-chip.locked { background: transparent; color: var(--gold); border-color: rgba(220, 177, 60, 0.7); }
-.dashboard.dark .fold-chip.done { color: var(--aqua); }
+.dashboard.dark .fold-chip.done { color: var(--cohort); }
 .dashboard.dark .fold-body { border-top-color: rgba(255, 255, 255, 0.1); }
 .dashboard.dark .streak-card { border: 1px solid rgba(255, 255, 255, 0.1); }
 .dashboard.dark .aphorism { color: #c4c9dc; }
@@ -944,13 +952,13 @@ td.actions { white-space: nowrap; }
 .dashboard.dark .q-textarea { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
 .dashboard.dark .q-textarea::placeholder { color: #8f96b3; }
 .dashboard.dark .choices button, .dashboard.dark .segmented button { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
-.dashboard.dark .choices button.selected, .dashboard.dark .segmented button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
+.dashboard.dark .choices button.selected, .dashboard.dark .segmented button.selected { background: var(--cohort); border-color: var(--cohort); color: var(--dark-blue); }
 .dashboard.dark .segmented button.selected.no { background: var(--gold); border-color: var(--gold); }
 .dashboard.dark .card-accent { background: rgba(220, 177, 60, 0.08); border-color: rgba(220, 177, 60, 0.45); }
 .dashboard.dark .card-celebrate { background: rgba(220, 177, 60, 0.1); border-color: rgba(220, 177, 60, 0.3); }
-.dashboard.dark .card-gentle { background: rgba(87, 189, 162, 0.1); border-color: rgba(87, 189, 162, 0.3); }
-.dashboard.dark .notice-good { background: rgba(87, 189, 162, 0.14); color: var(--aqua); }
-.dashboard.dark .done-badge, .dashboard.dark .form-success { color: var(--aqua); }
+.dashboard.dark .card-gentle { background: color-mix(in srgb, var(--cohort) 10%, transparent); border-color: color-mix(in srgb, var(--cohort) 30%, transparent); }
+.dashboard.dark .notice-good { background: color-mix(in srgb, var(--cohort) 14%, transparent); color: var(--cohort); }
+.dashboard.dark .done-badge, .dashboard.dark .form-success { color: var(--cohort); }
 .dashboard.dark .btn-text { color: #fff; }
 .dashboard.dark .hint { color: #9aa2bf; }
 .dashboard.dark .steps-list { color: #c4c9dc; }
@@ -959,14 +967,16 @@ td.actions { white-space: nowrap; }
 /* ---------- Full-screen panels: morning intention and evening review (Sheet.jsx) ---------- */
 .sheet {
   position: fixed; inset: 0; z-index: 40; overflow-y: auto; color: #fff;
-  background: radial-gradient(120% 90% at 50% 30%, var(--navy-blue) 0%, var(--dark-blue) 70%);
+  background:
+    radial-gradient(90% 40% at 50% 0%, color-mix(in srgb, var(--cohort) 12%, transparent) 0%, transparent 70%),
+    radial-gradient(120% 90% at 50% 30%, var(--navy-blue) 0%, var(--dark-blue) 70%);
   padding: calc(16px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));
 }
 .sheet-close { position: absolute; top: calc(10px + env(safe-area-inset-top)); right: 10px; color: #fff; }
 .sheet-inner { max-width: 440px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; }
 .sheet h2 { color: #fff; }
 .sheet .muted { color: #c4c9dc; }
-.sheet .btn-primary { color: var(--aqua); }
+.sheet .btn-primary { color: var(--cohort); }
 .sheet .btn-text { color: #c4c9dc; }
 .char-count { margin: 4px 0 0; text-align: right; font-size: 0.75rem; color: #8f96b3; }
 
@@ -994,18 +1004,13 @@ td.actions { white-space: nowrap; }
 .sheet .q-textarea::placeholder { color: #8f96b3; }
 .sheet .q-input { color-scheme: dark; }
 .sheet .segmented button { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
-.sheet .segmented button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
+.sheet .segmented button.selected { background: var(--cohort); border-color: var(--cohort); color: var(--dark-blue); }
 .sheet .segmented button.selected.no { background: var(--gold); border-color: var(--gold); }
 
-.strength { display: flex; align-items: center; gap: 14px; }
-.strength input[type="range"] { flex: 1; accent-color: var(--aqua); height: 32px; }
-.strength-value { min-width: 36px; text-align: center; font-family: var(--font-heading); font-size: 1.6rem; color: #fff; }
-.strength-value.untouched { color: #8f96b3; }
 .sheet .choices button { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
-.sheet .choices button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
+.sheet .choices button.selected { background: var(--cohort); border-color: var(--cohort); color: var(--dark-blue); }
 .sheet .scale-labels { color: #9aa2bf; }
 .sheet .btn-ghost { color: #dfe3f0; }
-.fold-icon.calm { background: rgba(87, 189, 162, 0.22); }
 .share-options { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 8px 0 0; }
 .share-options .checkbox { margin: 0; font-size: 0.9rem; }
 .sheet .share-options .checkbox { color: #e9eaf2; }
@@ -1035,7 +1040,7 @@ td.actions { white-space: nowrap; }
 /* ---------- My streak (StreakCard.jsx) ---------- */
 .my-streak-top { display: flex; align-items: center; gap: 18px; }
 .my-streak-number { margin: 0; display: flex; flex-direction: column; flex-shrink: 0; }
-.my-streak-number strong { font-family: var(--font-heading); font-size: 3.4rem; line-height: 1; color: var(--aqua); }
+.my-streak-number strong { font-family: var(--font-heading); font-size: 3.4rem; line-height: 1; color: var(--cohort); }
 .my-streak-number span { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #c4c9dc; }
 .my-streak-cohort { flex: 1; min-width: 0; }
 .my-streak-cohort .muted { margin: 0 0 2px; }
@@ -1044,18 +1049,18 @@ td.actions { white-space: nowrap; }
 
 /* Leaderboard as its own tile, on the dark Home */
 .dashboard.dark .people li { border-color: rgba(255, 255, 255, 0.1); color: #fff; }
-.dashboard.dark .people li.me { margin: 0; padding: 10px 12px; border-radius: 14px; background: rgba(87, 189, 162, 0.16); }
+.dashboard.dark .people li.me { margin: 0; padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, var(--cohort) 16%, transparent); }
 .share-fallback { flex-basis: 100%; }
 
 /* Morning intention: wording and the saved (published) look */
 .intention-intro { margin: 0 0 2.5vh; font-family: var(--font-heading); font-style: italic; font-size: 1.1rem; line-height: 1.45; color: var(--gold); }
-.intention-note { margin: 0 0 2vh; color: var(--aqua); font-size: 0.9rem; }
+.intention-note { margin: 0 0 2vh; color: var(--cohort); font-size: 0.9rem; }
 .intention-saved { margin: 4px 0 6px; }
 .intention-saved blockquote {
   margin: 0; padding: 4px 0 4px 16px; border-left: 3px solid var(--gold);
   font-family: var(--font-heading); font-style: italic; font-size: 1.3rem; line-height: 1.45; color: #fff;
 }
-.intention-saved-meta { margin: 10px 0 0; font-size: 0.85rem; color: var(--aqua); }
+.intention-saved-meta { margin: 10px 0 0; font-size: 0.85rem; color: var(--cohort); }
 .intention-saved-meta .link-btn { color: #c4c9dc; font-size: 0.85rem; }
 
 /* Leaderboard rows: rank · avatar · name (challenge) · badge · streak */
@@ -1068,7 +1073,7 @@ td.actions { white-space: nowrap; }
 .lb-streak strong { font-family: var(--font-heading); font-size: 1.5rem; color: var(--teal); }
 .lb-streak small { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
 .dashboard.dark .lb-rank, .dashboard.dark .lb-meta, .dashboard.dark .lb-streak small { color: #9aa2bf; }
-.dashboard.dark .lb-streak strong { color: var(--aqua); }
+.dashboard.dark .lb-streak strong { color: var(--cohort); }
 
 /* Saved answers (SavedAnswers.jsx): what the member wrote, shown on the page after Save */
 .saved-answers dl { margin: 0; display: grid; gap: 12px; }
@@ -1079,7 +1084,7 @@ td.actions { white-space: nowrap; }
 .saved-answers-meta { margin: 14px 0 4px; font-size: 0.85rem; color: var(--teal); }
 .sheet .saved-answers dt, .dashboard.dark .saved-answers dt { color: #9aa2bf; }
 .sheet .saved-answers dd, .dashboard.dark .saved-answers dd { color: #fff; }
-.sheet .saved-answers-meta, .dashboard.dark .saved-answers-meta { color: var(--aqua); }
+.sheet .saved-answers-meta, .dashboard.dark .saved-answers-meta { color: var(--cohort); }
 .saved-answers-meta .link-btn { font-size: 0.85rem; }
 .sheet .saved-answers-meta .link-btn, .dashboard.dark .saved-answers-meta .link-btn { color: #c4c9dc; }
 
@@ -1089,7 +1094,7 @@ td.actions { white-space: nowrap; }
   min-height: 46px; border-radius: 12px; font: inherit; font-weight: 600; font-size: 1.05rem; cursor: pointer;
   background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff;
 }
-.scale-row button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
+.scale-row button.selected { background: var(--cohort); border-color: var(--cohort); color: var(--dark-blue); }
 
 /* ---------- Cohort buttons (Home, for members in more than one cohort) ---------- */
 .cohort-switcher {
@@ -1101,8 +1106,10 @@ td.actions { white-space: nowrap; }
   flex: none; padding: 9px 16px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.06); color: #dfe3f0; font: inherit; font-weight: 600; font-size: 0.92rem; cursor: pointer;
 }
-.cohort-switcher button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
+.cohort-switcher button.selected { background: var(--cohort); border-color: var(--cohort); color: var(--dark-blue); }
 .cohort-switcher small { font-weight: 500; opacity: 0.8; }
+.cohort-switcher button::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--cohort); }
+.cohort-switcher button.selected::before { background: var(--dark-blue); opacity: 0.5; }
 .cohort-switcher button { display: inline-flex; align-items: center; gap: 6px; }
 .switcher-count {
   min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: #e5484d; color: #fff;

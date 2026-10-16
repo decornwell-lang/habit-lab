@@ -9,16 +9,18 @@ import { daysBetween, addDays } from "./dates.js";
 //   keptWhen  the answer to `question` that keeps the streak going
 //   kept, missed  a day on the journey, e.g. "Smoke-free" / "Smoked"
 //   cravings  true if the evening review's craving questions apply
+//   accent    the cohort's colour on Home (labels, chips, selected answers…), so you can
+//             feel which cohort you're in
 export const HABIT_TYPES = [
-  { id: "smoking", label: "Smoking", tab: "Smoke-free", streak: "smoke-free", question: "Did you smoke today?", keptWhen: "no", kept: "Smoke-free", missed: "Smoked", cravings: true },
-  { id: "alcohol", label: "Alcohol", tab: "Alcohol-free", streak: "alcohol-free", question: "Did you drink alcohol today?", keptWhen: "no", kept: "Alcohol-free", missed: "Drank", cravings: true },
-  { id: "exercise", label: "Fitness", tab: "Fitness", streak: "of exercise", question: "Did you exercise today?", keptWhen: "yes", kept: "Exercised", missed: "Didn't exercise" },
-  { id: "meditation", label: "Meditation", tab: "Meditation", streak: "of meditation", question: "Did you meditate today?", keptWhen: "yes", kept: "Meditated", missed: "Didn't meditate" },
-  { id: "asthma", label: "Asthma", tab: "Asthma", streak: "of breathing practice", question: "Did you do your breathing practice today?", keptWhen: "yes", kept: "Practised", missed: "Didn't practise" },
-  { id: "weightLoss", label: "Weight loss", tab: "Healthy eating", streak: "of healthy eating", question: "Did you eat well today?", keptWhen: "yes", kept: "Ate well", missed: "Didn't eat well" },
+  { id: "smoking", label: "Smoking", tab: "Smoke-free", streak: "smoke-free", question: "Did you smoke today?", keptWhen: "no", kept: "Smoke-free", missed: "Smoked", cravings: true, accent: "#57bda2" },
+  { id: "alcohol", label: "Alcohol", tab: "Alcohol-free", streak: "alcohol-free", question: "Did you drink alcohol today?", keptWhen: "no", kept: "Alcohol-free", missed: "Drank", cravings: true, accent: "#8fa6f5" },
+  { id: "exercise", label: "Fitness", tab: "Fitness", streak: "of exercise", question: "Did you exercise today?", keptWhen: "yes", kept: "Exercised", missed: "Didn't exercise", accent: "#a8d672" },
+  { id: "meditation", label: "Meditation", tab: "Meditation", streak: "of meditation", question: "Did you meditate today?", keptWhen: "yes", kept: "Meditated", missed: "Didn't meditate", accent: "#c4a3ec" },
+  { id: "asthma", label: "Asthma", tab: "Asthma", streak: "of breathing practice", question: "Did you do your breathing practice today?", keptWhen: "yes", kept: "Practised", missed: "Didn't practise", accent: "#6cc8e8" },
+  { id: "weightLoss", label: "Weight loss", tab: "Healthy eating", streak: "of healthy eating", question: "Did you eat well today?", keptWhen: "yes", kept: "Ate well", missed: "Didn't eat well", accent: "#f2b57c" },
 ];
 
-const OTHER_HABIT = { label: "Practice", tab: "Practice", streak: "of practice", question: "Did you keep your practice today?", keptWhen: "yes", kept: "Kept", missed: "Not kept" };
+const OTHER_HABIT = { label: "Practice", tab: "Practice", streak: "of practice", question: "Did you keep your practice today?", keptWhen: "yes", kept: "Kept", missed: "Not kept", accent: "#57bda2" };
 export const habitInfo = (id) => HABIT_TYPES.find((h) => h.id === id) || { ...OTHER_HABIT, id };
 export const habitLabel = (id) => habitInfo(id).label;
 export const habitStreakLabel = (id) => habitInfo(id).streak;

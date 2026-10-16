@@ -10,7 +10,8 @@ export default function CohortSwitcher({ rows, selected, waiting = {}, onSelect 
     <div className="cohort-switcher" role="tablist" aria-label="Your cohorts">
       {rows.map((r, i) => (
         <button type="button" role="tab" key={r.cohort.id} aria-selected={r.cohort.id === selected}
-          className={r.cohort.id === selected ? "selected" : ""} onClick={() => onSelect(r.cohort.id)}>
+          className={r.cohort.id === selected ? "selected" : ""} onClick={() => onSelect(r.cohort.id)}
+          style={{ "--cohort": habitInfo(r.cohort.habitType).accent }}>
           {/* Two cohorts on the same habit are told apart by name. */}
           {names.indexOf(names[i]) !== names.lastIndexOf(names[i]) ? r.cohort.name : names[i]}
           {r.progress.state === "upcoming" && <small> · soon</small>}

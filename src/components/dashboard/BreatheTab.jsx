@@ -18,9 +18,12 @@ export default function BreatheTab({ settings }) {
         {practice === "coherent" && <CoherentBreathing />}
         {practice === "space" && <BreathingSpace url={settings.breathingSpaceUrl} />}
         {!practice && (
-          <>
-            <h2>Craving?</h2>
-            <p className="breathe-hint">Choose a practice.</p>
+          // The two practices sit in the middle of the screen, with the title just above.
+          <div className="breathe-chooser">
+            <div className="breathe-chooser-head">
+              <h2>Craving?</h2>
+              <p className="breathe-hint">Choose a practice.</p>
+            </div>
             <div className="breathe-choices">
               {PRACTICES.map((p) => (
                 <button key={p.id} className="breathe-choice" onClick={() => setPractice(p.id)}>
@@ -29,7 +32,8 @@ export default function BreatheTab({ settings }) {
                 </button>
               ))}
             </div>
-          </>
+            <div />
+          </div>
         )}
       </div>
     </section>
