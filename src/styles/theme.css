@@ -1217,3 +1217,8 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .payment-popup-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
 .payment-popup-head > div { display: flex; flex-direction: column; gap: 2px; }
 .payment-popup .embedded-payment { margin-top: 0; }
+
+/* Countdown to a cohort that hasn't started (CohortCountdown.jsx) */
+.countdown-body { display: flex; align-items: center; gap: 18px; }
+.countdown-number { font-family: var(--font-heading); font-size: 3.6rem; line-height: 1; color: var(--cohort, var(--aqua)); font-variant-numeric: tabular-nums; }
+.countdown-text { margin: 0 0 4px; font-weight: 600; font-size: 1.05rem; color: #fff; }

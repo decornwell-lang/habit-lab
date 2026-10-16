@@ -17,6 +17,7 @@ import { aphorismFor } from "../lib/aphorisms.js";
 import { profileStreaks, cohortStreakEntry } from "../lib/streaks.js";
 
 import PreCohort from "../components/dashboard/PreCohort.jsx";
+import CohortCountdown from "../components/dashboard/CohortCountdown.jsx";
 import WeeklyAssignment from "../components/dashboard/WeeklyAssignment.jsx";
 import LiveSession from "../components/dashboard/LiveSession.jsx";
 import JoinCohort from "../components/dashboard/JoinCohort.jsx";
@@ -367,6 +368,7 @@ export default function Dashboard() {
         <>
           {explainerRow("home", "About Home")}
           {choices.length > 1 && <CohortSwitcher rows={choices} selected={current.cohort.id} waiting={waiting} onSelect={chooseCohort} />}
+          {current?.progress.state === "upcoming" && <CohortCountdown current={current} />}
           {current && <BadgesCard streak={streak} current={current} />}
           {/* key: switching cohort starts its tiles afresh (no answers carried over) */}
           <Folds key={current?.cohort.id} items={homeItems} initialOpen={params.get("open")} />
