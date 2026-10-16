@@ -13,6 +13,7 @@ export default function ContentTab({ settings, reload }) {
     nextSessionAt: settings.nextSessionAt || "",
     currentWeek: settings.currentWeek || 1,
     breathingSpaceUrl: settings.breathingSpaceUrl || "",
+    regulationUrl: settings.regulationUrl || "",
     explainers: Object.fromEntries(EXPLAINERS.map((x) => [x.id, settings.explainers?.[x.id] || ""])),
     weeks: Object.fromEntries(weekNumbers.map((w) => [w, { title: "", meditationUrl: "", reflectionUrl: "", ...settings.weeks?.[w] }])),
   });
@@ -43,10 +44,14 @@ export default function ContentTab({ settings, reload }) {
       </section>
 
       <section className="card">
-        <h2>3-Step Breathing Space</h2>
+        <h2>Breathing practices</h2>
         <div className="field">
           <label>Recording link (Breathe tab)</label>
           <input value={form.breathingSpaceUrl} onChange={(e) => setForm({ ...form, breathingSpaceUrl: e.target.value })} placeholder="Leave empty to use David's recording in the app" />
+        </div>
+        <div className="field">
+          <label>Nervous system regulation video (shown in the middle of its page)</label>
+          <input value={form.regulationUrl} onChange={(e) => setForm({ ...form, regulationUrl: e.target.value })} placeholder="https://youtu.be/…" />
         </div>
       </section>
 

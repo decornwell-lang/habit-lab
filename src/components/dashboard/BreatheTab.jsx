@@ -28,7 +28,7 @@ export default function BreatheTab({ settings, explainers = {} }) {
       <div className="breathe-inner">
         {practice === "coherent" && <CoherentBreathing />}
         {practice === "space" && <BreathingSpace url={settings.breathingSpaceUrl} />}
-        {practice === "regulation" && <NervousSystem />}
+        {practice === "regulation" && <NervousSystem url={settings.regulationUrl} />}
         {!practice && (
           // The two practices sit in the middle of the screen, with the title just above.
           <div className="breathe-chooser">
