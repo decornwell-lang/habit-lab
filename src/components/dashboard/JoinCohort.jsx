@@ -1,6 +1,6 @@
 // Upcoming tab: cohorts that haven't started yet, with a "Join" button.
-// Free cohorts are joined straight away. Paid ones first show the price (VAT included),
-// then go to Stripe's payment page.
+// Free cohorts are joined straight away. For paid ones, "Join" becomes "Continue to
+// payment" (price, VAT included), which goes to Stripe's payment page.
 // Alcohol-free cohorts start with a short screening (AlcoholScreening.jsx); only whether
 // its advice was shown is saved with the membership.
 import { useState } from "react";
@@ -62,10 +62,13 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
               {joinedIds.has(c.id) ? (
                 <span className="joined">✓ Joined</span>
               ) : (
-                <button className="btn btn-primary btn-small" disabled={busyId !== null}
-                  onClick={() => (Number(c.price) || needsScreening(c) ? setConfirming(confirming === c.id ? null : c.id) : handleJoin(c))}>
-                  {busyId === c.id ? "Please wait…" : "Join"}
-                </button>
+                <JoinButton cohort={c} ready={confirming === c.id && !needsScreening(c)} busy={busyId === c.id} disabled={busyId !== null}
+                  onClick={() => {
+                    // Free, already screened, or second tap: join (or go to payment). Otherwise open the next step.
+                    if (confirming === c.id && !needsScreening(c)) return handleJoin(c);
+                    if (Number(c.price) || needsScreening(c)) return setConfirming(confirming === c.id ? null : c.id);
+                    handleJoin(c);
+                  }} />
               )}
               {confirming === c.id && needsScreening(c) && (
                 <div className="join-terms">
@@ -75,19 +78,25 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
                   }} />
                 </div>
               )}
-              {confirming === c.id && !needsScreening(c) && Number(c.price) > 0 && (
-                <div className="join-terms">
-                  <p className="join-price"><strong>{formatPrice(c)}</strong> <span className="muted small">{JOIN_TERMS.price}</span></p>
-                  <button className="btn btn-primary" disabled={busyId !== null} onClick={() => handleJoin(c)}>
-                    {busyId === c.id ? "Please wait…" : "Continue to payment"}
-                  </button>
-                </div>
-              )}
             </li>
           ))}
         </ul>
       )}
       {error && <p className="form-error" role="alert">{error}</p>}
     </section>
+  );
+}
+
+// "Join" for a paid cohort turns into "Continue to payment" (with the price and VAT
+// note underneath) once tapped; the second tap goes to Stripe.
+function JoinButton({ cohort, ready, busy, disabled, onClick }) {
+  const paid = Number(cohort.price) > 0;
+  return (
+    <div className={`join-button ${ready && paid ? "ready" : ""}`}>
+      <button className="btn btn-primary btn-small" disabled={disabled} onClick={onClick}>
+        {busy ? "Please wait…" : ready && paid ? "Continue to payment" : "Join"}
+      </button>
+      {ready && paid && <span className="muted small">{formatPrice(cohort)} · {JOIN_TERMS.price}</span>}
+    </div>
   );
 }

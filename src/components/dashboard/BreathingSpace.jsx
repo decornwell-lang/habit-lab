@@ -97,16 +97,11 @@ function AudioPlayer({ src }) {
     <div className="breathing-space-player">
       <audio ref={audio} src={src} preload="metadata" onLoadedMetadata={update} onTimeUpdate={update}
         onEnded={() => { setPlaying(false); audio.current.currentTime = 0; update(); }} />
-      {playing ? (
-        <>
-          <p className="breathing-space-clock" aria-live="off">{left !== null ? clock(left) : "…"}</p>
-          <button className="btn btn-text breathe-text-btn" onClick={stop}>Stop</button>
-        </>
-      ) : (
-        <button className="btn btn-primary" onClick={start}>
-          Start{left !== null ? ` · ${clock(left)}` : ""}
-        </button>
-      )}
+      {/* One button: "Start · 3:00", then the countdown inside the same button (tap to stop). */}
+      <button className="btn btn-primary breathing-space-button" onClick={playing ? stop : start} aria-label={playing ? "Stop" : "Start"}>
+        {playing ? (left !== null ? clock(left) : "…") : `Start${left !== null ? ` · ${clock(left)}` : ""}`}
+      </button>
+      {playing && <p className="muted small breathing-space-hint">Tap to stop</p>}
     </div>
   );
 }

@@ -482,7 +482,7 @@ a { color: var(--primary); }
 .tabbar button.active { color: var(--teal); }
 .tabbar button.active svg { stroke-width: 2.2; }
 @media (min-width: 720px) {
-  .tabbar { max-width: 640px; margin: 0 auto 16px; border: 1px solid var(--border); border-radius: 18px; }
+  .tabbar { max-width: 640px; margin: 0 auto; border: 1px solid var(--border); border-bottom: none; border-radius: 18px 18px 0 0; } /* centred, but always touching the bottom */
   .tabbar button { font-size: 0.8rem; }
 }
 
@@ -800,6 +800,9 @@ td.actions { white-space: nowrap; }
   box-shadow: 0 10px 40px rgba(87, 189, 162, 0.3);
 }
 .breathe-circle.out { transform: scale(0.55); }
+button.breathe-circle { border: 0; padding: 0; font: inherit; cursor: pointer; }
+button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
+.breathe-tap { display: block; margin-top: 6px; font-size: 1.45rem; font-weight: 600; letter-spacing: 0.04em; opacity: 0.85; } /* drawn small with the ball, so larger */
 .breathe-circle.in { transform: scale(1.12); }
 .breathe-circle > span { display: flex; flex-direction: column; align-items: center; }
 .breathe-word { font-family: var(--font-heading); font-size: 1.35rem; font-weight: 600; margin: 0; }
@@ -847,8 +850,8 @@ td.actions { white-space: nowrap; }
 .breathe-choice span { color: #c4c9dc; font-size: 0.9rem; }
 .breathing-space-player { width: 100%; max-width: 320px; min-height: 92px; margin: 4px 0 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .breathing-space-player .btn { margin: 0; }
-.breathing-space-player .breathe-text-btn { min-height: 36px; padding: 0 16px; }
-.breathing-space-clock { margin: 0; font-family: var(--font-heading); font-size: 2.6rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.breathing-space-button { font-variant-numeric: tabular-nums; } /* the countdown doesn't jiggle as digits change */
+.breathing-space-hint { margin: 6px 0 0; color: #9aa2bf; }
 .breathing-space-video { width: 100%; max-width: 360px; margin: 4px 0 16px; border-radius: 12px; }
 
 /* The 3-Step Breathing Space hourglass (BreathingSpace.jsx) */
@@ -1177,3 +1180,7 @@ td.actions { white-space: nowrap; }
 
 /* Admin → Cohorts: "Upcoming & active" / "Archived" */
 .view-switch { margin: 0 0 14px; }
+.cohort-list li { flex-wrap: wrap; }
+.join-button { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; text-align: right; }
+.join-button.ready { flex: 1 1 100%; align-items: stretch; text-align: center; } /* "Continue to payment": full width, under the cohort */
+.join-button.ready .btn { width: 100%; }

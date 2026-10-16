@@ -84,16 +84,21 @@ export default function CoherentBreathing() {
       <p className="breathe-hint">Gentle, quiet, diaphragmatic belly breathing through your nose.</p>
 
       <div className="breathe-stage">
-        <div className={`breathe-circle ${ballClass}`} style={{ "--breath": `${breath}s` }}>
+        {/* The ball is the start button: tap it to begin. */}
+        <button type="button" className={`breathe-circle ${ballClass}`} style={{ "--breath": `${breath}s` }}
+          onClick={running ? undefined : start} aria-label={running ? undefined : "Start"} tabIndex={running ? -1 : 0}>
           {running ? (
             <span>
               <span className="breathe-word">{inPhase ? "Inhale" : "Exhale"}</span>
               <span className="breathe-count">{count}</span>
             </span>
           ) : (
-            <span className="breathe-word resting">{finished ? "✓" : `${settings.minutes}:00`}</span>
+            <span>
+              <span className="breathe-word resting">{finished ? "✓" : `${settings.minutes}:00`}</span>
+              {!finished && <span className="breathe-tap">Tap to start</span>}
+            </span>
           )}
-        </div>
+        </button>
       </div>
 
       <div className="breathe-controls">
@@ -125,7 +130,6 @@ export default function CoherentBreathing() {
                 </button>
               </div>
             </div>
-            <button className="btn btn-primary" onClick={start}>Start</button>
           </>
         )}
       </div>
