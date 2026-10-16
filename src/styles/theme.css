@@ -94,24 +94,27 @@ a { color: var(--primary); }
   min-height: var(--tap);
   padding: 0 24px;
   border-radius: 12px;
-  border: 1px solid transparent;
+  border: 1.5px solid currentColor; /* buttons are outlines: border and text in the same colour */
+  background: transparent;
   font: inherit;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
   width: 100%;
+  transition: background-color 0.15s;
 }
-.btn-primary { background: var(--primary); color: #fff; }
-.btn-primary:hover { background: var(--primary-hover); }
+.btn:hover:not(:disabled) { background: color-mix(in srgb, currentColor 10%, transparent); }
+.btn-primary { color: var(--primary); }
 
 .btn:disabled { opacity: 0.6; cursor: default; }
 .btn-text {
   background: none;
+  border-color: transparent;
   color: var(--primary);
   font-weight: 500;
   margin-top: 4px;
 }
-.btn-text:hover { text-decoration: underline; }
+.btn-text:hover:not(:disabled) { text-decoration: underline; background: none; }
 
 .small { font-size: 0.95rem; }
 .h2 { font-size: 1.6rem; }
@@ -317,12 +320,7 @@ a { color: var(--primary); }
 
 .center { text-align: center; }
 .btn + .btn, .btn + .small { margin-top: 10px; }
-.btn-ghost {
-  background: transparent;
-  color: var(--text);
-  border-color: var(--border);
-}
-.btn-ghost:hover { border-color: var(--text-muted); }
+.btn-ghost { color: var(--text-muted); }
 .btn-small { width: auto; min-height: 40px; padding: 0 18px; font-size: 0.95rem; }
 .notice-good { background: var(--accent-soft); color: var(--primary); }
 
@@ -500,7 +498,7 @@ a { color: var(--primary); }
 .journey-wrap .journey-legend { color: #c4c9dc; }
 .streak-card .share-panel { margin-top: 18px; }
 .streak-card .share-panel .muted { color: #c4c9dc; }
-.streak-card .btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.35); }
+.streak-card .btn-ghost { color: #dfe3f0; }
 .streak-card h2 { color: #fff; font-size: 1.15rem; margin-bottom: 2px; }
 .streak-card .card-label { color: var(--aqua); }
 .streak-card .muted { color: #c4c9dc; }
@@ -601,9 +599,8 @@ a { color: var(--primary); }
 .journey-legend .dot { width: 14px; }
 
 /* ---------- WhatsApp buttons ---------- */
-.btn-whatsapp { gap: 10px; margin-top: 16px; background: #1fa855; color: #fff; }
+.btn-whatsapp { gap: 10px; margin-top: 16px; color: #1a8f48; }
 .btn-whatsapp svg { width: 22px; height: 22px; flex-shrink: 0; }
-.btn-whatsapp:hover { background: #178a45; }
 .people .person-name .muted { display: block; font-weight: 400; }
 
 /* ---------- Numbered steps ---------- */
@@ -632,7 +629,6 @@ a { color: var(--primary); }
 }
 .share-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 12px 0 6px; }
 .share-links .btn { margin-top: 0; }
-.card-celebrate .btn-ghost { background: var(--surface); }
 .badge-list { list-style: none; padding: 0; margin: 8px 0 0; }
 .badge-list li { border-bottom: 1px solid var(--border); padding: 8px 0; }
 .badge-list li:last-child { border-bottom: none; }
@@ -797,7 +793,7 @@ td.actions { white-space: nowrap; }
 .breathe-hint { color: #c4c9dc; margin: 4px auto 12px; max-width: 340px; }
 .breathe-done { font-family: var(--font-heading); font-size: 1.8rem; margin: 0; }
 .breathe-screen .btn { max-width: 320px; }
-.breathe-screen .btn-primary { background: var(--aqua); color: var(--dark-blue); }
+.breathe-screen .btn-primary { color: var(--aqua); }
 .breathe-screen .breathe-text-btn { color: #fff; }
 @media (prefers-reduced-motion: reduce) { .breathe-circle { transition: none; } }
 .breathe-settings {
@@ -873,8 +869,9 @@ td.actions { white-space: nowrap; }
 .dashboard.dark h2, .dashboard.dark h3 { color: #fff; }
 .dashboard.dark .card-label { color: var(--aqua); }
 .dashboard.dark .muted { color: #c4c9dc; }
-.dashboard.dark .btn-primary { background: var(--aqua); color: var(--dark-blue); }
-.dashboard.dark .btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.35); }
+.dashboard.dark .btn-primary { color: var(--aqua); }
+.dashboard.dark .btn-ghost { color: #dfe3f0; }
+.dashboard.dark .btn-whatsapp, .sheet .btn-whatsapp { color: #3ddc84; }
 .dashboard.dark .joined { color: var(--aqua); }
 .dashboard.dark .cohort-list li { border-color: rgba(255, 255, 255, 0.1); }
 .meditation { margin: 16px 0 8px; }
@@ -969,7 +966,7 @@ td.actions { white-space: nowrap; }
 .sheet-inner { max-width: 440px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; }
 .sheet h2 { color: #fff; }
 .sheet .muted { color: #c4c9dc; }
-.sheet .btn-primary { background: var(--aqua); color: var(--dark-blue); }
+.sheet .btn-primary { color: var(--aqua); }
 .sheet .btn-text { color: #c4c9dc; }
 .char-count { margin: 4px 0 0; text-align: right; font-size: 0.75rem; color: #8f96b3; }
 
@@ -1007,7 +1004,7 @@ td.actions { white-space: nowrap; }
 .sheet .choices button { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
 .sheet .choices button.selected { background: var(--aqua); border-color: var(--aqua); color: var(--dark-blue); }
 .sheet .scale-labels { color: #9aa2bf; }
-.sheet .btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.35); }
+.sheet .btn-ghost { color: #dfe3f0; }
 .fold-icon.calm { background: rgba(87, 189, 162, 0.22); }
 .share-options { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 8px 0 0; }
 .share-options .checkbox { margin: 0; font-size: 0.9rem; }
