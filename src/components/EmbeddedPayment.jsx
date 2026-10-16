@@ -1,11 +1,13 @@
 // Stripe's payment form shown inside the app (embedded Checkout): card, Apple Pay or
 // Google Pay, with the VAT line. Card details go only to Stripe. When the payment
-// succeeds, the server confirms it and adds the member to the cohort (confirm-checkout),
-// then onPaid() runs. Needs VITE_STRIPE_PUBLISHABLE_KEY; without it, `canEmbed` is false
+// succeeds: for a signed-in member, the server confirms it and adds them to the cohort
+// (confirm-checkout); a visitor creates their account next (Join.jsx), which links it.
+// Then onPaid(sessionId) runs. Needs VITE_STRIPE_PUBLISHABLE_KEY; without it, `canEmbed` is false
 // and callers use Stripe's own page instead.
 import { useEffect, useRef, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { apiPost } from "../lib/api.js";
+import { auth } from "../firebase.js";
 
 const KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 export const canEmbed = Boolean(KEY);
@@ -23,13 +25,13 @@ export default function EmbeddedPayment({ cohortId, screening, onPaid, onCancel 
       stripePromise ??= loadStripe(KEY);
       const stripe = await stripePromise;
       const { clientSecret, sessionId, joined } = await apiPost("/api/create-checkout", { cohortId, screening, embedded: true });
-      if (joined) return onPaid();
+      if (joined) return onPaid(null);
       if (cancelled) return;
       checkout = await stripe.initEmbeddedCheckout({
         fetchClientSecret: async () => clientSecret,
         onComplete: async () => {
-          await apiPost("/api/confirm-checkout", { sessionId }).catch((err) => setError(err.message));
-          onPaid();
+          if (auth.currentUser) await apiPost("/api/confirm-checkout", { sessionId }).catch((err) => setError(err.message));
+          onPaid(sessionId);
         },
       });
       if (cancelled) return checkout.destroy();

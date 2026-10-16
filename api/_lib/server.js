@@ -77,6 +77,11 @@ export async function requireUser(req) {
   }
 }
 
+// The signed-in member, or null for a visitor (no login token sent).
+export async function optionalUser(req) {
+  return (req.headers.authorization || "").startsWith("Bearer ") ? requireUser(req) : null;
+}
+
 // Adds a member to a cohort (safe to call twice).
 export async function addMemberToCohort(uid, cohortId, details) {
   const store = db();

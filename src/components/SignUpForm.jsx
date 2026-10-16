@@ -10,13 +10,15 @@ import PhoneInput from "./PhoneInput.jsx";
 
 // onDone() runs after the account is created (default: go to the dashboard).
 // `loginState` is passed to the Log in link, so logging in returns to the same place.
-export default function SignUpForm({ title = site.signUpTitle, onDone, loginState }) {
+// `initial` fills in details already known (e.g. from the payment), and `lockEmail`
+// keeps the email as it is (a payment is linked to the account with that email).
+export default function SignUpForm({ title = site.signUpTitle, onDone, loginState, initial = {}, lockEmail = false, intro }) {
   const { signUp } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    firstName: "",
-    surname: "",
-    email: "",
+    firstName: initial.firstName || "",
+    surname: initial.surname || "",
+    email: initial.email || "",
     password: "",
     phone: "", // full international number from PhoneInput, e.g. "+447700900123"
     reflectionConsent: false, // off by default
@@ -59,6 +61,7 @@ export default function SignUpForm({ title = site.signUpTitle, onDone, loginStat
   return (
     <form className="card" onSubmit={handleSubmit} noValidate>
       <h2>{title}</h2>
+      {intro && <p className="muted small">{intro}</p>}
       {site.signUpSubtitle && <p className="muted small">{site.signUpSubtitle}</p>}
 
       {!isFirebaseConfigured && (
@@ -78,7 +81,7 @@ export default function SignUpForm({ title = site.signUpTitle, onDone, loginStat
 
       <div className="field">
         <label htmlFor="email">Email</label>
-        <input id="email" name="email" type="email" autoComplete="email" value={form.email} onChange={update} required />
+        <input id="email" name="email" type="email" autoComplete="email" value={form.email} onChange={update} required readOnly={lockEmail} />
       </div>
 
       <div className="field">

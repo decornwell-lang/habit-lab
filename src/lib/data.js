@@ -13,6 +13,7 @@
 //   cohorts/{cohortId}                cohort details and member list
 //   publicCohorts/{cohortId}          name, habit, dates and price only: readable by visitors (home page)
 //   members/{uid}, cohortEntitlements/{id}, payments/{id}  access and payments, written only by the server (src/lib/access.js)
+//   checkoutClaims/{stripeSessionId}  which account a visitor's payment was linked to (server only)
 //   settings/content                  Zoom link, session date, weekly media links
 //   notices/{id}                      messages from the owner (also sent as push notifications)
 import {
