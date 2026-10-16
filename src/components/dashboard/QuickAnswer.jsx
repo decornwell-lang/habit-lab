@@ -1,7 +1,7 @@
 // The morning check-in's answer form: a few tap-to-choose questions and/or a
 // short text, then one button: "Save", which then becomes "Share to WhatsApp"
 // (the share sheet opens with the answer ready for the cohort's group).
-import { useState } from "react";
+import { useRef, useState } from "react";
 import SaveShareButton from "../SaveShareButton.jsx";
 import QuestionStep from "./QuestionStep.jsx";
 import SavedAnswers from "./SavedAnswers.jsx";
@@ -14,6 +14,7 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
   const [saved, setSaved] = useState(Boolean(existing));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const box = useRef(null);
   const set = (key, value) => setAnswer((a) => ({ ...a, [key]: value }));
   const complete = questions.every((q) => answer[q.key]) && (questions.length > 0 || answer.note?.trim());
 
@@ -23,6 +24,8 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
     try {
       await onSave(answer);
       setSaved(true);
+      // The form folds up into the shorter saved view, so bring its tile back into view.
+      requestAnimationFrame(() => (box.current?.closest(".fold") || box.current)?.scrollIntoView({ behavior: "smooth", block: "start" }));
     } catch (err) {
       console.error(err);
       setError("Couldn't save. Please try again.");
@@ -35,7 +38,7 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
   const numbered = questions.length > 0;
   if (saved && summary) {
     return (
-      <div className="quick-answer">
+      <div className="quick-answer" ref={box}>
         <SavedAnswers items={summary(answer)} onEdit={() => setSaved(false)} />
         <SaveShareButton saved shareText={shareText(answer)} group={group} />
       </div>
@@ -43,7 +46,7 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
   }
 
   return (
-    <div className="quick-answer">
+    <div className="quick-answer" ref={box}>
       {questions.map((q, i) => (
         <QuestionStep key={q.key} n={i + 1} title={q.label}>
           <div className="choices">

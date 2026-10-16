@@ -32,16 +32,12 @@ export const JOIN_TERMS = {
   price: "VAT included",
 };
 
-// Screens that can have an explainer video (Admin → Content → Explainer videos). The video
-// icon only appears on a screen once its link is set.
+// Screens with an explainer video (Admin → Content → Explainer videos): a camera icon at
+// the top right. Members see it once its link is set; the owner sees a faded one until then.
 export const EXPLAINERS = [
-  { id: "home", label: "Home" },
-  { id: "morning", label: "Morning check-in" },
+  { id: "home", label: "Home (the same for every cohort)" },
   { id: "intention", label: "Intention" },
-  { id: "evening", label: "Evening review" },
-  { id: "breathe", label: "Breathe (choosing a practice)" },
-  { id: "coherent", label: "Coherent breathing" },
-  { id: "breathingSpace", label: "3-Step Breathing Space" },
+  { id: "breathe", label: "Breathe" },
   { id: "practices", label: "Practices" },
   { id: "upcoming", label: "Upcoming" },
 ];

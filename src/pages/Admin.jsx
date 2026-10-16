@@ -14,7 +14,7 @@ import ReflectionsTab from "../components/admin/ReflectionsTab.jsx";
 const TABS = ["Members", "Cohorts", "Content", "Check-ins", "Reflections", "Messages", "Aphorisms"];
 
 export default function Admin() {
-  const [tab, setTab] = useState("Members");
+  const [tab, setTab] = useState(() => new URLSearchParams(window.location.search).get("tab") || "Members"); // e.g. /admin?tab=Content
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [selectedUid, setSelectedUid] = useState("");

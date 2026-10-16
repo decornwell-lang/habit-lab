@@ -5,7 +5,6 @@
 // then widening again to the whole body.
 import { useRef, useState } from "react";
 import { videoSource } from "../../lib/video.js";
-import Explainer from "../Explainer.jsx";
 
 const STEPS = [
   { title: "Becoming aware", text: "Pause. Notice what's here: thoughts, feelings, sensations in the body." },
@@ -15,14 +14,11 @@ const STEPS = [
 
 const RECORDING = "/audio/three-step-breathing-space.m4a";
 
-export default function BreathingSpace({ url, explainer }) {
+export default function BreathingSpace({ url }) {
   const media = videoSource(url || RECORDING);
   return (
     <>
-      <div className="title-with-explainer">
-        <h2>3-Step Breathing Space</h2>
-        <Explainer url={explainer} label="About the 3-Step Breathing Space" />
-      </div>
+      <h2>3-Step Breathing Space</h2>
       <p className="breathe-hint">Three minutes, three steps.</p>
 
       {media?.type === "audio" && <AudioPlayer src={media.src} />}
@@ -75,7 +71,8 @@ function Hourglass() {
 }
 
 // The recording: a Start button that becomes a countdown of the time left.
-function AudioPlayer({ src }) {
+// The Start button that becomes the countdown (also used by NervousSystem.jsx).
+export function AudioPlayer({ src }) {
   const audio = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [left, setLeft] = useState(null); // seconds left, once the length is known

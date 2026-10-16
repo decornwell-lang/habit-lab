@@ -1,32 +1,33 @@
-// Breathe tab: for a craving. Choose a practice:
-//   Coherent breathing (CoherentBreathing.jsx) or the 3-Step Breathing Space (BreathingSpace.jsx).
+// Breathe tab: for a craving. Choose a practice: Coherent breathing (CoherentBreathing.jsx),
+// the 3-Step Breathing Space (BreathingSpace.jsx) or Nervous system regulation (NervousSystem.jsx).
 import { useState } from "react";
 import CoherentBreathing from "./CoherentBreathing.jsx";
 import BreathingSpace from "./BreathingSpace.jsx";
 import Explainer from "../Explainer.jsx";
+import NervousSystem from "./NervousSystem.jsx";
 
 const PRACTICES = [
   { id: "coherent", title: "Coherent breathing", text: "Slow, even breaths with a guide. You choose the pace and length." },
   { id: "space", title: "3-Step Breathing Space", text: "A 3-minute guided pause, from MBCT." },
+  { id: "regulation", title: "Nervous system regulation", text: "A guided practice to help your body settle." },
 ];
 
-// explainers: explainer video links (Admin → Content), shown as a video icon by each title.
+// explainers: explainer video links (Admin → Content); the Breathe one is a camera icon at the top right.
 export default function BreatheTab({ settings, explainers = {} }) {
   const [practice, setPractice] = useState(null); // tapping the Breathe tab again returns here (see Dashboard.jsx)
 
   return (
     <section className="breathe-screen" aria-label="Breathing">
+      <div className="breathe-explainer"><Explainer url={explainers.breathe} label="About the breathing practices" /></div>
       <div className="breathe-inner">
-        {practice === "coherent" && <CoherentBreathing explainer={explainers.coherent} />}
-        {practice === "space" && <BreathingSpace url={settings.breathingSpaceUrl} explainer={explainers.breathingSpace} />}
+        {practice === "coherent" && <CoherentBreathing />}
+        {practice === "space" && <BreathingSpace url={settings.breathingSpaceUrl} />}
+        {practice === "regulation" && <NervousSystem url={settings.regulationUrl} />}
         {!practice && (
           // The two practices sit in the middle of the screen, with the title just above.
           <div className="breathe-chooser">
             <div className="breathe-chooser-head">
-              <div className="title-with-explainer">
-                <h2>Craving?</h2>
-                <Explainer url={explainers.breathe} label="About the breathing practices" />
-              </div>
+              <h2>Craving?</h2>
               <p className="breathe-hint">Choose a practice.</p>
             </div>
             <div className="breathe-choices">

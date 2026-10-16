@@ -1,5 +1,5 @@
 // My account (from the menu): each member's own page. Their details, the cohorts they're
-// in (each can be removed, with its data), badges (with sharing), avatar, mobile number,
+// in (each can be removed, with its data), light/dark/automatic, badges (with sharing), avatar, mobile number,
 // privacy, notifications, password, log out, and deleting their membership.
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -14,6 +14,7 @@ import ChangePassword from "../components/ChangePassword.jsx";
 import { isValidPhone } from "../lib/phone.js";
 import PhoneInput from "../components/PhoneInput.jsx";
 import MyCohorts from "../components/MyCohorts.jsx";
+import ThemeSetting from "../components/ThemeSetting.jsx";
 import AppearanceFields from "../components/AppearanceFields.jsx";
 import { publicIdentity, lookFrom } from "../lib/identity.js";
 import DeleteAccount from "../components/DeleteAccount.jsx";
@@ -83,6 +84,8 @@ export default function Account() {
       </section>
 
       <MyCohorts uid={user.uid} />
+
+      <ThemeSetting uid={user.uid} profile={profile} />
 
       <section className="card">
         <h2>My badges</h2>

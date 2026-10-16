@@ -37,6 +37,7 @@ import MorningCheckin from "../components/dashboard/MorningCheckin.jsx";
 import { promptTime } from "../content/dailyPrompts.js";
 import AppBadge from "../components/AppBadge.jsx";
 import { publicIdentity } from "../lib/identity.js";
+import { useDark } from "../lib/theme.js";
 import Sheet from "../components/dashboard/Sheet.jsx";
 import IntentionScreen from "../components/dashboard/IntentionScreen.jsx";
 import EveningReview from "../components/dashboard/EveningReview.jsx";
@@ -45,8 +46,6 @@ import WhatsAppIcon from "../components/WhatsAppIcon.jsx";
 import Explainer from "../components/Explainer.jsx";
 import { LockIcon, PencilIcon } from "../components/TileIcons.jsx";
 
-// Tabs shown on the dark blue background, like the Breathe screen.
-const DARK_TABS = ["home", "practices", "breathe", "upcoming"];
 
 // The cohort last chosen on Home (for members in more than one), remembered on this device.
 const COHORT_KEY = "habitlab:cohort";
@@ -69,6 +68,7 @@ export default function Dashboard() {
   const [sheet, setSheet] = useState(null); // full-screen panel: "intention" or "evening"
   const [params, setParams] = useSearchParams();
   const [tabTaps, setTabTaps] = useState(0); // tapping a tab again starts it afresh (e.g. Breathe → choose a practice)
+  const dark = useDark(profile); // light, dark or automatic (My account)
   const today = todayKey(); // calendar day: morning check-in, intention, evening review, cohort day
   const checkinDay = checkinDayKey(); // the check-in day (turns over at 21:00, see dates.js)
 
@@ -268,9 +268,9 @@ export default function Dashboard() {
   // The chosen cohort's habit streak (it carries across cohorts of the same habit) and personal best.
   const { streak, best } = current ? cohortStreakEntry(current.cohort, data.cohorts, data.checkins, data.publicProfile, today, checkinDay) : { streak: 0, best: 0 };
 
-  // Explainer video links per screen (Admin → Content), and a right-aligned icon for one.
+  // Explainer videos (Admin → Content): a camera icon at the top right of Home, Practices and Upcoming.
   const explainers = data.settings.explainers || {};
-  const explainerRow = (id, label) => explainers[id] && <div className="explainer-row"><Explainer url={explainers[id]} label={label} /></div>;
+  const explainerRow = (id, label) => <div className="explainer-row"><Explainer url={explainers[id]} label={label} /></div>;
 
   // Saves a reflection or morning answer into Home's state, so its tile updates straight away.
   const onSavedDay = (key, answer) => setData((d) => ({ ...d, day: { ...d.day, [key]: answer } }));
@@ -296,7 +296,7 @@ export default function Dashboard() {
     return [
       {
         ...tile({ id: "morning", icon: "☀️", tone: "gold", title: "Morning", subtitle: "How are you feeling?", isDone: Boolean(morning), doneText: "✓ Shared" }),
-        content: <>{explainerRow("morning", "About the morning check-in")}<MorningCheckin uid={user.uid} today={today} cohortId={id} dayLabel={`Day ${row.progress.day} `} group={group}
+        content: <><MorningCheckin uid={user.uid} today={today} cohortId={id} dayLabel={`Day ${row.progress.day} `} group={group}
           existing={morning} onSaved={onSavedDay} /></>,
       },
       {
@@ -332,7 +332,7 @@ export default function Dashboard() {
   return (
     // --cohort: the chosen cohort's colour, on Home only (and its full-screen panels), so
     // Home feels different in each cohort. Breathe, Practices and Upcoming keep the main colours.
-    <main className={`page dashboard ${DARK_TABS.includes(tab) ? "dark" : ""}`}
+    <main className={`page dashboard ${dark || tab === "breathe" ? "dark" : ""}`}
       style={current && tab === "home" ? { "--cohort": habitInfo(current.cohort.habitType).accent } : undefined}>
       {tab === DEFAULT_TAB && aphorism && <p className="aphorism">“{aphorism.text}”</p>}
 
@@ -413,14 +413,14 @@ export default function Dashboard() {
 
       {/* The chosen cohort's intention and evening review */}
       {sheet === "intention" && current && (
-        <Sheet label="Your intention for today" onClose={() => setSheet(null)} explainer={explainers.intention}>
+        <Sheet label="Your intention for today" onClose={() => setSheet(null)} explainer={explainers.intention || ""}>
           <IntentionScreen uid={user.uid} date={today} cohortId={current.cohort.id} group={habitInfo(current.cohort.habitType).tab}
             existing={data.reflections[`${today}_intention_${current.cohort.id}`]} firstName={firstName}
             onSaved={(entry) => onSavedReflection(`${today}_intention_${current.cohort.id}`, entry)} />
         </Sheet>
       )}
       {sheet === "evening" && current && (
-        <Sheet label="Evening review" onClose={() => setSheet(null)} explainer={explainers.evening}>
+        <Sheet label="Evening review" onClose={() => setSheet(null)}>
           <EveningReview uid={user.uid} date={today} existing={data.reflections[`${today}_evening_${current.cohort.id}`]}
             habit={{ ...habitInfo(current.cohort.habitType), cohortId: current.cohort.id }} firstName={firstName}
             onSaved={async (entry, skipped) => {
