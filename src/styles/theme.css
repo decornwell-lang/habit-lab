@@ -1279,3 +1279,34 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .breathe-stop-clock { font-variant-numeric: tabular-nums; }
 
 .cohort-tile { scroll-margin-top: calc(72px + env(safe-area-inset-top)); } /* clears the header when scrolled to */
+
+/* Subtle: selected, ready and locked states are outlines in the cohort's colour, never solid fills */
+.cohort-switcher button[role="tab"].selected,
+.fold-chip.highlight, .dashboard.dark .fold-chip.highlight,
+.scale-row button.selected,
+.dashboard.dark .choices button.selected, .dashboard.dark .segmented button.selected,
+.sheet .choices button.selected, .sheet .segmented button.selected {
+  background: color-mix(in srgb, var(--cohort) 12%, transparent); border: 1px solid var(--cohort); color: var(--cohort);
+}
+.segmented button.selected.no, .dashboard.dark .segmented button.selected.no, .sheet .segmented button.selected.no {
+  background: color-mix(in srgb, var(--gold) 12%, transparent); border-color: var(--gold); color: var(--gold);
+}
+.cohort-switcher button[role="tab"].selected::before { background: var(--cohort); opacity: 1; }
+.fold-icon.ready, .dashboard.dark .fold-icon.ready { background: transparent; color: var(--cohort); border: 1.5px solid var(--cohort); }
+.fold-icon.locked, .dashboard.dark .fold-icon.locked { background: transparent; color: var(--gold); border: 1.5px solid var(--gold); box-shadow: none; }
+.q-num { background: transparent; border: 1.5px solid var(--cohort); color: var(--cohort); }
+/* Light mode: dark text keeps the outlines readable on white */
+.dashboard:not(.dark) .cohort-switcher button[role="tab"].selected, .dashboard:not(.dark) .fold-chip.highlight,
+.dashboard:not(.dark) .fold-icon.ready, .dashboard:not(.dark) .q-num { color: var(--text); }
+
+/* Text boxes with a microphone button (DictationTextarea.jsx) */
+.dictation { position: relative; }
+.dictation .q-textarea { padding-right: 52px; display: block; }
+.dictation-btn {
+  position: absolute; right: 8px; bottom: 8px; width: 38px; height: 38px; display: grid; place-items: center;
+  border-radius: 50%; border: 1px solid color-mix(in srgb, var(--cohort) 60%, transparent); background: transparent; color: var(--cohort); cursor: pointer;
+}
+.dictation-btn.listening { border-color: #e5484d; color: #e5484d; animation: dictation-pulse 1.4s ease-out infinite; }
+@keyframes dictation-pulse { 0% { box-shadow: 0 0 0 0 rgba(229, 72, 77, 0.5); } 100% { box-shadow: 0 0 0 10px rgba(229, 72, 77, 0); } }
+@media (prefers-reduced-motion: reduce) { .dictation-btn.listening { animation: none; } }
+.dashboard:not(.dark) .dictation-btn { color: var(--text); }

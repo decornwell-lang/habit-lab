@@ -3,6 +3,7 @@
 // (the share sheet opens with the answer ready for the cohort's group).
 import { useRef, useState } from "react";
 import SaveShareButton from "../SaveShareButton.jsx";
+import DictationTextarea from "../DictationTextarea.jsx";
 import QuestionStep from "./QuestionStep.jsx";
 import SavedAnswers from "./SavedAnswers.jsx";
 
@@ -59,8 +60,8 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
         </QuestionStep>
       ))}
       <QuestionStep n={numbered ? questions.length + 1 : null} title={text || "Anything to add?"} hint={numbered ? "Optional" : null}>
-        <textarea className="q-textarea" rows={3} aria-label={text || "Anything to add?"} value={answer.note || ""}
-          onChange={(e) => set("note", e.target.value)} placeholder={numbered ? "A few words…" : "A few words is enough"} />
+        <DictationTextarea rows={3} aria-label={text || "Anything to add?"} value={answer.note || ""}
+          onChange={(v) => set("note", v)} placeholder={numbered ? "A few words…" : "A few words is enough"} />
       </QuestionStep>
       {error && <p className="form-error" role="alert">{error}</p>}
       <SaveShareButton saved={saved} canSave={complete} busy={busy} onSave={save} shareText={complete ? shareText(answer) : ""} group={group} />

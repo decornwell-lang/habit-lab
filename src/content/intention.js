@@ -18,7 +18,7 @@ export const EVENING = {
   intensityLow: "None",
   intensityHigh: "Very strong",
   strongest: "When did the strongest craving arrive?",
-  helped: "What helped, even a little?",
+  helped: "Name one thing that helped you today.",
   // Shown only if a practice wasn't kept today (e.g. "Yes" to smoking). Neutral, nothing else.
   honest: "Thank you for being honest. What do you want to carry into tomorrow?",
 };

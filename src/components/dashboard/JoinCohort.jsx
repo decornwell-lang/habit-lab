@@ -59,7 +59,7 @@ export default function JoinCohort({ uid, cohorts, memberships, onJoined }) {
           {joinedIds.has(c.id) ? (
             <p className="joined">✓ Joined</p>
           ) : paying?.cohort.id === c.id ? null : ( // hidden while its payment is open below
-            <button className="btn btn-primary" disabled={busyId !== null || Boolean(paying)}
+            <button className="btn btn-primary" disabled={busyId !== null}
               onClick={() => handleJoin(c)}>
               {busyId === c.id ? "Please wait…" : "Join"}
             </button>

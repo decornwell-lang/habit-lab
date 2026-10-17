@@ -8,6 +8,7 @@ import { useState } from "react";
 import { saveReflection } from "../../lib/data.js";
 import { INTENTION, MAX_TEXT } from "../../content/intention.js";
 import SaveShareButton from "../SaveShareButton.jsx";
+import DictationTextarea from "../DictationTextarea.jsx";
 import ShareOptions from "../ShareOptions.jsx";
 import { shareMessage } from "../../lib/shareMessage.js";
 
@@ -52,7 +53,7 @@ export default function IntentionScreen({ uid, date, cohortId, group, existing, 
         </div>
       ) : (
         <>
-          <textarea className="q-textarea" rows={3} maxLength={MAX_TEXT} value={text} onChange={(e) => setText(e.target.value)}
+          <DictationTextarea rows={3} maxLength={MAX_TEXT} value={text} onChange={setText}
             placeholder={INTENTION.box} aria-label={INTENTION.box} />
           <p className="char-count">{text.length} / {MAX_TEXT}</p>
         </>

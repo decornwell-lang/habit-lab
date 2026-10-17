@@ -12,6 +12,7 @@ import { EVENING, MAX_TEXT } from "../../content/intention.js";
 import QuestionStep from "./QuestionStep.jsx";
 import SavedAnswers from "./SavedAnswers.jsx";
 import SaveShareButton from "../SaveShareButton.jsx";
+import DictationTextarea from "../DictationTextarea.jsx";
 import ShareOptions from "../ShareOptions.jsx";
 import { shareMessage } from "../../lib/shareMessage.js";
 
@@ -87,7 +88,7 @@ export default function EveningReview({ uid, date, existing, habit, firstName, o
           {slipped && (
             <div className="evening-honest">
               <p>{EVENING.honest}</p>
-              <textarea className="q-textarea" rows={2} maxLength={MAX_TEXT} value={form.tomorrow} onChange={(e) => set("tomorrow", e.target.value)}
+              <DictationTextarea rows={2} maxLength={MAX_TEXT} value={form.tomorrow} onChange={(v) => set("tomorrow", v)}
                 aria-label={EVENING.honest} />
             </div>
           )}
@@ -113,7 +114,7 @@ export default function EveningReview({ uid, date, existing, habit, firstName, o
           )}
 
           <QuestionStep n={++n} title={EVENING.helped} hint="Optional">
-            <textarea className="q-textarea" rows={2} maxLength={MAX_TEXT} value={form.helped} onChange={(e) => set("helped", e.target.value)}
+            <DictationTextarea rows={2} maxLength={MAX_TEXT} value={form.helped} onChange={(v) => set("helped", v)}
               aria-label={EVENING.helped} />
             <p className="char-count">{form.helped.length} / {MAX_TEXT}</p>
           </QuestionStep>
