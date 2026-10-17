@@ -450,6 +450,7 @@ a { color: var(--primary); }
   box-shadow: 0 -4px 20px rgba(10, 14, 40, 0.06);
   /* Just enough room for the iPhone home-indicator line (the full allowance left a gap under the tabs) */
   padding-bottom: max(4px, calc(env(safe-area-inset-bottom) - 14px));
+  transform: translateY(var(--viewport-gap, 0px)); /* iPhone: back onto the real bottom (viewportFix.js) */
 }
 .tabbar button {
   display: flex;

@@ -7,9 +7,14 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { videoSource } from "../lib/video.js";
 import YouTubePlayer from "./YouTubePlayer.jsx";
+import { afterVideo } from "../lib/viewportFix.js";
 
 export default function Explainer({ url, label = "Watch the explainer" }) {
   const [open, setOpen] = useState(false);
+  const close = () => {
+    setOpen(false);
+    afterVideo(); // iPhone: keep the tab bar on the bottom of the screen
+  };
   const { isAdmin } = useAuth();
   const video = videoSource(url);
   if (!video) {
@@ -25,8 +30,8 @@ export default function Explainer({ url, label = "Watch the explainer" }) {
         <CameraIcon />
       </button>
       {open && (
-        <div className="video-modal" role="dialog" aria-label={label} onClick={(e) => e.target === e.currentTarget && setOpen(false)}>
-          <button className="icon-btn video-modal-close" onClick={() => setOpen(false)} aria-label="Close">
+        <div className="video-modal" role="dialog" aria-label={label} onClick={(e) => e.target === e.currentTarget && close()}>
+          <button className="icon-btn video-modal-close" onClick={close} aria-label="Close">
             <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
