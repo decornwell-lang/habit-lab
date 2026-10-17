@@ -1342,3 +1342,15 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
   border-radius: 50%; background: rgba(255, 255, 255, 0.92); color: var(--dark-blue); font-size: 1.4rem; padding-left: 4px;
 }
 .dashboard.dark .payment-inline .embedded-payment > div:not(:empty) { background: transparent; } /* Stripe's form brings its own background (Stripe → Settings → Branding) */
+
+/* The payment pop-up (home page and join steps) is dark too, like the app, with Stripe's
+   form in the colours set in Stripe → Settings → Branding */
+.payment-popup .payment-popup-panel { background: var(--dark-blue); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); }
+.payment-popup .payment-popup-head strong, .payment-popup .plan-price { color: #fff; }
+.payment-popup .muted, .dashboard .payment-popup .muted { color: #c4c9dc; }
+.payment-popup .icon-btn { color: #dfe3f0; }
+.payment-popup .plan-choices button { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
+.payment-popup .plan-choices button.selected { background: color-mix(in srgb, var(--aqua) 12%, transparent); border-color: var(--aqua); }
+.payment-popup .embedded-payment > div:not(:empty) { background: transparent; }
+.payment-popup .form-error { color: #ff9a9a; }
+.payment-popup .btn-primary { color: var(--aqua); border-color: var(--aqua); }
