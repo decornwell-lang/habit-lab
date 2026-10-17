@@ -6,6 +6,7 @@ import { saveCohort, syncPublicCohorts } from "../../lib/data.js";
 import { HABIT_TYPES, habitLabel, formatPrice } from "../../lib/cohorts.js";
 import { cleanGroupLink } from "../../lib/phone.js";
 import { todayKey, formatDate } from "../../lib/dates.js";
+import { isMonday, mondayOnOrBefore } from "../../lib/mindful.js";
 
 // Prices are in euros, VAT included.
 // capacity: the number of places (empty = no limit).
@@ -15,7 +16,7 @@ const EMPTY = { name: "", habitType: "smoking", startDate: "", durationDays: 28,
 // today so you can try every feature straight away.
 const SAMPLES = [
   { name: "Non-Smoking Cohort, November 2026", habitType: "smoking", startDate: "2026-11-16", durationDays: 28, price: 99, status: "upcoming" },
-  { name: "Test Cohort (free, starts today)", habitType: "smoking", startDate: todayKey(), durationDays: 28, price: 0, status: "active" },
+  { name: "Test Cohort (free, starts today)", habitType: "smoking", startDate: mondayOnOrBefore(todayKey()), durationDays: 28, price: 0, status: "active" },
 ];
 
 export default function CohortsTab({ cohorts, reload }) {
@@ -59,6 +60,9 @@ export default function CohortsTab({ cohorts, reload }) {
       whatsappGroupLink: cleanGroupLink(form.whatsappGroupLink || "") || null,
     };
     if (!data.name || !data.startDate || !data.durationDays) return setMessage("Please fill in the name, start date and duration.");
+    if (!isMonday(data.startDate)) {
+      return setMessage(`Cohorts start on a Monday. The Monday before is ${formatDate(mondayOnOrBefore(data.startDate), { year: undefined })}.`);
+    }
     await saveCohort(editingId === "new" ? null : editingId, data);
     setEditingId(null);
     setMessage("Cohort saved.");

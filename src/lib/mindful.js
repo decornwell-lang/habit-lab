@@ -33,10 +33,13 @@ export const earnedMilestones = (days) => MINDFUL_MILESTONES.filter((m) => days 
 // The next milestone, or null after the last.
 export const nextMilestone = (days) => MINDFUL_MILESTONES.find((m) => m > days) ?? null;
 
+// The Monday on or before a date. Cohorts always start on a Monday.
+export const mondayOnOrBefore = (dateKey) => addDays(dateKey, -WEEKDAYS.indexOf(weekdayOf(dateKey)));
+export const isMonday = (dateKey) => weekdayOf(dateKey) === "monday";
+
 // Members may log a practice for today or an earlier day of the current week (Monday to today).
 export function canLogDate(dateKey, today) {
-  const monday = addDays(today, -WEEKDAYS.indexOf(weekdayOf(today)));
-  return dateKey >= monday && dateKey <= today;
+  return dateKey >= mondayOnOrBefore(today) && dateKey <= today;
 }
 
 // Midnight at the start of `dateKey` in a time zone, as a Date (UTC instant).

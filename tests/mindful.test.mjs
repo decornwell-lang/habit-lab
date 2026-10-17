@@ -1,6 +1,6 @@
 // Meditation progress (src/lib/mindful.js): the checks from the brief.
 import assert from "node:assert/strict";
-import { mindfulStats, earnedMilestones, nextMilestone, canLogDate, weekUnlocksAt, zonedMidnight, weekOfCohort } from "../src/lib/mindful.js";
+import { mondayOnOrBefore, isMonday, mindfulStats, earnedMilestones, nextMilestone, canLogDate, weekUnlocksAt, zonedMidnight, weekOfCohort } from "../src/lib/mindful.js";
 
 const today = "2026-10-17"; // a Saturday
 // Two sources on one day: one mindful day, both durations in the minutes.
@@ -43,4 +43,9 @@ assert.equal(weekOfCohort("2027-01-04", "2027-01-10"), 1);
 assert.equal(weekOfCohort("2027-01-04", "2027-01-11"), 2);
 assert.equal(weekOfCohort("2027-01-04", "2027-01-31"), 4);
 assert.equal(weekOfCohort("2027-01-04", "2027-02-01"), 5);
+// Cohorts start on a Monday: a Friday start moves to the Monday before.
+assert.equal(mondayOnOrBefore("2026-10-09"), "2026-10-05");
+assert.equal(mondayOnOrBefore("2026-10-05"), "2026-10-05");
+assert.equal(mondayOnOrBefore("2026-10-11"), "2026-10-05"); // Sunday
+assert.equal(isMonday("2027-01-04"), true); assert.equal(isMonday("2027-01-08"), false);
 console.log("Mindful days: all checks pass");
