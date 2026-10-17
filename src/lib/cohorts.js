@@ -47,12 +47,13 @@ function cohortProgress(cohort, membership, today, weeksInProgramme = 5) {
 // All of the member's cohorts, each as { cohort, membership, progress }, in the order
 // they're shown on Home: active ones (earliest start first), then upcoming, then finished
 // (latest first). Cohorts starting the same day follow the order of HABIT_TYPES.
+// Archived cohorts (Admin → Cohorts → Archive) no longer show for their members.
 export function memberCohorts(cohorts, memberships, today) {
   const order = { active: 0, upcoming: 1, finished: 2 };
   return memberships
     .map((m) => {
       const cohort = cohorts.find((c) => c.id === m.cohortId);
-      return cohort ? { cohort, membership: m, progress: cohortProgress(cohort, m, today) } : null;
+      return cohort && !cohort.archived ? { cohort, membership: m, progress: cohortProgress(cohort, m, today) } : null;
     })
     .filter(Boolean)
     .sort((a, b) =>
