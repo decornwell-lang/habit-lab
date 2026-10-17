@@ -1251,9 +1251,9 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
   display: flex; justify-content: space-between; align-items: center; gap: 12px;
   padding: calc(10px + env(safe-area-inset-top)) 14px 10px; background: var(--dark-blue);
 }
-.pdf-bar .btn { width: auto; margin: 0; }
-.pdf-bar .btn-ghost { color: #fff; }
-.pdf-bar .btn-primary { color: var(--aqua); }
+.pdf-bar .btn { width: auto; margin: 0; gap: 6px; }
+.pdf-bar .btn-primary { color: var(--aqua); border-color: var(--aqua); }
+.pdf-bar .pdf-close { color: #fff; }
 .pdf-frame { flex: 1; width: 100%; border: 0; background: #fff; }
 
 /* Upcoming: one tile per cohort (JoinCohort.jsx), in the habit's colour */
@@ -1354,3 +1354,15 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .payment-popup .embedded-payment > div:not(:empty) { background: transparent; }
 .payment-popup .form-error { color: #ff9a9a; }
 .payment-popup .btn-primary { color: var(--aqua); border-color: var(--aqua); }
+
+/* The worksheet, readable on a phone (WorksheetButton.jsx) */
+.worksheet { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--bg); color: var(--text); padding: 24px 20px calc(40px + env(safe-area-inset-bottom)); }
+.worksheet > * { max-width: 640px; margin-left: auto; margin-right: auto; }
+.worksheet h1 { margin: 0 auto 8px; font-size: 1.6rem; }
+.worksheet h2 { margin: 28px auto 8px; font-size: 1.3rem; padding-top: 16px; border-top: 1px solid var(--border); }
+.worksheet h3 { margin: 18px auto 6px; font-size: 1rem; font-family: var(--font-body); }
+.worksheet p { margin: 0 auto 10px; line-height: 1.6; }
+.worksheet ul, .worksheet ol { padding-left: 22px; line-height: 1.55; }
+.worksheet li { margin: 0 0 8px; }
+.worksheet ol li::marker { color: var(--label); font-weight: 700; }
+.worksheet h1, .worksheet h2, .worksheet h3, .dashboard.dark .worksheet h1, .dashboard.dark .worksheet h2, .dashboard.dark .worksheet h3 { color: var(--heading); }

@@ -1,14 +1,9 @@
 // The countdown at the top of Home for a cohort that hasn't started yet:
 // "31 days until your cohort begins · Monday, 16 November", and underneath, in the same
-// box, what to do before it begins: the "My story and my diary" worksheet for the
-// cohort's habit (smoking, alcohol, gambling, fitness, or a general one). It opens in the
-// app (PdfButton) with Download. The worksheets are made by scripts/make-worksheets.mjs.
+// box, what to do before it begins: the "My diary and my life story" worksheet for the
+// cohort's habit (WorksheetButton.jsx; wording in src/content/worksheets.js).
 import { formatDate } from "../../lib/dates.js";
-import PdfButton from "../PdfButton.jsx";
-
-const WORKSHEET_HABITS = ["smoking", "alcohol", "gambling", "exercise"];
-const worksheetUrl = (habitType) =>
-  `/assets/before-you-begin-${WORKSHEET_HABITS.includes(habitType) ? habitType : "default"}.pdf`;
+import WorksheetButton from "../WorksheetButton.jsx";
 
 export default function CohortCountdown({ current }) {
   const { progress, cohort } = current;
@@ -26,10 +21,10 @@ export default function CohortCountdown({ current }) {
 
       <div className="countdown-todo">
         <p className="card-label">Before you begin</p>
-        <h2>My story and my diary</h2>
-        <p className="muted small">Your story, and a daily diary to keep from now and through the programme.</p>
-        <PdfButton url={worksheetUrl(cohort.habitType)} label="Open the worksheet" fileName={`before-you-begin-${cohort.habitType}.pdf`} />
-        <p className="small muted center">Print it, or keep it in a notebook. Private: nothing needs to be shared.</p>
+        <h2>My diary and my life story</h2>
+        <p className="muted small">A journal to keep from now and through the programme, and prompts for your story.</p>
+        <WorksheetButton habitType={cohort.habitType} />
+        <p className="small muted center">Private: nothing needs to be shared.</p>
       </div>
     </section>
   );

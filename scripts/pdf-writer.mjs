@@ -2,8 +2,9 @@
 // tables). Used by scripts/make-pdfs.mjs and scripts/make-worksheets.mjs.
 // Text must be plain (Latin-1): no curly quotes or long dashes.
 //
-// Blocks: { title }, { subtitle }, { heading }, { text }, { question } (numbered, with
-// writing lines: `lines`), { table: { columns: [[label, width]], rows } }, { pageBreak }.
+// Blocks: { title }, { subtitle }, { heading }, { text }, { bullet }, { question } (numbered,
+// with writing lines: `lines`, 0 for none), { table: { columns: [[label, width]], rows } },
+// { pageBreak }.
 
 const PAGE_TOP = 790, PAGE_BOTTOM = 60, LEFT = 55, RIGHT = 540;
 
@@ -38,6 +39,13 @@ export function makePdf(blocks, footer = "The Habit Lab  -  David Ernest Cornwel
     if (b.text) {
       for (const t of wrap(b.text, 92)) { need(15); text(t, "F1", 10.5); y -= 15; }
       y -= 10;
+    }
+    if (b.bullet) {
+      const bLines = wrap(b.bullet, 84);
+      need(bLines.length * 15 + 4);
+      text("-", "F1", 10.5, LEFT + 6);
+      for (const t of bLines) { text(t, "F1", 10.5, LEFT + 18); y -= 15; }
+      y -= 3;
     }
     if (b.question) {
       const qLines = wrap(`${++n}. ${b.question}`, 86);
