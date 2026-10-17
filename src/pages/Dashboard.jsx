@@ -421,7 +421,7 @@ export default function Dashboard() {
 
       {/* Upcoming: cohorts that haven't started yet */}
       {tab === "upcoming" && (
-        <>{explainerRow("upcoming", "About joining a cohort")}<TherapyTile /><JoinCohort uid={user.uid} cohorts={data.cohorts} memberships={data.memberships} onJoined={load} /></>
+        <><div className="explainer-row upcoming-top"><TherapyTile /><Explainer url={explainers.upcoming} label="About joining a cohort" /></div><JoinCohort uid={user.uid} cohorts={data.cohorts} memberships={data.memberships} onJoined={load} /></>
       )}
 
       {/* The chosen cohort's intention and evening review */}
