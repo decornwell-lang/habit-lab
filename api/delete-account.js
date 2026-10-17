@@ -15,6 +15,13 @@ export default handle(async (req, res) => {
     throw new HttpError(403, "The owner account can't be deleted from the app.");
   }
 
+  // A Study Group subscription that would renew must be cancelled first, so Stripe never
+  // charges a deleted account.
+  const subs = await store.collection("studyGroupSubscriptions").where("uid", "==", user.uid).get();
+  if (subs.docs.some((d) => ["active", "trialing", "past_due"].includes(d.data().status) && !d.data().cancelAtPeriodEnd)) {
+    throw new HttpError(409, "Please cancel your Study Group subscription first (Study Group → Manage subscription), then delete your account.");
+  }
+
   // Off every cohort's member list.
   const memberships = await userRef.collection("memberships").get();
   for (const m of memberships.docs) {

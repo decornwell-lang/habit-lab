@@ -82,6 +82,17 @@ service cloud.firestore {
       allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
       allow write: if false;
     }
+    // What each member agreed to before paying for the Study Group (terms version, time,
+    // immediate access). Written only by the server.
+    match /studyGroupConsents/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow write: if false;
+    }
+    // Each member's Stripe customer (for the Customer Portal). Server only.
+    match /stripeCustomers/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+      allow write: if false;
+    }
     // Stripe events already handled (so a repeated webhook does nothing twice). Server only.
     match /stripeEvents/{id} {
       allow read, write: if false;

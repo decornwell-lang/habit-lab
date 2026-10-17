@@ -11,7 +11,10 @@
 //                             { uid, stripeSubscriptionId, stripeCustomerId, status, currentPeriodStart,
 //                               currentPeriodEnd, cancelAtPeriodEnd, termsVersion, termsAcceptedAt,
 //                               immediateAccess, updatedAt }  (written only by the Stripe webhook)
-//   stripeEvents/{eventId}    { type, processedAt }  (each Stripe event is handled once)
+//   studyGroupConsents/{checkoutSessionId}
+//                             { uid, termsVersion, termsAcceptedAt, immediateAccess }  (saved before Stripe opens)
+//   stripeCustomers/{uid}     { stripeCustomerId }  (for the Customer Portal)
+//   stripeEvents/{eventId}    { type, receivedAt }  (each Stripe event is handled once)
 //
 // Dates here are JavaScript Dates (Firestore Timestamps are turned into Dates first).
 
