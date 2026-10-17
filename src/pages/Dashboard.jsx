@@ -16,7 +16,6 @@ import { weekContent } from "../lib/content.js";
 import { aphorismFor } from "../lib/aphorisms.js";
 import { profileStreaks, cohortStreakEntry } from "../lib/streaks.js";
 
-import PreCohort from "../components/dashboard/PreCohort.jsx";
 import CohortCountdown from "../components/dashboard/CohortCountdown.jsx";
 import WhatsAppGroupCard from "../components/dashboard/WhatsAppGroupCard.jsx";
 import TherapyTile from "../components/dashboard/TherapyTile.jsx";
@@ -384,7 +383,6 @@ export default function Dashboard() {
                 content: <Leaderboard uid={user.uid} cohort={current.cohort} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} />,
               }]} />
               <LeaderboardInvite uid={user.uid} profile={profile} />
-              {current.progress.state === "upcoming" && <PreCohort current={current} />}
             </>
           ) : (
             <section className="card center">

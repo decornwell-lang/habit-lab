@@ -1206,6 +1206,11 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .countdown-body { display: flex; align-items: center; gap: 18px; }
 .countdown-number { font-family: var(--font-heading); font-size: 3.6rem; line-height: 1; color: var(--cohort, var(--aqua)); font-variant-numeric: tabular-nums; }
 .countdown-text { margin: 0 0 4px; font-weight: 600; font-size: 1.05rem; color: #fff; }
+.countdown-todo { margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.12); }
+.countdown-todo h2 { margin: 0 0 4px; }
+.countdown-todo .muted.small { margin: 0 0 12px; }
+.countdown-todo .btn { width: 100%; }
+.countdown-todo .center { margin: 10px 0 0; }
 
 /* Scrolling a tile into view stops below the sticky header */
 .fold { scroll-margin-top: calc(76px + env(safe-area-inset-top)); }
