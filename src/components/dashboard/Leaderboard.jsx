@@ -1,14 +1,16 @@
 // Leaderboard (Home tile): members of this cohort who opted in, ranked by their streak
 // in it. Each row: rank, picture, the name they chose, the challenge (unless they hid it), their
-// current badge and streak.
+// current badge and streak. Before the cohort begins (`opensOn`, its start date) it just
+// says when it opens.
 import { useEffect, useState } from "react";
+import { formatDate } from "../../lib/dates.js";
 import { getLeaderboard } from "../../lib/data.js";
 import { effectiveStreak, sortBadges, profileStreakFor } from "../../lib/streaks.js";
 import { habitStreakLabel } from "../../lib/cohorts.js";
 import Badge from "../Badge.jsx";
 import Avatar from "../Avatar.jsx";
 
-export default function Leaderboard({ uid, cohort, optedIn, today }) {
+export default function Leaderboard({ uid, cohort, optedIn, today, opensOn }) {
   const [rows, setRows] = useState(null);
 
   useEffect(() => {
@@ -24,6 +26,15 @@ export default function Leaderboard({ uid, cohort, optedIn, today }) {
       )
       .catch(() => setRows([]));
   }, [today, optedIn, cohort]);
+
+  if (opensOn) {
+    return (
+      <section className="card">
+        <p className="card-label">Leaderboard</p>
+        <p className="muted">Opens on {formatDate(opensOn, { weekday: undefined, year: undefined })}, when your cohort begins.</p>
+      </section>
+    );
+  }
 
   return (
     <section className="card">

@@ -390,7 +390,8 @@ export default function Dashboard() {
               <StreakCard streak={streak} best={best} current={current} checkins={checkinsFor(data.checkins, current.cohort)} onCorrect={correctCheckin} />
               <Folds items={[{
                 id: "leaderboard", icon: "🏆", tone: "gold", title: "Leaderboard", subtitle: "Your cohort's streaks",
-                content: <Leaderboard uid={user.uid} cohort={current.cohort} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay} />,
+                content: <Leaderboard uid={user.uid} cohort={current.cohort} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay}
+                  opensOn={current.progress.state === "upcoming" ? current.progress.start : null} />,
               }]} />
               <LeaderboardInvite uid={user.uid} profile={profile} />
             </>
