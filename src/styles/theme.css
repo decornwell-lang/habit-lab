@@ -345,7 +345,6 @@ a { color: var(--primary); }
   position: relative;
   aspect-ratio: 16 / 9;
   margin: 16px 0 4px;
-  border-radius: 12px;
   overflow: hidden;
   background: var(--dark-blue);
 }
@@ -837,7 +836,7 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .breathing-space-player .btn { margin: 0; }
 .breathing-space-button { font-variant-numeric: tabular-nums; } /* the countdown doesn't jiggle as digits change */
 .breathing-space-hint { margin: 6px 0 0; color: #9aa2bf; }
-.breathing-space-video { width: 100%; max-width: 360px; margin: 4px 0 16px; border-radius: 12px; }
+.breathing-space-video { width: 100%; max-width: 360px; margin: 4px 0 16px; }
 
 /* The 3-Step Breathing Space hourglass (BreathingSpace.jsx) */
 .hourglass {
@@ -884,14 +883,12 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .dashboard.dark .joined { color: var(--cohort); }
 .dashboard.dark .cohort-list li { border-color: rgba(255, 255, 255, 0.1); }
 .meditation { margin: 16px 0 8px; }
-.meditation .video { margin: 0; border-radius: var(--radius); }
+.meditation .video { margin: 0; }
 
 /* Clean YouTube player (YouTubePlayer.jsx). The YouTube frame is 60px taller at the top and
    bottom than the box, so its title bar and suggestions are cut off; the video itself fits the box. */
-.yt { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--radius); background: #000; }
-/* Taller than the frame and moved up, so YouTube's title bar sits above the frame, out of
-   sight; the controls along the bottom stay visible */
-.yt iframe { position: absolute; left: 0; width: 100%; top: -56px; height: calc(100% + 56px); border: 0; }
+.yt { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #000; }
+.yt iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 /* The same title card on every video until it plays: David's photo and a red play button */
 .yt-card { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; padding: 0; border: 0; background: #000; cursor: pointer; }
 .yt-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; opacity: 0.85; }
@@ -1167,7 +1164,7 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 }
 .explainer-btn:hover { background: color-mix(in srgb, var(--gold) 14%, transparent); }
 .explainer-row { display: flex; justify-content: flex-end; margin: 0 0 10px; }
-.video-modal { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgba(5, 7, 20, 0.92); }
+.video-modal { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgba(5, 7, 20, 0.55); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); } /* the page stays visible behind */
 .video-modal-player { width: 100%; max-width: 720px; }
 .video-modal-close { position: absolute; top: calc(10px + env(safe-area-inset-top)); right: 10px; color: #fff; }
 .sheet-explainer { position: absolute; top: calc(14px + env(safe-area-inset-top)); right: 16px; } /* camera top right */
@@ -1328,7 +1325,7 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .press-source { margin: 0 0 6px; font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--label); }
 .press-video h3 { margin-top: 12px; }
 .press-video .muted { margin: 0; }
-.press-video-link { position: relative; display: block; border-radius: 14px; overflow: hidden; aspect-ratio: 16 / 9; background: #000; }
+.press-video-link { position: relative; display: block; overflow: hidden; aspect-ratio: 16 / 9; background: #000; }
 .press-video-link img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.85; }
 .press-play {
   position: absolute; inset: 0; margin: auto; width: 64px; height: 64px; display: grid; place-items: center;

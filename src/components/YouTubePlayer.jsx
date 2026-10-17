@@ -1,9 +1,7 @@
-// YouTube video with YouTube's own controls (play, pause, the timeline, full screen).
-// The title YouTube lays over the top of the video is hidden: the player is drawn a little
-// taller than its frame and moved up, so its top bar (title, share, "watch later") falls
-// outside the frame. Subtitles start switched off (members can still turn them on with
-// the CC button). Before it plays, every video shows the same title card: David's photo
-// with a red play button in the middle (no YouTube title or thumbnail). Used on every
+// YouTube video with YouTube's own controls (play, pause, the timeline, full screen),
+// filling its frame exactly. Subtitles start switched off (members can still turn them on
+// with the CC button). Before it plays, every video shows the same title card: David's
+// photo with a red play button in the middle, instead of YouTube's title and thumbnail. Used on every
 // screen with a video.
 import { useEffect, useRef, useState } from "react";
 import { site } from "../content/site.js";
