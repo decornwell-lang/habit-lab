@@ -1370,15 +1370,15 @@ body:has(.dashboard.dark) { background: var(--dark-blue); }
 .pdf-note { font-size: 0.8rem; color: #c4c9dc; }
 .worksheet-keep { margin: 0 auto 4px; font-size: 0.85rem; color: var(--text-muted); }
 
-/* Upcoming, top right: the small psychotherapy button, then the camera icon */
-.upcoming-top { align-items: center; gap: 10px; }
-.therapy-pill {
-  display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 7px 14px; border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--gold) 60%, transparent); color: var(--gold); text-decoration: none; line-height: 1.2;
-}
-.therapy-pill span { font-weight: 600; font-size: 0.88rem; }
-.therapy-pill small { font-size: 0.72rem; color: #c4c9dc; }
-.dashboard:not(.dark) .therapy-pill small { color: var(--text-muted); }
+/* Upcoming, top: the psychotherapy tile (lined up with the cohort tiles on the left),
+   then the camera icon on the right */
+.upcoming-top { align-items: flex-start; gap: 10px; margin-bottom: 22px; }
+.upcoming-top .therapy-tile { flex: 1; min-width: 0; margin: 0; padding: 16px; border-color: color-mix(in srgb, var(--gold) 50%, transparent) !important; }
+.therapy-tile h2 { margin: 0 0 4px; font-size: 1.15rem; }
+.therapy-where { margin: 0 0 6px; font-weight: 600; color: var(--gold); font-size: 0.92rem; }
+.therapy-tile .muted { margin: 0 0 12px; }
+.therapy-tile .btn { width: 100%; justify-content: center; }
+.dashboard.dark .therapy-tile .btn-primary { color: var(--gold); border-color: var(--gold); }
 
 /* Control pause slider (QuickAnswer.jsx) */
 .seconds-hint { margin: 0 0 12px; font-size: 0.85rem; line-height: 1.5; color: var(--text-muted); }

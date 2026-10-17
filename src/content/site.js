@@ -54,6 +54,7 @@ export const GROUP_PODS =
 export const THERAPY = {
   title: "Psychotherapy with David",
   text: "In person in Mallorca or on Zoom",
+  more: "One-to-one, body-centred psychotherapy, alongside your cohort or on its own.",
   button: "Contact David",
   link: "mailto:info@davidernestcornwell.com?subject=" + encodeURIComponent("Psychotherapy session"),
 };
