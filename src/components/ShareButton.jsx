@@ -2,6 +2,7 @@
 // WhatsApp group there and you stay in the app). Elsewhere it opens WhatsApp
 // with the message ready.
 import WhatsAppIcon from "./WhatsAppIcon.jsx";
+import { afterShare } from "../lib/viewportFix.js";
 
 const whatsAppShareLink = (text) => `https://wa.me/?text=${encodeURIComponent(text)}`;
 
@@ -10,7 +11,7 @@ export default function ShareButton({ text, onShare, children = "Share to WhatsA
     onShare?.();
     if (navigator.share) {
       e.preventDefault();
-      navigator.share({ text }).catch(() => {}); // closed without sharing: nothing to do
+      navigator.share({ text }).catch(() => {}).finally(afterShare); // closed without sharing: nothing to do
     }
   }
   return (

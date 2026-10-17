@@ -5,6 +5,7 @@
 import { useEffect, useState } from "react";
 import { makeShareImage } from "../lib/shareImage.js";
 import ShareCard from "./ShareCard.jsx";
+import { afterShare } from "../lib/viewportFix.js";
 
 export default function ShareImageButton({ image, text, fileName, label = "Share" }) {
   const [file, setFile] = useState(null);
@@ -19,7 +20,7 @@ export default function ShareImageButton({ image, text, fileName, label = "Share
 
   function share() {
     if (file && navigator.canShare?.({ files: [file] })) {
-      navigator.share({ files: [file], text: `${text}\nJoin me: ${window.location.origin}` }).catch(() => {});
+      navigator.share({ files: [file], text: `${text}\nJoin me: ${window.location.origin}` }).catch(() => {}).finally(afterShare);
     } else {
       setFallback((f) => !f);
     }

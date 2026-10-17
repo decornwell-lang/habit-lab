@@ -6,6 +6,7 @@
 //   <ShareCard image={{ badge, label } or { days, label }} text="..." fileName="..." />
 import { useEffect, useState } from "react";
 import { makeShareImage } from "../lib/shareImage.js";
+import { afterShare } from "../lib/viewportFix.js";
 
 // `simple` hides "Download image" and "Copy text" (used on the streak card).
 export default function ShareCard({ image, text, fileName, simple = false }) {
@@ -37,6 +38,7 @@ export default function ShareCard({ image, text, fileName, simple = false }) {
     } catch (err) {
       if (err.name !== "AbortError") setMessage("Sharing didn't work here. Try downloading the image instead.");
     }
+    afterShare();
   }
 
   async function copyText() {

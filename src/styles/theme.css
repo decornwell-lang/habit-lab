@@ -1371,3 +1371,7 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .q-step.missing, .dashboard.dark .q-step.missing, .sheet .q-step.missing { border-color: #e5484d; box-shadow: 0 0 0 1px #e5484d; }
 .q-missing { margin: 10px 0 0; font-size: 0.85rem; font-weight: 600; color: #e5484d; }
 .dashboard.dark .q-missing, .sheet .q-missing { color: #ff8a8d; }
+
+/* The dark tabs paint the page behind them dark too, so no light strip can ever show
+   below the content (e.g. when iPhone briefly measures the screen wrong after sharing) */
+body:has(.dashboard.dark) { background: var(--dark-blue); }
