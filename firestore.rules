@@ -77,6 +77,15 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow write: if false;
     }
+    // Study Group subscriptions: written only by the Stripe webhook. Members can read their own.
+    match /studyGroupSubscriptions/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow write: if false;
+    }
+    // Stripe events already handled (so a repeated webhook does nothing twice). Server only.
+    match /stripeEvents/{id} {
+      allow read, write: if false;
+    }
 
     // The public copy of each cohort (name, habit, dates, price): anyone can read it, so the
     // home page can list cohorts before signing in. Only the owner writes it.

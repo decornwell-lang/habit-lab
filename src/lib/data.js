@@ -65,6 +65,12 @@ export async function getEntitlements(uid) {
   return snap.docs.map((d) => ({ id: d.id, ...d.data(), startsAt: toDate(d.data().startsAt), endsAt: toDate(d.data().endsAt) }));
 }
 
+// The member's Study Group subscriptions (normally one), with dates as Dates.
+export async function getStudyGroupSubscriptions(uid) {
+  const snap = await getDocs(query(collection(db, "studyGroupSubscriptions"), where("uid", "==", uid)));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data(), currentPeriodStart: toDate(d.data().currentPeriodStart), currentPeriodEnd: toDate(d.data().currentPeriodEnd) }));
+}
+
 // ---------- Cohorts ----------
 export async function getCohorts() {
   const cohorts = list(await getDocs(collection(db, "cohorts")));

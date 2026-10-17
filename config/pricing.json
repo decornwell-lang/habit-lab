@@ -1,5 +1,5 @@
 {
-  "_howToEdit": "Prices are in euros and include VAT (vatRate is used only if Stripe Tax isn't set up). Change a price here; nothing else needs editing. cohortDays: how long one cohort's access lasts. extendDays: how long an extension lasts, counted from the member's first join. year: the price for a cohort plus a full year, offered at payment (extending later costs the extension price).",
+  "_howToEdit": "Prices are in euros and include VAT (vatRate is used only if Stripe Tax isn't set up). Change a price here; nothing else needs editing. cohortDays: how long one cohort's access lasts. extendDays: how long an extension lasts, counted from the member's first join. year: the price for a cohort plus a full year, offered at payment (extending later costs the extension price). studyGroup: the yearly Study Group subscription. stripePriceId is the Stripe Price for it (test mode first, then the live one); reminderDaysBefore: when the renewal reminder email goes out (to confirm with an adviser); termsVersion: change it whenever the Study Group terms change, so each member's acceptance records which version they agreed to.",
   "currency": "eur",
   "vatRate": 0.21,
   "cohortDays": 33,
@@ -16,6 +16,14 @@
     "year": {
       "name": "Cohort plus a full year",
       "price": 175
+    },
+    "studyGroup": {
+      "name": "Habit Lab Study Group",
+      "price": 129,
+      "interval": "year",
+      "stripePriceId": "",
+      "reminderDaysBefore": 14,
+      "termsVersion": "2026-10-draft"
     }
   }
 }
