@@ -69,7 +69,7 @@ const average = (vals) => (vals.length ? vals.reduce((a, b) => a + b, 0) / vals.
 
 export default function ProgressCharts({ current, habit, practiceDays, checkins }) {
   const { cohort, progress } = current;
-  const length = Number(cohort.durationDays) || 33;
+  const length = Number(cohort.durationDays) || 28;
   const upcoming = progress.state === "upcoming";
   // Before it begins: the whole cohort, empty. Then: the days so far.
   const total = upcoming ? length : Math.max(1, Math.min(progress.day, length));

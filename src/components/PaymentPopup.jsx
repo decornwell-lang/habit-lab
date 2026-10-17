@@ -1,4 +1,4 @@
-// The payment pop-up: Join opens a window over the page with two choices, the 33-day
+// The payment pop-up: Join opens a window over the page with two choices, the 28-day
 // cohort (its price) or the cohort plus a full year (config/pricing.json), then Stripe's
 // payment form (EmbeddedPayment.jsx), with the cohort at the top and ✕ to close.
 // If the in-app form isn't set up (no VITE_STRIPE_PUBLISHABLE_KEY), "Continue to payment"

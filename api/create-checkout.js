@@ -1,5 +1,5 @@
 // POST /api/create-checkout  { cohortId, plan, returnPath, embedded }
-// plan: "cohort" (the cohort's own price, 33 days) or "year" (the cohort plus a full year,
+// plan: "cohort" (the cohort's own price, 28 days) or "year" (the cohort plus a full year,
 // price in config/pricing.json).
 // Works for signed-in members and for visitors: a visitor pays first (Stripe asks for
 // their email) and creates their account afterwards; confirm-checkout then links the

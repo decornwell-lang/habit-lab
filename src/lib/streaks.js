@@ -80,14 +80,16 @@ export function cohortStreakEntry(cohort, cohorts, checkins, profile, today, che
   };
 }
 
-// Badge milestones, in days: 1, 7, 20 and 33 (a full cohort), then 66 days, 6 months and a
-// year for members who carry on; after one year, a badge is earned every year.
+// Badge milestones, in days: 1, 7, 14, 21 and 28 (a full four-week cohort), then 66 days,
+// 6 months and a year for members who carry on; after one year, a badge is earned every
+// year. Badges from before the switch to 28 days (20 and 33 days) still show if earned.
 // Each badge is drawn as a gold seal with `num` and `unit` inside (see Badge.jsx).
 const MILESTONES = [
   { id: "d1", days: 1, num: 1, unit: "day" },
   { id: "d7", days: 7, num: 7, unit: "days" },
-  { id: "d20", days: 20, num: 20, unit: "days" },
-  { id: "d33", days: 33, num: 33, unit: "days" },
+  { id: "d14", days: 14, num: 14, unit: "days" },
+  { id: "d21", days: 21, num: 21, unit: "days" },
+  { id: "d28", days: 28, num: 28, unit: "days" },
   { id: "d66", days: 66, num: 66, unit: "days" },
   { id: "m6", days: 182, num: 6, unit: "months" },
   { id: "y1", days: 365, num: 1, unit: "year" },

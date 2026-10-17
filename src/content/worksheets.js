@@ -5,7 +5,7 @@
 // Plain text only (no curly quotes or long dashes), so the PDFs print correctly.
 
 const JOURNAL =
-  "Buy a notebook or journal that you keep just for this programme. Start writing in it today, every day until your cohort begins, and keep going through the 33 days. You don't need to change anything yet: just notice, and write it down. Nobody else needs to read it.";
+  "Buy a notebook or journal that you keep just for this programme. Start writing in it today, every day until your cohort begins, and keep going through the 28 days. You don't need to change anything yet: just notice, and write it down. Nobody else needs to read it.";
 
 const STORY_INTRO =
   "Take your time with these. Write in your journal over a few days, as much or as little as feels right. There are no right answers: just be honest with yourself.";

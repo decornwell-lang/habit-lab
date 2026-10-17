@@ -147,12 +147,12 @@ export const pages = {
       {
         heading: "What The Habit Lab is",
         body:
-          "A wellbeing and habit-change programme: a 33-day group cohort with daily check-ins in the app, weekly meditation and assignments, a live Zoom session each Monday and a WhatsApp group. It is a supportive community, not medical care, psychotherapy or a treatment programme, and it does not replace advice from your doctor.",
+          "A wellbeing and habit-change programme: a 28-day (four-week) group cohort with daily check-ins in the app, weekly meditation and assignments, a live Zoom session each Monday and a WhatsApp group. It is a supportive community, not medical care, psychotherapy or a treatment programme, and it does not replace advice from your doctor.",
       },
       {
         heading: "Prices and payment",
         list: [
-          "One cohort: €99 for 33 days of access, from the cohort's start date.",
+          "One cohort: €99 for 28 days of access, from the cohort's start date.",
           "Extend to one year: €99, for access until one year after the date you first joined. Available while your access is current.",
           "Another cohort: €99 for that cohort.",
           "All prices are in euros and include VAT (IVA at 21%), shown separately on your receipt.",
