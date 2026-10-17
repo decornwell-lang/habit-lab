@@ -1402,3 +1402,66 @@ body:has(.dashboard.dark) { background: var(--dark-blue); }
 .chart-legend { display: flex; gap: 14px; margin-top: 6px; font-size: 0.78rem; color: #c4c9dc; }
 .dashboard:not(.dark) .chart-legend { color: var(--text-muted); }
 .chart-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; background: var(--cohort); vertical-align: -1px; }
+
+/* ---------- Meditation (MeditationTile.jsx, PracticesTab.jsx) ---------- */
+.meditation-tile { display: block; width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+.mindful-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0 12px; }
+.mindful-stats > span { display: flex; flex-direction: column; }
+.mindful-stats strong { font-family: var(--font-heading); font-size: 1.9rem; line-height: 1.1; color: var(--cohort); }
+.mindful-stats strong em { font-style: normal; font-size: 1rem; color: #c4c9dc; }
+.mindful-stats small { font-size: 0.8rem; color: #c4c9dc; }
+.dashboard:not(.dark) .mindful-stats small, .dashboard:not(.dark) .mindful-stats strong em { color: var(--text-muted); }
+.mindful-badge { display: flex; align-items: center; gap: 10px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.mindful-badge small { font-size: 0.85rem; color: #c4c9dc; }
+.dashboard:not(.dark) .mindful-badge { border-top-color: var(--border); }
+.dashboard:not(.dark) .mindful-badge small { color: var(--text-muted); }
+
+.celebrate { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 24px; background: rgba(5, 7, 20, 0.6); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+.celebrate-panel { width: 100%; max-width: 320px; padding: 28px 22px; text-align: center; border-radius: var(--radius); background: var(--dark-blue); border: 1px solid color-mix(in srgb, var(--gold) 50%, transparent); color: #fff; }
+.celebrate-badge { display: grid; place-items: center; animation: celebrate-pop 0.7s cubic-bezier(.2, 1.4, .4, 1) both; }
+.celebrate-line { margin: 14px 0 18px; font-family: var(--font-heading); font-size: 1.4rem; }
+@keyframes celebrate-pop { from { transform: scale(0.4) rotate(-12deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .celebrate-badge { animation: none; } }
+
+.this-week h2 { margin: 2px 0 12px; }
+.this-week.locked { opacity: 0.55; }
+.week-steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
+.week-steps li { display: flex; flex-direction: column; gap: 6px; padding: 12px 0 12px 16px; border-left: 2px solid color-mix(in srgb, var(--cohort) 45%, transparent); }
+.week-steps li + li { border-top: 1px solid rgba(255, 255, 255, 0.08); }
+.week-step-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cohort); }
+.week-steps .btn { align-self: flex-start; width: auto; }
+
+.mindful-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 10px; }
+.mindful-grid span { aspect-ratio: 1; border-radius: 50%; background: rgba(255, 255, 255, 0.07); }
+.mindful-grid span.done { background: var(--cohort); }
+.mindful-grid span.today { box-shadow: inset 0 0 0 2px #fff; }
+.mindful-grid span.future { opacity: 0.45; }
+.dashboard:not(.dark) .mindful-grid span { background: var(--bg); }
+.dashboard:not(.dark) .mindful-grid span.done { background: var(--cohort); }
+.dashboard:not(.dark) .mindful-grid span.today { box-shadow: inset 0 0 0 2px var(--text); }
+
+.rest-title { margin: 6px 0 8px; }
+.rest-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 16px; }
+.rest-days button { min-height: 38px; border-radius: 10px; font: inherit; font-size: 0.8rem; text-transform: capitalize; cursor: pointer; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; }
+.rest-days button.selected { background: color-mix(in srgb, var(--cohort) 12%, transparent); border-color: var(--cohort); color: var(--cohort); }
+.rest-days button:disabled { opacity: 0.4; cursor: default; }
+.dashboard:not(.dark) .rest-days button { background: var(--surface); border-color: var(--border); color: var(--text); }
+.log-form { display: grid; gap: 10px; }
+.log-form .q-title { margin: 6px 0 0; }
+.log-actions { display: flex; gap: 10px; align-items: center; }
+
+.library { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 14px; }
+.library-item { display: grid; grid-template-columns: 72px 1fr; gap: 12px; align-items: start; }
+.library-item img { width: 72px; aspect-ratio: 1; object-fit: cover; object-position: center 25%; }
+.library-item > div { display: flex; flex-direction: column; gap: 6px; }
+.library-item .btn { align-self: flex-start; width: auto; }
+.library-item audio { width: 100%; height: 36px; }
+.coming-soon { align-self: flex-start; padding: 3px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(255, 255, 255, 0.2); color: #c4c9dc; }
+.dashboard:not(.dark) .coming-soon { border-color: var(--border); color: var(--text-muted); }
+.archive-weeks { list-style: none; padding: 0; margin: 0; }
+.archive-week { margin: 12px 0; padding: 16px; }
+.archive-week.locked { opacity: 0.5; }
+.archive-links { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.archive-links .btn { width: auto; }
+.practise-how-long { margin: 12px 0 8px; } .practise-other { width: 84px; flex: 0 0 84px; min-height: 42px; }
+.week-admin { margin: 10px 0; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; } .week-admin summary { cursor: pointer; font-weight: 600; } .week-admin .btn { width: auto; }

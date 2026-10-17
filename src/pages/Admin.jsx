@@ -6,12 +6,14 @@ import {
 import MembersTab from "../components/admin/MembersTab.jsx";
 import CohortsTab from "../components/admin/CohortsTab.jsx";
 import ContentTab from "../components/admin/ContentTab.jsx";
+import WeeksTab from "../components/admin/WeeksTab.jsx";
+import PracticesAdminTab from "../components/admin/PracticesAdminTab.jsx";
 import CheckinsTab from "../components/admin/CheckinsTab.jsx";
 import AphorismsTab from "../components/admin/AphorismsTab.jsx";
 import MessagesTab from "../components/admin/MessagesTab.jsx";
 import ReflectionsTab from "../components/admin/ReflectionsTab.jsx";
 
-const TABS = ["Members", "Cohorts", "Content", "Check-ins", "Reflections", "Messages", "Aphorisms"];
+const TABS = ["Members", "Cohorts", "Weeks", "Practices", "Content", "Check-ins", "Reflections", "Messages", "Aphorisms"];
 
 export default function Admin() {
   const [tab, setTab] = useState(() => new URLSearchParams(window.location.search).get("tab") || "Members"); // e.g. /admin?tab=Content
@@ -62,6 +64,8 @@ export default function Admin() {
         />
       )}
       {data && tab === "Cohorts" && <CohortsTab cohorts={data.cohorts} reload={load} />}
+      {data && tab === "Weeks" && <WeeksTab cohorts={data.cohorts} />}
+      {tab === "Practices" && <PracticesAdminTab />}
       {data && tab === "Content" && <ContentTab settings={data.settings} reload={load} />}
       {data && tab === "Check-ins" && <CheckinsTab data={data} selectedUid={selectedUid} setSelectedUid={setSelectedUid} />}
       {data && tab === "Reflections" && <ReflectionsTab data={data} />}

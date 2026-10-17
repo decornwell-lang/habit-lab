@@ -39,6 +39,11 @@ service cloud.firestore {
         allow read: if isSelf(uid) || isAdmin();
         allow write: if isSelf(uid);
       }
+      // Meditation: one document per date (mindful days). The member's own.
+      match /meditation/{date} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow write: if isSelf(uid);
+      }
       match /practiceChecks/{id} {
         allow read: if isSelf(uid) || isAdmin();
         allow create: if isSelf(uid);
@@ -115,6 +120,17 @@ service cloud.firestore {
             && resource.data.price == 0
             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["memberIds"])
             && request.resource.data.memberIds.toSet().difference(resource.data.memberIds.toSet()) == [request.auth.uid].toSet());
+    }
+
+    // The practice library and each cohort week's resources: everyone signed in reads them;
+    // only the owner edits them.
+    match /practices/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+    match /weeklyResources/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
     }
 
     // Messages from the owner (Admin > Messages).

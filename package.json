@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "draft-aphorisms": "node --env-file-if-exists=.env.local scripts/draft-aphorisms.js"
+    "draft-aphorisms": "node --env-file-if-exists=.env.local scripts/draft-aphorisms.js",
+    "test": "for f in tests/*.test.mjs; do node \"$f\" || exit 1; done"
   },
   "dependencies": {
     "@stripe/stripe-js": "^4.10.0",

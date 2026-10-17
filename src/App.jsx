@@ -12,6 +12,7 @@ import Admin from "./pages/Admin.jsx";
 import InfoPage from "./pages/InfoPage.jsx";
 import PressPage from "./pages/PressPage.jsx";
 import PlaceholderPage from "./pages/PlaceholderPage.jsx";
+import Archive from "./pages/Archive.jsx";
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
           {/* Members-only pages */}
           <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
           <Route path="/account" element={<RequireAuth><Account /></RequireAuth>} />
+          <Route path="/archive" element={<RequireAuth><Archive /></RequireAuth>} />
 
           {/* Owner-only */}
           <Route path="/admin" element={<RequireAuth admin><Admin /></RequireAuth>} />

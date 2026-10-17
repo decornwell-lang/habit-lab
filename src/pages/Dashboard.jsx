@@ -8,6 +8,7 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import {
   getCohorts, getMemberships, getCheckins, getPublicProfile, savePublicProfile,
   getContentSettings, getDay, getReflectionsForDay, getPracticeDays, saveCheckin, updateUserProfile, clearOldStreak,
+  getMeditationDays, getPractices, getWeeklyResources,
 } from "../lib/data.js";
 import { apiPost } from "../lib/api.js";
 import { todayKey, checkinDayKey, timeZoneName } from "../lib/dates.js";
@@ -19,8 +20,6 @@ import { profileStreaks, cohortStreakEntry } from "../lib/streaks.js";
 import CohortCountdown from "../components/dashboard/CohortCountdown.jsx";
 import WhatsAppGroupCard from "../components/dashboard/WhatsAppGroupCard.jsx";
 import TherapyTile from "../components/dashboard/TherapyTile.jsx";
-import WeeklyAssignment from "../components/dashboard/WeeklyAssignment.jsx";
-import LiveSession from "../components/dashboard/LiveSession.jsx";
 import JoinCohort from "../components/dashboard/JoinCohort.jsx";
 import Leaderboard from "../components/dashboard/Leaderboard.jsx";
 import Celebration from "../components/dashboard/Celebration.jsx";
@@ -36,6 +35,11 @@ import BreatheTab from "../components/dashboard/BreatheTab.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
 import MorningCheckin from "../components/dashboard/MorningCheckin.jsx";
 import ProgressCharts from "../components/dashboard/ProgressCharts.jsx";
+import MeditationTile from "../components/dashboard/MeditationTile.jsx";
+import PracticesTab from "../components/dashboard/PracticesTab.jsx";
+import { DEFAULT_PRACTICES } from "../content/practices.js";
+import { cohortAccess } from "../lib/access.js";
+import pricing from "../../config/pricing.json";
 import { promptTime } from "../content/dailyPrompts.js";
 import AppBadge from "../components/AppBadge.jsx";
 import { publicIdentity } from "../lib/identity.js";
@@ -43,7 +47,6 @@ import { useDark } from "../lib/theme.js";
 import Sheet from "../components/dashboard/Sheet.jsx";
 import IntentionScreen from "../components/dashboard/IntentionScreen.jsx";
 import EveningReview from "../components/dashboard/EveningReview.jsx";
-import TodaysPractice from "../components/dashboard/TodaysPractice.jsx";
 import Explainer from "../components/Explainer.jsx";
 import { LockIcon, PencilIcon } from "../components/TileIcons.jsx";
 import { isInstalled } from "../lib/install.js";
@@ -60,7 +63,7 @@ function readCohortChoice() {
 }
 
 export default function Dashboard() {
-  const { user, profile } = useAuth();
+  const { user, profile, isAdmin } = useAuth();
   const installed = isInstalled(); // opened from the Home Screen
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
@@ -93,7 +96,7 @@ export default function Dashboard() {
   const load = useCallback(async () => {
     try {
       const date = todayKey();
-      const [cohorts, memberships, checkins, publicProfile, settings, day, reflections, practiceDays] = await Promise.all([
+      const [cohorts, memberships, checkins, publicProfile, settings, day, reflections, practiceDays, meditation, savedPractices] = await Promise.all([
         getCohorts(),
         getMemberships(user.uid),
         getCheckins(user.uid),
@@ -102,8 +105,14 @@ export default function Dashboard() {
         getDay(user.uid, date),
         getReflectionsForDay(user.uid, date).catch(() => ({})),
         getPracticeDays(user.uid).catch(() => ({})),
+        getMeditationDays(user.uid).catch(() => ({})),
+        getPractices().catch(() => []),
       ]);
-      setData({ cohorts, memberships, checkins, publicProfile, settings, day, reflections, practiceDays });
+      // The library: the starting practices, with any the owner has edited in Admin.
+      const practices = DEFAULT_PRACTICES.map((p) => ({ ...p, ...savedPractices.find((x) => x.id === p.id) }))
+        .concat(savedPractices.filter((x) => !DEFAULT_PRACTICES.some((p) => p.id === x.id)));
+      const resources = await getWeeklyResources(memberships.map((m) => m.cohortId)).catch(() => []);
+      setData({ cohorts, memberships, checkins, publicProfile, settings, day, reflections, practiceDays, meditation, practices, resources });
     } catch (err) {
       console.error(err);
       setError("We couldn't load your dashboard. Please refresh the page.");
@@ -282,6 +291,13 @@ export default function Dashboard() {
   const explainerRow = (id, label) => <div className="explainer-row"><Explainer url={explainers[id]} label={label} /></div>;
 
   // Saves a reflection or morning answer into Home's state, so its tile updates straight away.
+  // Cohort access (current, upcoming, ended): who can open Practices and the meditation tile.
+  const access = cohortAccess(data.memberships, data.cohorts, pricing);
+  // A practice just logged: add it to that day (one mindful day; minutes add up).
+  const onLoggedMeditation = (date, entry) => setData((d) => {
+    const day = d.meditation[date] || { date, minutes: 0, entries: [] };
+    return { ...d, meditation: { ...d.meditation, [date]: { ...day, minutes: (day.minutes || 0) + entry.minutes, entries: [...(day.entries || []), entry] } } };
+  });
   const onSavedDay = (key, answer) => setData((d) => ({ ...d, day: { ...d.day, [key]: answer } }));
   const onSavedReflection = (id, entry) => setData((d) => ({ ...d, reflections: { ...d.reflections, [id]: entry } }));
 
@@ -382,6 +398,10 @@ export default function Dashboard() {
           {/* On the Home Screen app, notifications are asked for first thing, at the top
               (browsers only allow turning them on with a tap, never automatically). */}
           {installed && <NotificationSettings uid={user.uid} compact />}
+          {/* Meditation: one tile for all the member's cohorts, while their access is current */}
+          {access.state === "active" && (
+            <MeditationTile uid={user.uid} profile={profile} sessions={data.meditation} today={today} onOpen={() => setTab("practices")} />
+          )}
           {current?.progress.state === "upcoming" && <CohortCountdown current={current} />}
           {current && <BadgesCard streak={streak} current={current} />}
           {/* key: switching cohort starts its tiles afresh (no answers carried over) */}
@@ -414,9 +434,8 @@ export default function Dashboard() {
       {tab === "practices" && (
         <>
           {explainerRow("practices", "About Practices")}
-          <TodaysPractice content={content} />
-          <WeeklyAssignment content={content} settings={data.settings} />
-          <LiveSession settings={data.settings} />
+          <PracticesTab uid={user.uid} profile={profile} access={access} isAdmin={isAdmin} rows={rows} sessions={data.meditation}
+            practices={data.practices} resources={data.resources} settings={data.settings} content={content} today={today} onLogged={onLoggedMeditation} />
         </>
       )}
 
@@ -433,6 +452,7 @@ export default function Dashboard() {
         <Sheet label="Evening review" onClose={() => setSheet(null)}>
           <EveningReview uid={user.uid} date={today} existing={data.reflections[`${today}_evening_${current.cohort.id}`]}
             habit={{ ...habitInfo(current.cohort.habitType), cohortId: current.cohort.id }} firstName={firstName}
+            meditatedToday={Boolean(data.meditation[today])} onMeditation={onLoggedMeditation}
             onSaved={async (entry, skipped) => {
               onSavedReflection(`${today}_evening_${current.cohort.id}`, entry);
               if (skipped) return setSheet(null);

@@ -18,7 +18,7 @@
 //   notices/{id}                      messages from the owner (also sent as push notifications)
 import {
   doc, getDoc, getDocs, setDoc, updateDoc, addDoc, collection, collectionGroup,
-  query, where, orderBy, limit, writeBatch, arrayUnion, serverTimestamp, deleteField,
+  query, where, orderBy, limit, writeBatch, arrayUnion, increment, serverTimestamp, deleteField,
 } from "firebase/firestore";
 import { db } from "../firebase.js";
 
@@ -181,6 +181,40 @@ export async function getPracticeDays(uid) {
 export async function saveDayAnswer(uid, date, key, value) {
   await setDoc(doc(db, "users", uid, "practice", date), { date, [key]: value, at: serverTimestamp() }, { merge: true });
 }
+
+// ---------- Meditation (mindful days) ----------
+//   users/{uid}/meditation/{date}   { date, minutes, entries: [{ source, practiceId, minutes, at }] }
+// One document per date, so a second practice the same day adds its minutes but is still one
+// mindful day. source: "app" (played to the end), "self_reported" ("I practised today" or the
+// evening review) or "manual_log" (practice done elsewhere).
+export async function getMeditationDays(uid) {
+  const snap = await getDocs(collection(db, "users", uid, "meditation"));
+  return Object.fromEntries(snap.docs.map((d) => [d.id, d.data()]));
+}
+
+export async function logMeditation(uid, date, { source, practiceId = null, minutes = 0 }) {
+  const entry = { source, practiceId, minutes: Number(minutes) || 0, at: new Date().toISOString() };
+  await setDoc(doc(db, "users", uid, "meditation", date), { date, minutes: increment(entry.minutes), entries: arrayUnion(entry) }, { merge: true });
+  return entry;
+}
+
+// ---------- Practice library and cohort weeks (Admin edits them; everyone signed in reads) ----------
+export async function getPractices() {
+  const snap = await getDocs(collection(db, "practices"));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+export const savePractice = (id, data) => setDoc(doc(db, "practices", id), data, { merge: true });
+
+//   weeklyResources/{cohortId}_w{week}   { cohortId, weekNumber, assignmentPdfUrl, zoomLink, zoomStartsAt,
+//                                          recordingUrl, recordingDescription }
+// When each week unlocks is worked out from the cohort's start (src/lib/mindful.js).
+export async function getWeeklyResources(cohortIds) {
+  if (!cohortIds.length) return [];
+  const snap = await getDocs(query(collection(db, "weeklyResources"), where("cohortId", "in", cohortIds.slice(0, 30))));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+export const saveWeeklyResource = (cohortId, weekNumber, data) =>
+  setDoc(doc(db, "weeklyResources", `${cohortId}_w${weekNumber}`), { cohortId, weekNumber, ...data }, { merge: true });
 
 export async function savePracticeCheck(uid, data) {
   await addDoc(collection(db, "users", uid, "practiceChecks"), { ...data, createdAt: serverTimestamp() });
