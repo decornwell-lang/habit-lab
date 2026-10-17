@@ -162,6 +162,47 @@ export const WORKSHEETS = {
       "Who are you becoming? Describe a day in your life as someone who moves every day.",
     ],
   },
+  asthma: {
+    name: "Asthma",
+    journal: `${JOURNAL} Keep taking your medication as prescribed: this programme works alongside your doctor's advice, never instead of it.`,
+    eachTime: {
+      heading: "Each time you have symptoms, or use your reliever inhaler, write down:",
+      items: [
+        "The time, and where you are.",
+        "What you noticed: wheezing, coughing, a tight chest, shortness of breath.",
+        "What you were doing just before, and anything that might have set it off: exercise, cold air, dust, pollen, smoke, a cold, stress.",
+        "How you felt just before, and during: calm, anxious, rushed, frightened.",
+        "How strong the symptoms were, from 0 to 5.",
+        "Which inhaler or medication you used, how many puffs, and how quickly it helped.",
+      ],
+    },
+    endOfDay: {
+      heading: "At the end of each day, write a few lines:",
+      items: [
+        "Did I take my preventer medication as prescribed today?",
+        "How many times did I need my reliever inhaler?",
+        "Did I do my breathing practice today? How did my breathing feel afterwards?",
+        "Did asthma wake me in the night, or stop me doing anything today?",
+        "What emotions came up around my breathing today?",
+        "One thing I noticed about myself today.",
+      ],
+    },
+    story: [
+      "When did you first have asthma symptoms? How old were you, and what was happening in your life at that time?",
+      "When were you diagnosed, and how did you feel about it then?",
+      "When did you first take medication for it? What were you given, and how did it feel to rely on it?",
+      "What medication do you use now: preventer, reliever, tablets? How much, and how often do you reach for your reliever?",
+      "How has your asthma changed over the years: times it was worse, better, or you hardly noticed it?",
+      "What sets it off for you: exercise, cold air, allergies, colds, smoke, stress, strong emotions?",
+      "Have you had a serious attack, or been to hospital? What do you remember, and how does it stay with you?",
+      "How do you breathe on an ordinary day: through your nose or mouth, high in the chest or low in the belly, fast or slow?",
+      "How does asthma affect your life: sleep, exercise, work, travel, confidence, how you feel about your body?",
+      "Who in your family has asthma or allergies? What did you learn about breathing and illness growing up?",
+      "What have you tried before to manage it, besides medication, and what did you learn from it?",
+      "What has brought you to this group, now?",
+      "Who are you becoming? Describe a day in your life breathing more easily.",
+    ],
+  },
   default: {
     name: "Your habit",
     journal: JOURNAL,
@@ -202,6 +243,6 @@ export const STORY_HEADING = "My life story";
 export const STORY_TEXT = STORY_INTRO;
 export const DIARY_HEADING = "Keeping a diary";
 
-const PDF_HABITS = ["smoking", "alcohol", "gambling", "exercise"];
+const PDF_HABITS = ["smoking", "alcohol", "gambling", "exercise", "asthma"];
 export const worksheetFor = (habitType) => WORKSHEETS[habitType] || WORKSHEETS.default;
 export const worksheetPdf = (habitType) => `/assets/before-you-begin-${PDF_HABITS.includes(habitType) ? habitType : "default"}.pdf`;

@@ -35,7 +35,11 @@ export function makePdf(blocks, footer = "The Habit Lab  -  David Ernest Cornwel
     if (b.pageBreak) { newPage(); continue; }
     if (b.title) { need(40); text(b.title, "F2", 22); y -= 30; }
     if (b.subtitle) { need(24); text(b.subtitle, "F1", 12); y -= 26; }
-    if (b.heading) { need(60); y -= 6; text(b.heading, "F2", 15); y -= 24; }
+    if (b.heading) {
+      need(60); y -= 6;
+      const hLines = wrap(b.heading, 62);
+      hLines.forEach((t, i) => { text(t, "F2", 15); y -= i === hLines.length - 1 ? 24 : 19; });
+    }
     if (b.text) {
       for (const t of wrap(b.text, 92)) { need(15); text(t, "F1", 10.5); y -= 15; }
       y -= 10;
