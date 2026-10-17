@@ -1,7 +1,7 @@
 // "Open the worksheet" (the countdown box): the before-you-begin worksheet for the habit,
 // full screen and easy to read on a phone: keeping a diary (what to write in their own
-// journal), then their life story (prompts). Download saves the same thing as a two-page
-// PDF; ✕ closes it. Wording: src/content/worksheets.js.
+// journal), then their life story (prompts). "Save or share" (phones) or "Download"
+// (computers) keeps the same thing as a two-page PDF; ✕ closes it. Wording: src/content/worksheets.js.
 import { useEffect, useState } from "react";
 import ViewerBar from "./ViewerBar.jsx";
 import { worksheetFor, worksheetPdf, DIARY_HEADING, STORY_HEADING, STORY_TEXT } from "../content/worksheets.js";
@@ -31,6 +31,7 @@ export default function WorksheetButton({ habitType, label = "Open the worksheet
           <article className="worksheet">
             <p className="eyebrow">Before you begin · {w.name}</p>
             <h1>My diary and my life story</h1>
+            <p className="worksheet-keep">To keep a copy (two pages, to print or save), tap the button at the top left.</p>
 
             <h2>{DIARY_HEADING}</h2>
             <p>{w.journal}</p>

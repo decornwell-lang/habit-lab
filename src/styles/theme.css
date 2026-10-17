@@ -1368,3 +1368,6 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 /* The dark tabs paint the page behind them dark too, so no light strip can ever show
    below the content (e.g. when iPhone briefly measures the screen wrong after sharing) */
 body:has(.dashboard.dark) { background: var(--dark-blue); }
+.pdf-keep { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.pdf-note { font-size: 0.8rem; color: #c4c9dc; }
+.worksheet-keep { margin: 0 auto 4px; font-size: 0.85rem; color: var(--text-muted); }
