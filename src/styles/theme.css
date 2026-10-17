@@ -1086,10 +1086,10 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .intention-saved-meta .link-btn { color: #c4c9dc; font-size: 0.85rem; }
 
 /* Leaderboard rows: rank · avatar · name (challenge) · badge · streak */
-.leaderboard li { gap: 12px; }
-.lb-rank { width: 18px; text-align: center; font-weight: 700; font-size: 0.9rem; color: var(--text-muted); }
+.leaderboard li { gap: 8px; }
+.lb-rank { width: 14px; text-align: center; font-weight: 700; font-size: 0.9rem; color: var(--text-muted); }
 .lb-who { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
-.lb-who strong { font-size: 1.02rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-who strong { font-size: 1.02rem; overflow-wrap: anywhere; } /* long names wrap onto a second line, never cut off */
 .lb-meta { font-size: 0.8rem; color: var(--text-muted); }
 .lb-streak { display: flex; flex-direction: column; align-items: flex-end; line-height: 1; min-width: 44px; }
 .lb-streak strong { font-family: var(--font-heading); font-size: 1.5rem; color: var(--teal); }

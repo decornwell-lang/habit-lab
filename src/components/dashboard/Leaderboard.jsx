@@ -45,7 +45,7 @@ export default function Leaderboard({ uid, cohort, optedIn, today }) {
                   <strong>{p.name || p.firstName}</strong>
                   {habit && <span className="lb-meta">{habit.charAt(0).toUpperCase() + habit.slice(1)}</span>}
                 </span>
-                {top && <Badge id={top} size={30} />}
+                {top && <Badge id={top} size={26} />}
                 <span className="lb-streak"><strong>{p.current}</strong><small>{p.current === 1 ? "day" : "days"}</small></span>
               </li>
             );
