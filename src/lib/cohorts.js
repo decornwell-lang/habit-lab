@@ -14,7 +14,7 @@ import { daysBetween, addDays } from "./dates.js";
 export const HABIT_TYPES = [
   { id: "smoking", label: "Smoking", tab: "Smoke-free", streak: "smoke-free", question: "Did you smoke today?", keptWhen: "no", kept: "Smoke-free", missed: "Smoked", cravings: true, accent: "#57bda2" },
   { id: "alcohol", label: "Alcohol", tab: "Alcohol-free", streak: "alcohol-free", question: "Did you drink alcohol today?", keptWhen: "no", kept: "Alcohol-free", missed: "Drank", cravings: true, accent: "#8fa6f5" },
-  { id: "gambling", label: "Gambling", tab: "Gamble-free", streak: "gamble-free", question: "Did you gamble today?", keptWhen: "no", kept: "Gamble-free", missed: "Gambled", cravings: true, accent: "#e79bb4" },
+  { id: "gambling", label: "Gambling", tab: "Gamble-free", streak: "gamble-free", question: "Did you gamble today?", keptWhen: "no", kept: "Gamble-free", missed: "Gambled", cravings: true, accent: "#b9a2e8" },
   { id: "exercise", label: "Fitness", tab: "Fitness", streak: "of exercise", question: "Did you exercise today?", keptWhen: "yes", kept: "Exercised", missed: "Didn't exercise", accent: "#a8d672" },
   { id: "meditation", label: "Meditation", tab: "Meditation", streak: "of meditation", question: "Did you meditate today?", keptWhen: "yes", kept: "Meditated", missed: "Didn't meditate", accent: "#c4a3ec" },
   { id: "asthma", label: "Asthma", tab: "Asthma", streak: "of breathing practice", question: "Did you do your breathing practice today?", keptWhen: "yes", kept: "Practised", missed: "Didn't practise", accent: "#6cc8e8" },
