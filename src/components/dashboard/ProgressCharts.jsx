@@ -4,7 +4,8 @@
 //    (lighter Poor, darker Good). From the morning check-in.
 //  - Cravings (cohorts with cravings): the evening's craving intensity, 0 to 5.
 //  - Control pause (asthma cohorts): seconds, from the morning check-in.
-// Tap a day to see its numbers. A chart shows once it has at least one day.
+// Tap a day to see its numbers. During the countdown (and before the first answers) the
+// charts show empty, across the cohort's days, and fill in from day 1.
 import { useState } from "react";
 import { addDays } from "../../lib/dates.js";
 import { SLEEP_HOURS } from "../../content/dailyPrompts.js";
@@ -35,7 +36,7 @@ function Chart({ days, max, ticks, unit, bars, label, describe }) {
 
   return (
     <div className="chart">
-      <p className="chart-readout" aria-live="polite">{pick ? `Day ${pick.day}: ${describe(pick)}` : "Tap a day to see it."}</p>
+      {known.length > 0 && <p className="chart-readout" aria-live="polite">{pick ? `Day ${pick.day}: ${describe(pick)}` : "Tap a day to see it."}</p>}
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label}>
         {ticks.map((t) => (
           <g key={t}>
@@ -68,8 +69,10 @@ const average = (vals) => (vals.length ? vals.reduce((a, b) => a + b, 0) / vals.
 
 export default function ProgressCharts({ current, habit, practiceDays, checkins }) {
   const { cohort, progress } = current;
-  if (progress.state === "upcoming") return null;
-  const total = Math.min(progress.day, Number(cohort.durationDays) || 33);
+  const length = Number(cohort.durationDays) || 33;
+  const upcoming = progress.state === "upcoming";
+  // Before it begins: the whole cohort, empty. Then: the days so far.
+  const total = upcoming ? length : Math.max(1, Math.min(progress.day, length));
   const days = Array.from({ length: total }, (_, i) => {
     const date = addDays(progress.start, i);
     const m = practiceDays[date]?.[`morning_${cohort.id}`] || {};
@@ -91,45 +94,37 @@ export default function ProgressCharts({ current, habit, practiceDays, checkins 
   const has = (series) => series.some((d) => d.value != null);
   const avg = (series) => average(series.filter((d) => d.value != null).map((d) => d.value));
 
-  const charts = [];
-  if (has(sleep)) {
-    charts.push(
-      <section key="sleep" className="chart-block">
+  const empty = upcoming ? "Fills in from day 1." : "Fills in as you check in.";
+  const sub = (series, text) => <p className="muted small">{has(series) ? text() : empty}</p>;
+
+  return (
+    <section className="card progress-card">
+      <p className="card-label">My progress</p>
+      <section className="chart-block">
         <h3>Sleep</h3>
-        <p className="muted small">Average {avg(sleep).toFixed(1)} hours a night</p>
+        {sub(sleep, () => `Average ${avg(sleep).toFixed(1)} hours a night`)}
         <Chart days={sleep} max={9} ticks={[0, 3, 6, 9]} unit="h" bars label="Hours of sleep each night, shaded by sleep quality"
           describe={(d) => (d.value == null ? "no answer" : `${d.sleepLength}${d.quality != null ? `, ${QUALITY_NAMES[d.quality]}` : ""}`)} />
         <div className="chart-legend" aria-hidden="true">
           {QUALITY_NAMES.map((name, i) => <span key={name}><i style={{ opacity: SHADE[i] }} />{name}</span>)}
         </div>
       </section>
-    );
-  }
-  if (habit.cravings && has(cravings)) {
-    charts.push(
-      <section key="cravings" className="chart-block">
-        <h3>Cravings</h3>
-        <p className="muted small">Average intensity {avg(cravings).toFixed(1)} out of 5</p>
-        <Chart days={cravings} max={5} ticks={[0, 1, 2, 3, 4, 5]} unit="" label="Craving intensity each evening, 0 to 5"
-          describe={(d) => (d.value == null ? "no answer" : `intensity ${d.value} of 5`)} />
-      </section>
-    );
-  }
-  if (cohort.habitType === "asthma" && has(pause)) {
-    charts.push(
-      <section key="pause" className="chart-block">
-        <h3>Control pause</h3>
-        <p className="muted small">Average {Math.round(avg(pause))} seconds</p>
-        <Chart days={pause} max={60} ticks={[0, 20, 40, 60]} unit="s" label="Control pause each morning, in seconds"
-          describe={(d) => (d.value == null ? "not measured" : `${d.value} seconds`)} />
-      </section>
-    );
-  }
-
-  return (
-    <section className="card progress-card">
-      <p className="card-label">My progress</p>
-      {charts.length ? charts : <p className="muted">Your charts fill in as you check in each morning and evening.</p>}
+      {habit.cravings && (
+        <section className="chart-block">
+          <h3>Cravings</h3>
+          {sub(cravings, () => `Average intensity ${avg(cravings).toFixed(1)} out of 5`)}
+          <Chart days={cravings} max={5} ticks={[0, 1, 2, 3, 4, 5]} unit="" label="Craving intensity each evening, 0 to 5"
+            describe={(d) => (d.value == null ? "no answer" : `intensity ${d.value} of 5`)} />
+        </section>
+      )}
+      {cohort.habitType === "asthma" && (
+        <section className="chart-block">
+          <h3>Control pause</h3>
+          {sub(pause, () => `Average ${Math.round(avg(pause))} seconds`)}
+          <Chart days={pause} max={60} ticks={[0, 20, 40, 60]} unit="s" label="Control pause each morning, in seconds"
+            describe={(d) => (d.value == null ? "not measured" : `${d.value} seconds`)} />
+        </section>
+      )}
     </section>
   );
 }
