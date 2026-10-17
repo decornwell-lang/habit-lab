@@ -891,7 +891,7 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 .yt { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--radius); background: #000; }
 /* Taller than the frame and moved up, so YouTube's title bar sits above the frame, out of
    sight; the controls along the bottom stay visible */
-.yt-frame { position: absolute; left: 0; width: 100%; top: -56px; height: calc(100% + 56px); border: 0; }
+.yt iframe { position: absolute; left: 0; width: 100%; top: -56px; height: calc(100% + 56px); border: 0; }
 
 /* Leaderboard inside the badge box (dark) */
 
