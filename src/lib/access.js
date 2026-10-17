@@ -89,3 +89,24 @@ export function studyGroupAccess({ subscriptions = [], entitlements = [] }, now 
   if (running) return { ok: true, via: "cohort", until: running.endsAt };
   return { ok: false };
 }
+
+// ---------- Cohort access, from the member's cohorts ----------
+// Used by the app to decide what a member can open. Every membership counts (paid, free,
+// or added by the owner), from the day its cohort begins for its length; a membership on
+// the year plan adds a year from the first cohort's start. Memberships of paid cohorts are
+// only ever written by the server after Stripe confirms the payment, so they can be trusted.
+// Returns { state: "active" | "upcoming" | "ended" | "none", startsAt, endsAt }.
+export function cohortAccess(memberships, cohorts, { cohortDays, extendDays }, now = new Date()) {
+  const periods = memberships
+    .map((m) => ({ m, c: cohorts.find((c) => c.id === m.cohortId) }))
+    .filter(({ c }) => c?.startDate && !c.archived)
+    .map(({ m, c }) => ({ plan: m.plan, ...entitlementPeriod(c.startDate, Number(c.durationDays) || cohortDays) }));
+  if (!periods.length) return { state: "none" };
+  const startsAt = new Date(Math.min(...periods.map((p) => p.startsAt.getTime())));
+  const year = periods.some((p) => p.plan === "year");
+  const endsAt = accessEndsAt({ entitlements: periods, extended: year }, extendDays);
+  // Inside one of the cohorts, or (year plan) within the year from the first cohort's start.
+  const running = periods.some((p) => p.startsAt <= now && now < p.endsAt) || (year && startsAt <= now && now < plusDays(startsAt, extendDays));
+  const state = running ? "active" : now < startsAt || periods.some((p) => now < p.startsAt) ? "upcoming" : "ended";
+  return { state, startsAt, endsAt };
+}

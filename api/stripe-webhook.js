@@ -1,12 +1,16 @@
 // POST /api/stripe-webhook  (called by Stripe, never by the app)
-// Keeps the Study Group subscription records up to date. Every message is checked against
+// Records paid cohorts (checkout.session.completed: the member is added and their access
+// recorded, even if they closed the app straight after paying) and keeps the Study Group
+// subscription records up to date. Every message is checked against
 // STRIPE_WEBHOOK_SECRET (Stripe → Developers → Webhooks → this endpoint → Signing secret),
 // and each Stripe event is handled once (stripeEvents/{eventId}); the handlers themselves
 // always write Stripe's current state, so a repeat changes nothing.
-// Events: customer.subscription.created / updated / deleted, invoice.paid.
+// Events: checkout.session.completed, checkout.session.async_payment_succeeded,
+// customer.subscription.created / updated / deleted, invoice.paid.
 // A cancelled subscription keeps its record: access simply ends at currentPeriodEnd.
 import { db, stripe, FieldValue } from "./_lib/server.js";
 import { saveSubscription } from "./_lib/studyGroup.js";
+import { recordCohortPayment, recordGuestPayment } from "./_lib/cohortPayments.js";
 
 export const config = { api: { bodyParser: false } }; // the signature is checked on the raw body
 
@@ -38,7 +42,11 @@ export default async function handler(req, res) {
 
   try {
     const obj = event.data.object;
-    if (event.type.startsWith("customer.subscription.")) {
+    if ((event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded")
+      && obj.mode === "payment" && obj.metadata?.cohortId && obj.payment_status === "paid") {
+      if (obj.metadata.uid) await recordCohortPayment(obj.metadata.uid, obj);
+      else await recordGuestPayment(obj); // linked when they create their account (confirm-checkout)
+    } else if (event.type.startsWith("customer.subscription.")) {
       await saveSubscription(obj);
     } else if (event.type === "invoice.paid") {
       const subId = obj.subscription || obj.parent?.subscription_details?.subscription;

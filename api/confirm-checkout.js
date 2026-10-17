@@ -1,9 +1,12 @@
 // POST /api/confirm-checkout  { sessionId }
 // After a payment: checks with Stripe that it really went through, then adds the member
-// to the cohort. A payment made by a signed-in member must be theirs. A payment made by
+// to the cohort and records their access (api/_lib/cohortPayments.js). Stripe's webhook
+// does the same independently, so a member who closes the app straight after paying is
+// still added. A payment made by a signed-in member must be theirs. A payment made by
 // a visitor (before creating an account) is linked to the account whose email matches
 // the email given to Stripe, once only (recorded in checkoutClaims/{sessionId}).
-import { handle, requireUser, stripe, db, addMemberToCohort, HttpError } from "./_lib/server.js";
+import { handle, requireUser, stripe, db, HttpError } from "./_lib/server.js";
+import { recordCohortPayment } from "./_lib/cohortPayments.js";
 
 export default handle(async (req, res) => {
   const user = await requireUser(req);
@@ -26,17 +29,7 @@ export default handle(async (req, res) => {
     throw new HttpError(403, "This payment belongs to a different account.");
   }
 
-  await addMemberToCohort(user.uid, session.metadata.cohortId, {
-    paid: true,
-    method: "stripe",
-    amount: (session.amount_total || 0) / 100,
-    currency: session.currency,
-    stripeSessionId: session.id,
-    plan: session.metadata.plan || "cohort", // "year": the cohort plus a full year
-    ...(session.metadata.screeningAdvised
-      ? { screening: { advised: session.metadata.screeningAdvised === "true", at: new Date().toISOString() } }
-      : {}),
-  });
+  await recordCohortPayment(user.uid, session); // also done by the Stripe webhook; safe to repeat
 
   res.json({ joined: true, cohortId: session.metadata.cohortId });
 });
