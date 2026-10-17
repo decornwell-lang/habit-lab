@@ -1,24 +1,10 @@
-// Creates the placeholder PDFs in public/assets. Run with:  node scripts/make-pdfs.mjs
+// Creates the weekly reflection PDFs in public/assets/reflections. Run with:  node scripts/make-pdfs.mjs
+// (The before-you-begin worksheets are made by scripts/make-worksheets.mjs.)
 // To use your own PDFs instead, just replace the files in public/assets
 // (keep the same names), or paste links in Admin → Content.
 import { writeFileSync, mkdirSync } from "node:fs";
 
 const OUT = new URL("../public/assets/", import.meta.url);
-
-const story = {
-  file: "your-story-before-the-cohort.pdf",
-  title: "Your Story Before the Cohort",
-  intro: "Take your time with these questions. Write as much or as little as you like. Nothing needs to be shared.",
-  questions: [
-    "When did this habit first start? What was happening in your life at the time?",
-    "What did it give you back then? What does it give you now?",
-    "When do you usually reach for it? Think about times of day, places, people and moods.",
-    "What are your impulses and cravings like? Where do you feel them in your body?",
-    "What have you tried before, and what did you learn from it?",
-    "What would change in your life if this habit loosened its grip?",
-    "Who are you becoming? Describe that person in a few sentences.",
-  ],
-};
 
 const weeks = [
   ["Foundations", "Intention, identity and triggers", [
@@ -118,7 +104,6 @@ function makePdf({ title, subtitle, intro, questions }) {
 }
 
 mkdirSync(new URL("reflections/", OUT), { recursive: true });
-writeFileSync(new URL(story.file, OUT), makePdf(story));
 weeks.forEach(([theme, focus, questions], i) => {
   writeFileSync(
     new URL(`reflections/week-${i + 1}.pdf`, OUT),

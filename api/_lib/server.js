@@ -5,6 +5,7 @@
 //   FIREBASE_SERVICE_ACCOUNT  the Firebase service account key (the whole JSON, on one line)
 //   STRIPE_SECRET_KEY         Stripe secret key (sk_test_... until launch)
 //   STRIPE_TAX                "on" once Stripe Tax is set up (works out the VAT inside each price)
+//   STRIPE_WEBHOOK_SECRET     the Study Group webhook's signing secret (whsec_...), for api/stripe-webhook.js
 import { initializeApp, cert, getApps } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore, FieldValue, FieldPath } from "firebase-admin/firestore";
