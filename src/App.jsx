@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Account from "./pages/Account.jsx";
 import Admin from "./pages/Admin.jsx";
 import InfoPage from "./pages/InfoPage.jsx";
+import PressPage from "./pages/PressPage.jsx";
 import PlaceholderPage from "./pages/PlaceholderPage.jsx";
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/contact" element={<InfoPage name="contact" />} />
           <Route path="/habit-lab" element={<InfoPage name="habitLab" />} />
           <Route path="/offerings" element={<InfoPage name="offerings" />} />
+          <Route path="/press" element={<PressPage />} />
           <Route path="/terms" element={<InfoPage name="terms" />} />
           <Route path="/join/:cohortId" element={<Join />} />
 

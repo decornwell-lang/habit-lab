@@ -8,6 +8,7 @@ import InstallApp from "./InstallApp.jsx";
 const links = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
+  { to: "/press", label: "Press" },
   { to: "/contact", label: "Contact" },
   { to: "/habit-lab", label: "The Habit Lab" },
   { to: "/offerings", label: "Offerings / Retreats" },
