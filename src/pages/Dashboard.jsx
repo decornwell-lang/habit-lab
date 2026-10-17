@@ -112,13 +112,18 @@ export default function Dashboard() {
     load();
   }, [load]);
 
-  // If the app stays open past midnight or 21:00, reload so the new day / check-in appears.
+  // Fresh data whenever the member comes back to the app (it often stays open in the
+  // background for days): changes made in Admin, such as a cohort's WhatsApp link, show
+  // straight away. Also past midnight or 21:00, so the new day / check-in appears.
   useEffect(() => {
     const dayStamp = () => `${todayKey()}|${checkinDayKey()}`;
     let loadedFor = dayStamp();
+    let loadedAt = Date.now();
     const refreshIfNewDay = () => {
-      if (document.visibilityState === "visible" && dayStamp() !== loadedFor) {
+      if (document.visibilityState !== "visible") return;
+      if (dayStamp() !== loadedFor || Date.now() - loadedAt > 60 * 1000) {
         loadedFor = dayStamp();
+        loadedAt = Date.now();
         load();
       }
     };
