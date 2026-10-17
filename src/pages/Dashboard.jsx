@@ -45,6 +45,7 @@ import EveningReview from "../components/dashboard/EveningReview.jsx";
 import TodaysPractice from "../components/dashboard/TodaysPractice.jsx";
 import Explainer from "../components/Explainer.jsx";
 import { LockIcon, PencilIcon } from "../components/TileIcons.jsx";
+import { isInstalled } from "../lib/install.js";
 
 
 // The cohort last chosen on Home (for members in more than one), remembered on this device.
@@ -59,6 +60,7 @@ function readCohortChoice() {
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
+  const installed = isInstalled(); // opened from the Home Screen
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -370,6 +372,9 @@ export default function Dashboard() {
           ) : (
             <div className="explainer-row left"><Explainer url={explainers.home} label="About Home" /></div>
           )}
+          {/* On the Home Screen app, notifications are asked for first thing, at the top
+              (browsers only allow turning them on with a tap, never automatically). */}
+          {installed && <NotificationSettings uid={user.uid} compact />}
           {current?.progress.state === "upcoming" && <CohortCountdown current={current} />}
           {current && <BadgesCard streak={streak} current={current} />}
           {/* key: switching cohort starts its tiles afresh (no answers carried over) */}
@@ -390,7 +395,7 @@ export default function Dashboard() {
               <button className="btn btn-primary" onClick={() => setTab("upcoming")}>See cohorts</button>
             </section>
           )}
-          <NotificationSettings uid={user.uid} compact />
+          {!installed && <NotificationSettings uid={user.uid} compact />}
           <InstallApp />
         </>
       )}
