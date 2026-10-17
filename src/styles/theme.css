@@ -1341,3 +1341,4 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
   position: absolute; inset: 0; margin: auto; width: 64px; height: 64px; display: grid; place-items: center;
   border-radius: 50%; background: rgba(255, 255, 255, 0.92); color: var(--dark-blue); font-size: 1.4rem; padding-left: 4px;
 }
+.dashboard.dark .payment-inline .embedded-payment > div:not(:empty) { background: transparent; } /* Stripe's form brings its own background (Stripe → Settings → Branding) */
