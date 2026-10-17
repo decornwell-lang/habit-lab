@@ -1310,3 +1310,12 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 @keyframes dictation-pulse { 0% { box-shadow: 0 0 0 0 rgba(229, 72, 77, 0.5); } 100% { box-shadow: 0 0 0 10px rgba(229, 72, 77, 0); } }
 @media (prefers-reduced-motion: reduce) { .dictation-btn.listening { animation: none; } }
 .dashboard:not(.dark) .dictation-btn { color: var(--text); }
+
+/* Payment inside a cohort tile on the dark screens: the panel and plan choices stay dark;
+   Stripe draws its own form inside, in the colours set in Stripe → Settings → Branding */
+.dashboard.dark .payment-inline { background: rgba(5, 7, 20, 0.45); border: 1px solid color-mix(in srgb, var(--cohort) 30%, transparent); color: #fff; }
+.dashboard.dark .payment-inline .muted { color: #c4c9dc; }
+.dashboard.dark .payment-inline .icon-btn { color: #dfe3f0; }
+.dashboard.dark .payment-inline .plan-choices button { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.15); color: #fff; }
+.dashboard.dark .payment-inline .plan-choices button.selected { background: color-mix(in srgb, var(--cohort) 12%, transparent); border-color: var(--cohort); }
+.dashboard.dark .payment-inline .plan-price { color: #fff; }
