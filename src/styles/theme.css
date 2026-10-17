@@ -892,6 +892,11 @@ button.breathe-circle:not(.in):hover { filter: brightness(1.06); }
 /* Taller than the frame and moved up, so YouTube's title bar sits above the frame, out of
    sight; the controls along the bottom stay visible */
 .yt iframe { position: absolute; left: 0; width: 100%; top: -56px; height: calc(100% + 56px); border: 0; }
+/* The same title card on every video until it plays: David's photo and a red play button */
+.yt-card { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; padding: 0; border: 0; background: #000; cursor: pointer; }
+.yt-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; opacity: 0.85; }
+.yt-card-play { position: relative; display: grid; filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35)); transition: transform 0.15s; }
+.yt-card:hover .yt-card-play { transform: scale(1.06); }
 
 /* Leaderboard inside the badge box (dark) */
 
