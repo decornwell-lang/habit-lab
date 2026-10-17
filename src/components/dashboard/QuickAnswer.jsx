@@ -15,11 +15,17 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
   const [saved, setSaved] = useState(Boolean(existing));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [tried, setTried] = useState(false); // Save tapped with questions unanswered: show them in red
   const box = useRef(null);
   const set = (key, value) => setAnswer((a) => ({ ...a, [key]: value }));
   const complete = questions.every((q) => answer[q.key]) && (questions.length > 0 || answer.note?.trim());
 
   async function save() {
+    if (!complete) {
+      setTried(true);
+      setTimeout(() => box.current?.querySelector(".q-step.missing")?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -49,7 +55,7 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
   return (
     <div className="quick-answer" ref={box}>
       {questions.map((q, i) => (
-        <QuestionStep key={q.key} n={i + 1} title={q.label}>
+        <QuestionStep key={q.key} n={i + 1} title={q.label} missing={tried && !answer[q.key]}>
           <div className="choices">
             {q.choices.map((c) => (
               <button type="button" key={c} className={answer[q.key] === c ? "selected" : ""} aria-pressed={answer[q.key] === c} onClick={() => set(q.key, c)}>
@@ -59,12 +65,13 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
           </div>
         </QuestionStep>
       ))}
-      <QuestionStep n={numbered ? questions.length + 1 : null} title={text || "Anything to add?"} hint={numbered ? "Optional" : null}>
+      <QuestionStep n={numbered ? questions.length + 1 : null} title={text || "Anything to add?"} hint={numbered ? "Optional" : null}
+        missing={tried && !numbered && !answer.note?.trim()}>
         <DictationTextarea rows={3} aria-label={text || "Anything to add?"} value={answer.note || ""}
           onChange={(v) => set("note", v)} placeholder={numbered ? "A few words…" : "A few words is enough"} />
       </QuestionStep>
       {error && <p className="form-error" role="alert">{error}</p>}
-      <SaveShareButton saved={saved} canSave={complete} busy={busy} onSave={save} shareText={complete ? shareText(answer) : ""} group={group} />
+      <SaveShareButton saved={saved} busy={busy} onSave={save} shareText={complete ? shareText(answer) : ""} group={group} />
       {saved && <p className="muted small center">✓ Saved</p>}
     </div>
   );

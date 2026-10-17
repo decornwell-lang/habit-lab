@@ -45,13 +45,13 @@ service cloud.firestore {
       }
       // Cohort memberships. Members can join free cohorts themselves; paid
       // ones are added by the server after Stripe payment. Members may only
-      // change their own restart date.
+      // change their own restart date, and mark that they joined the WhatsApp group.
       match /memberships/{cohortId} {
         allow read: if isSelf(uid) || isAdmin();
         allow create: if isAdmin()
           || (isSelf(uid) && get(/databases/$(database)/documents/cohorts/$(cohortId)).data.price == 0);
         allow update: if isAdmin()
-          || (isSelf(uid) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["personalStartDate"]));
+          || (isSelf(uid) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["personalStartDate", "whatsappJoined"]));
         allow delete: if isAdmin();
       }
     }

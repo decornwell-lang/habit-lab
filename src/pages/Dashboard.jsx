@@ -384,7 +384,7 @@ export default function Dashboard() {
           {current && <BadgesCard streak={streak} current={current} />}
           {/* key: switching cohort starts its tiles afresh (no answers carried over) */}
           <Folds key={current?.cohort.id} items={homeItems} initialOpen={params.get("open")} />
-          {current && <WhatsAppGroupCard current={current} />}
+          {current && <WhatsAppGroupCard uid={user.uid} current={current} />}
           {current ? (
             <>
               <StreakCard streak={streak} best={best} current={current} checkins={checkinsFor(data.checkins, current.cohort)} onCorrect={correctCheckin} />
