@@ -170,6 +170,13 @@ export async function getDay(uid, date) {
   return (await getDoc(doc(db, "users", uid, "practice", date))).data() || {};
 }
 
+// Every day's practice record ({ date: { morning_<cohortId>: {...}, ... } }), for the charts
+// in "My progress".
+export async function getPracticeDays(uid) {
+  const snap = await getDocs(collection(db, "users", uid, "practice"));
+  return Object.fromEntries(snap.docs.map((d) => [d.id, d.data()]));
+}
+
 // Saves one of the day's answers (the morning check-in: key "morning_<cohortId>").
 export async function saveDayAnswer(uid, date, key, value) {
   await setDoc(doc(db, "users", uid, "practice", date), { date, [key]: value, at: serverTimestamp() }, { merge: true });

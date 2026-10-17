@@ -27,3 +27,19 @@ export const MORNING_QUESTIONS = [
 ];
 export const MORNING_CHOICES = ["😔 Low", "😐 Okay", "🙂 Good"];
 
+// Morning, then: last night's sleep (shown on the Sleep chart in "My progress").
+export const SLEEP_QUESTIONS = [
+  { key: "sleepQuality", label: "Sleep quality", choices: ["😔 Poor", "😐 Okay", "🙂 Good"] },
+  { key: "sleepHours", label: "How long did you sleep?", choices: ["Under 5h", "5–6h", "6–7h", "7–8h", "8h+"] },
+];
+// Each sleep length as hours, for the chart.
+export const SLEEP_HOURS = { "Under 5h": 4.5, "5–6h": 5.5, "6–7h": 6.5, "7–8h": 7.5, "8h+": 8.5 };
+
+// Asthma cohorts only: the control pause, in seconds (shown on its own chart).
+export const CONTROL_PAUSE = {
+  key: "controlPause",
+  label: "Control pause",
+  hint: "Sitting quietly, breathe out normally, gently pinch your nose and count the seconds until the first urge to breathe. Then breathe normally. Stop at the first urge; never push. Skip it if you're short of breath.",
+  max: 60,
+};
+

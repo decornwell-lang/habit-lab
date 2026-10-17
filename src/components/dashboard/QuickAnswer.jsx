@@ -7,7 +7,9 @@ import DictationTextarea from "../DictationTextarea.jsx";
 import QuestionStep from "./QuestionStep.jsx";
 import SavedAnswers from "./SavedAnswers.jsx";
 
-// questions: [{ key, label, choices }]   text: label for the free text (optional)
+// questions: [{ key, label, choices }] to tap one, or [{ key, label, type: "seconds", max, hint }]
+// for a slider (0 to max seconds). `optional: true` questions can be left out.
+// text: label for the free text (optional)
 // shareText(answer) builds the WhatsApp message. onSave(answer) stores it (returns a promise).
 // summary(answer) lists the answers ([{ label, value }]) shown on the page once saved.
 export default function QuickAnswer({ questions = [], text, existing, shareText, onSave, summary, group }) {
@@ -18,7 +20,8 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
   const [tried, setTried] = useState(false); // Save tapped with questions unanswered: show them in red
   const box = useRef(null);
   const set = (key, value) => setAnswer((a) => ({ ...a, [key]: value }));
-  const complete = questions.every((q) => answer[q.key]) && (questions.length > 0 || answer.note?.trim());
+  const answered = (q) => (q.type === "seconds" ? Number.isFinite(answer[q.key]) : Boolean(answer[q.key]));
+  const complete = questions.every((q) => q.optional || answered(q)) && (questions.length > 0 || answer.note?.trim());
 
   async function save() {
     if (!complete) {
@@ -55,14 +58,26 @@ export default function QuickAnswer({ questions = [], text, existing, shareText,
   return (
     <div className="quick-answer" ref={box}>
       {questions.map((q, i) => (
-        <QuestionStep key={q.key} n={i + 1} title={q.label} missing={tried && !answer[q.key]}>
-          <div className="choices">
-            {q.choices.map((c) => (
-              <button type="button" key={c} className={answer[q.key] === c ? "selected" : ""} aria-pressed={answer[q.key] === c} onClick={() => set(q.key, c)}>
-                {c}
-              </button>
-            ))}
-          </div>
+        <QuestionStep key={q.key} n={i + 1} title={q.label} hint={q.optional ? "Optional" : null} missing={tried && !q.optional && !answered(q)}>
+          {q.type === "seconds" ? (
+            <div className="seconds-input">
+              {q.hint && <p className="seconds-hint">{q.hint}</p>}
+              <div className="seconds-row">
+                <input type="range" min="0" max={q.max} step="1" value={answer[q.key] ?? 0} aria-label={`${q.label}, seconds`}
+                  onChange={(e) => set(q.key, Number(e.target.value))} />
+                <output className="seconds-value">{Number.isFinite(answer[q.key]) ? `${answer[q.key]}s` : "–"}</output>
+              </div>
+              <div className="scale-labels"><span>0s</span><span>{q.max}s</span></div>
+            </div>
+          ) : (
+            <div className="choices">
+              {q.choices.map((c) => (
+                <button type="button" key={c} className={answer[q.key] === c ? "selected" : ""} aria-pressed={answer[q.key] === c} onClick={() => set(q.key, c)}>
+                  {c}
+                </button>
+              ))}
+            </div>
+          )}
         </QuestionStep>
       ))}
       <QuestionStep n={numbered ? questions.length + 1 : null} title={text || "Anything to add?"} hint={numbered ? "Optional" : null}

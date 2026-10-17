@@ -7,7 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import {
   getCohorts, getMemberships, getCheckins, getPublicProfile, savePublicProfile,
-  getContentSettings, getDay, getReflectionsForDay, saveCheckin, updateUserProfile, clearOldStreak,
+  getContentSettings, getDay, getReflectionsForDay, getPracticeDays, saveCheckin, updateUserProfile, clearOldStreak,
 } from "../lib/data.js";
 import { apiPost } from "../lib/api.js";
 import { todayKey, checkinDayKey, timeZoneName } from "../lib/dates.js";
@@ -35,6 +35,7 @@ import Folds from "../components/dashboard/Folds.jsx";
 import BreatheTab from "../components/dashboard/BreatheTab.jsx";
 import LeaderboardInvite from "../components/dashboard/LeaderboardInvite.jsx";
 import MorningCheckin from "../components/dashboard/MorningCheckin.jsx";
+import ProgressCharts from "../components/dashboard/ProgressCharts.jsx";
 import { promptTime } from "../content/dailyPrompts.js";
 import AppBadge from "../components/AppBadge.jsx";
 import { publicIdentity } from "../lib/identity.js";
@@ -92,7 +93,7 @@ export default function Dashboard() {
   const load = useCallback(async () => {
     try {
       const date = todayKey();
-      const [cohorts, memberships, checkins, publicProfile, settings, day, reflections] = await Promise.all([
+      const [cohorts, memberships, checkins, publicProfile, settings, day, reflections, practiceDays] = await Promise.all([
         getCohorts(),
         getMemberships(user.uid),
         getCheckins(user.uid),
@@ -100,8 +101,9 @@ export default function Dashboard() {
         getContentSettings(),
         getDay(user.uid, date),
         getReflectionsForDay(user.uid, date).catch(() => ({})),
+        getPracticeDays(user.uid).catch(() => ({})),
       ]);
-      setData({ cohorts, memberships, checkins, publicProfile, settings, day, reflections });
+      setData({ cohorts, memberships, checkins, publicProfile, settings, day, reflections, practiceDays });
     } catch (err) {
       console.error(err);
       setError("We couldn't load your dashboard. Please refresh the page.");
@@ -302,7 +304,7 @@ export default function Dashboard() {
     return [
       {
         ...tile({ id: "morning", icon: "☀️", tone: "gold", title: "Morning", subtitle: "How are you feeling?", isDone: Boolean(morning), doneText: "✓ Shared" }),
-        content: <><MorningCheckin uid={user.uid} today={today} cohortId={id} dayLabel={`Day ${row.progress.day} `} group={group}
+        content: <><MorningCheckin uid={user.uid} today={today} cohortId={id} habitType={row.cohort.habitType} dayLabel={`Day ${row.progress.day} `} group={group}
           existing={morning} onSaved={onSavedDay} /></>,
       },
       {
@@ -388,6 +390,8 @@ export default function Dashboard() {
           {current ? (
             <>
               <StreakCard streak={streak} best={best} current={current} checkins={checkinsFor(data.checkins, current.cohort)} onCorrect={correctCheckin} />
+              <ProgressCharts current={current} habit={habitInfo(current.cohort.habitType)} checkins={checkinsFor(data.checkins, current.cohort)}
+                practiceDays={{ ...data.practiceDays, [today]: { ...data.practiceDays?.[today], ...data.day } }} />
               <Folds items={[{
                 id: "leaderboard", icon: "🏆", tone: "gold", title: "Leaderboard", subtitle: "Your cohort's streaks",
                 content: <Leaderboard uid={user.uid} cohort={current.cohort} optedIn={Boolean(profile?.leaderboardOptIn)} today={checkinDay}
