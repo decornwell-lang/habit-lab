@@ -18,17 +18,23 @@
 const DAY = 24 * 60 * 60 * 1000;
 export const plusDays = (date, days) => new Date(date.getTime() + days * DAY);
 
-// One cohort's access: from the cohort's start for `cohortDays` days.
+// Access always starts on the day the cohort begins, never on the day of payment (members
+// often book weeks or months ahead). One cohort's access: from its start for `cohortDays` days.
 export function entitlementPeriod(cohortStart, cohortDays) {
   const startsAt = new Date(`${cohortStart}T00:00:00Z`);
   return { startsAt, endsAt: plusDays(startsAt, cohortDays) };
 }
 
 // The member's access end: the latest of their cohort entitlements (refunded ones don't
-// count) and, if they extended, one year from their first join.
-export function accessEndsAt({ entitlements, firstJoinedAt, extended }, extendDays) {
-  const ends = entitlements.filter((e) => !e.refunded).map((e) => e.endsAt.getTime());
-  if (extended && firstJoinedAt) ends.push(plusDays(firstJoinedAt, extendDays).getTime());
+// count) and, if they extended (or paid for the year), one year from the day their first
+// cohort began.
+export function accessEndsAt({ entitlements, extended }, extendDays) {
+  const kept = entitlements.filter((e) => !e.refunded);
+  const ends = kept.map((e) => e.endsAt.getTime());
+  if (extended && kept.length) {
+    const firstStart = Math.min(...kept.map((e) => e.startsAt.getTime()));
+    ends.push(plusDays(new Date(firstStart), extendDays).getTime());
+  }
   return ends.length ? new Date(Math.max(...ends)) : null;
 }
 
@@ -59,9 +65,20 @@ export const expiresSoon = (member, now = new Date(), days = 7) =>
 export const subscriptionActive = (sub, now = new Date()) =>
   Boolean(sub && ["active", "trialing"].includes(sub.status) && sub.currentPeriodEnd && now < sub.currentPeriodEnd);
 
-// Study Group access: an active subscription, or a cohort running now (cohort members get
-// the Study Group included for their cohort's dates, so they don't pay twice). Returns why, and
-// until when, for the page ("Included with your cohort until 18 February").
+// The dates of each paid cohort the member is in (memberships with paid: true), from the
+// day the cohort begins for its length: these include the Study Group.
+export function paidCohortPeriods(memberships, cohorts, cohortDays) {
+  return memberships
+    .filter((m) => m.paid)
+    .map((m) => cohorts.find((c) => c.id === m.cohortId))
+    .filter((c) => c?.startDate)
+    .map((c) => ({ cohortId: c.id, ...entitlementPeriod(c.startDate, Number(c.durationDays) || cohortDays) }));
+}
+
+// Study Group access: an active subscription, or a paid cohort running now (cohort members
+// get the Study Group included for their cohort's dates, so they don't pay twice).
+// `entitlements`: cohort periods, e.g. from paidCohortPeriods(). Returns why, and until
+// when, for the page ("Included with your cohort until 18 February").
 export function studyGroupAccess({ subscriptions = [], entitlements = [] }, now = new Date()) {
   const sub = subscriptions.filter((s) => subscriptionActive(s, now)).sort((a, b) => b.currentPeriodEnd - a.currentPeriodEnd)[0];
   if (sub) return { ok: true, via: "subscription", until: sub.currentPeriodEnd, cancelAtPeriodEnd: Boolean(sub.cancelAtPeriodEnd) };
